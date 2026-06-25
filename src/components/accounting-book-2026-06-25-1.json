@@ -1,0 +1,382 @@
+{
+  "version": 1,
+  "exportedAt": "2026-06-25T09:24:37.521Z",
+  "transactions": [
+    {
+      "id": "9ed19f0d-1831-46aa-8602-dfecd7ddd8fa",
+      "type": "income",
+      "amount": 100,
+      "category": "工资",
+      "note": "",
+      "occurredAt": "2026-06-25T00:00:00.000Z"
+    },
+    {
+      "id": "56075168-dcf1-42b3-a608-d283f711bf39",
+      "type": "expense",
+      "amount": 10,
+      "category": "餐饮",
+      "note": "11111",
+      "occurredAt": "2026-06-25T00:00:00.000Z"
+    },
+    {
+      "id": "2c21e4e4-70dd-4a1b-bc5c-b5b6541108bf",
+      "type": "expense",
+      "amount": 20,
+      "category": "餐饮",
+      "note": "",
+      "occurredAt": "2026-06-25T00:00:00.000Z"
+    },
+    {
+      "id": "c93d5912-6f87-4085-88c6-44eb3bdf2cb7",
+      "type": "expense",
+      "amount": 10,
+      "category": "交通",
+      "note": "",
+      "occurredAt": "2026-06-23T00:00:00.000Z"
+    },
+    {
+      "id": "c191c9b7-5a31-4a15-aebc-98b12692db84",
+      "type": "expense",
+      "amount": 111,
+      "category": "餐饮",
+      "note": "",
+      "occurredAt": "2026-05-20T00:00:00.000Z"
+    },
+    {
+      "id": "i2j3k4l5-m6n7-8901-opqr-234567890123",
+      "type": "expense",
+      "amount": 350,
+      "category": "餐饮",
+      "note": "圣诞大餐",
+      "occurredAt": "2025-12-25T00:00:00.000Z"
+    },
+    {
+      "id": "h1i2j3k4-l5m6-7890-nopq-123456789012",
+      "type": "income",
+      "amount": 8000,
+      "category": "工资",
+      "note": "12月工资-年终奖",
+      "occurredAt": "2025-12-20T00:00:00.000Z"
+    },
+    {
+      "id": "j3k4l5m6-n7o8-9012-pqrs-345678901234",
+      "type": "expense",
+      "amount": 1200,
+      "category": "购物",
+      "note": "双十一购物-羽绒服",
+      "occurredAt": "2025-11-11T00:00:00.000Z"
+    },
+    {
+      "id": "k4l5m6n7-o8p9-0123-qrst-456789012345",
+      "type": "expense",
+      "amount": 2800,
+      "category": "住房",
+      "note": "11月房租",
+      "occurredAt": "2025-11-01T00:00:00.000Z"
+    },
+    {
+      "id": "l5m6n7o8-p9q0-1234-rstu-567890123456",
+      "type": "expense",
+      "amount": 85,
+      "category": "交通",
+      "note": "国庆出游-高铁票",
+      "occurredAt": "2025-10-03T00:00:00.000Z"
+    },
+    {
+      "id": "m6n7o8p9-q0r1-2345-stuv-678901234567",
+      "type": "expense",
+      "amount": 450,
+      "category": "餐饮",
+      "note": "中秋节聚餐",
+      "occurredAt": "2025-09-17T00:00:00.000Z"
+    },
+    {
+      "id": "n7o8p9q0-r1s2-3456-tuvw-789012345678",
+      "type": "income",
+      "amount": 500,
+      "category": "其他",
+      "note": "生日红包",
+      "occurredAt": "2025-08-15T00:00:00.000Z"
+    },
+    {
+      "id": "o8p9q0r1-s2t3-4567-uvwx-890123456789",
+      "type": "expense",
+      "amount": 230,
+      "category": "娱乐",
+      "note": "音乐节门票",
+      "occurredAt": "2025-07-20T00:00:00.000Z"
+    },
+    {
+      "id": "p9q0r1s2-t3u4-5678-vwxy-901234567890",
+      "type": "expense",
+      "amount": 280,
+      "category": "医疗",
+      "note": "体检费用",
+      "occurredAt": "2025-06-10T00:00:00.000Z"
+    },
+    {
+      "id": "q0r1s2t3-u4v5-6789-wxyz-012345678901",
+      "type": "income",
+      "amount": 6500,
+      "category": "工资",
+      "note": "5月工资",
+      "occurredAt": "2025-05-15T00:00:00.000Z"
+    },
+    {
+      "id": "r1s2t3u4-v5w6-7890-xyza-123456789012",
+      "type": "expense",
+      "amount": 2000,
+      "category": "住房",
+      "note": "5月房租",
+      "occurredAt": "2025-05-01T00:00:00.000Z"
+    },
+    {
+      "id": "s2t3u4v5-w6x7-8901-yzab-234567890123",
+      "type": "expense",
+      "amount": 158,
+      "category": "餐饮",
+      "note": "朋友生日晚餐",
+      "occurredAt": "2025-04-12T00:00:00.000Z"
+    },
+    {
+      "id": "t3u4v5w6-x7y8-9012-zabc-345678901234",
+      "type": "income",
+      "amount": 1000,
+      "category": "奖金",
+      "note": "季度奖金-Q1",
+      "occurredAt": "2025-03-31T00:00:00.000Z"
+    },
+    {
+      "id": "u4v5w6x7-y8z9-0123-abcd-456789012345",
+      "type": "expense",
+      "amount": 99,
+      "category": "购物",
+      "note": "情人节礼物-花",
+      "occurredAt": "2025-02-14T00:00:00.000Z"
+    },
+    {
+      "id": "v5w6x7y8-z9a0-1234-bcde-567890123456",
+      "type": "expense",
+      "amount": 3200,
+      "category": "住房",
+      "note": "1月房租+押金",
+      "occurredAt": "2025-01-05T00:00:00.000Z"
+    },
+    {
+      "id": "x7y8z9a0-b1c2-3456-defg-789012345678",
+      "type": "expense",
+      "amount": 520,
+      "category": "餐饮",
+      "note": "公司年会聚餐",
+      "occurredAt": "2024-12-28T00:00:00.000Z"
+    },
+    {
+      "id": "w6x7y8z9-a0b1-2345-cdef-678901234567",
+      "type": "income",
+      "amount": 7500,
+      "category": "工资",
+      "note": "12月工资-年终结算",
+      "occurredAt": "2024-12-20T00:00:00.000Z"
+    },
+    {
+      "id": "y8z9a0b1-c2d3-4567-efgh-890123456789",
+      "type": "expense",
+      "amount": 180,
+      "category": "交通",
+      "note": "周末自驾游-油费",
+      "occurredAt": "2024-11-16T00:00:00.000Z"
+    },
+    {
+      "id": "z9a0b1c2-d3e4-5678-fghi-901234567890",
+      "type": "expense",
+      "amount": 650,
+      "category": "购物",
+      "note": "双十一-护肤品",
+      "occurredAt": "2024-11-11T00:00:00.000Z"
+    },
+    {
+      "id": "a0b1c2d3-e4f5-6789-ghij-012345678901",
+      "type": "expense",
+      "amount": 2600,
+      "category": "住房",
+      "note": "10月房租",
+      "occurredAt": "2024-10-01T00:00:00.000Z"
+    },
+    {
+      "id": "b1c2d3e4-f5a6-7890-hijk-123456789012",
+      "type": "income",
+      "amount": 2000,
+      "category": "其他",
+      "note": "二手车出售",
+      "occurredAt": "2024-09-15T00:00:00.000Z"
+    },
+    {
+      "id": "c2d3e4f5-a6b7-8901-ijkl-234567890123",
+      "type": "expense",
+      "amount": 430,
+      "category": "医疗",
+      "note": "牙科检查+洗牙",
+      "occurredAt": "2024-08-22T00:00:00.000Z"
+    },
+    {
+      "id": "d3e4f5a6-b7c8-9012-jklm-345678901234",
+      "type": "expense",
+      "amount": 380,
+      "category": "娱乐",
+      "note": "演唱会门票",
+      "occurredAt": "2024-07-27T00:00:00.000Z"
+    },
+    {
+      "id": "e4f5a6b7-c8d9-0123-klmn-456789012345",
+      "type": "income",
+      "amount": 6800,
+      "category": "工资",
+      "note": "6月工资",
+      "occurredAt": "2024-06-15T00:00:00.000Z"
+    },
+    {
+      "id": "f5a6b7c8-d9e0-1234-lmno-567890123456",
+      "type": "expense",
+      "amount": 95,
+      "category": "餐饮",
+      "note": "端午节粽子礼盒",
+      "occurredAt": "2024-06-10T00:00:00.000Z"
+    },
+    {
+      "id": "a6b7c8d9-e0f1-2345-mnop-678901234567",
+      "type": "expense",
+      "amount": 2200,
+      "category": "住房",
+      "note": "4月房租",
+      "occurredAt": "2024-04-01T00:00:00.000Z"
+    },
+    {
+      "id": "b7c8d9e0-f1a2-3456-nopq-789012345678",
+      "type": "income",
+      "amount": 300,
+      "category": "奖金",
+      "note": "全勤奖-3月",
+      "occurredAt": "2024-03-31T00:00:00.000Z"
+    },
+    {
+      "id": "c8d9e0f1-a2b3-4567-opqr-890123456789",
+      "type": "expense",
+      "amount": 168,
+      "category": "餐饮",
+      "note": "情人节晚餐",
+      "occurredAt": "2024-02-14T00:00:00.000Z"
+    },
+    {
+      "id": "d9e0f1a2-b3c4-5678-pqrs-901234567890",
+      "type": "expense",
+      "amount": 1500,
+      "category": "购物",
+      "note": "新年衣服",
+      "occurredAt": "2024-01-20T00:00:00.000Z"
+    },
+    {
+      "id": "f1a2b3c4-d5e6-7890-rstu-123456789012",
+      "type": "expense",
+      "amount": 580,
+      "category": "餐饮",
+      "note": "圣诞大餐+红酒",
+      "occurredAt": "2023-12-25T00:00:00.000Z"
+    },
+    {
+      "id": "e0f1a2b3-c4d5-6789-qrst-012345678901",
+      "type": "income",
+      "amount": 12000,
+      "category": "工资",
+      "note": "12月工资+年终奖",
+      "occurredAt": "2023-12-22T00:00:00.000Z"
+    },
+    {
+      "id": "b3c4d5e6-f7a8-9012-tuvw-345678901234",
+      "type": "expense",
+      "amount": 920,
+      "category": "购物",
+      "note": "双十一-电子产品",
+      "occurredAt": "2023-11-11T00:00:00.000Z"
+    },
+    {
+      "id": "a2b3c4d5-e6f7-8901-stuv-234567890123",
+      "type": "expense",
+      "amount": 3100,
+      "category": "住房",
+      "note": "11月房租",
+      "occurredAt": "2023-11-01T00:00:00.000Z"
+    },
+    {
+      "id": "c4d5e6f7-a8b9-0123-uvwx-456789012345",
+      "type": "income",
+      "amount": 500,
+      "category": "其他",
+      "note": "中秋礼金",
+      "occurredAt": "2023-09-29T00:00:00.000Z"
+    },
+    {
+      "id": "d5e6f7a8-b9c0-1234-vwxy-567890123456",
+      "type": "expense",
+      "amount": 400,
+      "category": "医疗",
+      "note": "眼科检查+配眼镜",
+      "occurredAt": "2023-08-15T00:00:00.000Z"
+    },
+    {
+      "id": "e6f7a8b9-c0d1-2345-wxyz-678901234567",
+      "type": "expense",
+      "amount": 275,
+      "category": "娱乐",
+      "note": "水上乐园门票",
+      "occurredAt": "2023-07-22T00:00:00.000Z"
+    },
+    {
+      "id": "f7a8b9c0-d1e2-3456-xyza-789012345678",
+      "type": "income",
+      "amount": 6000,
+      "category": "工资",
+      "note": "6月工资",
+      "occurredAt": "2023-06-15T00:00:00.000Z"
+    },
+    {
+      "id": "a8b9c0d1-e2f3-4567-yzab-890123456789",
+      "type": "expense",
+      "amount": 2600,
+      "category": "住房",
+      "note": "5月房租",
+      "occurredAt": "2023-05-01T00:00:00.000Z"
+    },
+    {
+      "id": "b9c0d1e2-f3a4-5678-zabc-901234567890",
+      "type": "expense",
+      "amount": 68,
+      "category": "餐饮",
+      "note": "生日蛋糕",
+      "occurredAt": "2023-04-08T00:00:00.000Z"
+    },
+    {
+      "id": "c0d1e2f3-a4b5-6789-abcd-012345678901",
+      "type": "expense",
+      "amount": 120,
+      "category": "交通",
+      "note": "清明扫墓-往返车费",
+      "occurredAt": "2023-04-05T00:00:00.000Z"
+    },
+    {
+      "id": "d1e2f3a4-b5c6-7890-bcde-123456789012",
+      "type": "income",
+      "amount": 300,
+      "category": "其他",
+      "note": "春节红包",
+      "occurredAt": "2023-01-22T00:00:00.000Z"
+    },
+    {
+      "id": "e2f3a4b5-c6d7-8901-cdef-234567890123",
+      "type": "expense",
+      "amount": 1800,
+      "category": "购物",
+      "note": "新年换手机",
+      "occurredAt": "2023-01-15T00:00:00.000Z"
+    }
+  ]
+}
