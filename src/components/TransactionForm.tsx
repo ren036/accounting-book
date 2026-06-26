@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
 import { clampInputDateToMax, todayInputValue } from '../lib/dates'
-import { evaluateAmountExpression } from '../lib/money'
 import { AmountInput } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
 
@@ -25,9 +24,9 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
 
-    const numericAmount = evaluateAmountExpression(amount)
-    if (numericAmount === null || numericAmount <= 0) {
-      window.alert('请输入正确的金额')
+    const numericAmount = Number(amount)
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+      window.alert('请输入大于 0 的金额')
       return
     }
 

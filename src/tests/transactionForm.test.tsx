@@ -22,4 +22,15 @@ describe('TransactionForm', () => {
     expect(html).toContain('class="native-date-input"')
     expect(html).toContain('type="date"')
   })
+
+  it('renders category icon buttons instead of a category select', () => {
+    const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
+
+    expect(html).toContain('class="category-picker"')
+    expect(html).toContain('class="category-icon-button active"')
+    expect(html).not.toContain('class="category-option active"')
+    expect(html).toContain('餐饮')
+    expect(html).toContain('通讯')
+    expect(html).not.toContain('<select')
+  })
 })

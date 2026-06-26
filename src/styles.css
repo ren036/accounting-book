@@ -175,6 +175,62 @@ button {
   resize: vertical;
 }
 
+.category-picker {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: 64px;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 2px 2px 8px;
+  scrollbar-width: none;
+}
+
+.category-picker::-webkit-scrollbar {
+  display: none;
+}
+
+.category-option {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.category-icon-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #f3f3f3;
+}
+
+.category-icon-button .category-emoji {
+  width: 100%;
+  height: 100%;
+  line-height: 40px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-icon-button.active {
+  border-color: rgb(255, 191, 72);
+  background: rgb(255, 191, 72);
+}
+
+
+
+.category-option-label {
+  line-height: 1.2;
+}
+
 .segmented {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -304,55 +360,6 @@ hr {
   gap: 8px;
 }
 
-.category-emoji {
-  display: inline-grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  flex: 0 0 auto;
-  border-radius: 12px;
-  background: #fff7ed;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.category-picker {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.category-picker button {
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 10px 6px;
-  background: #ffffff;
-  color: #374151;
-  font-size: 13px;
-}
-
-.category-picker button .category-emoji {
-  width: 38px;
-  height: 38px;
-  border: 1px solid #fde68a;
-  background: #fffbeb;
-  font-size: 22px;
-}
-
-.category-picker button.active {
-  border-color: #111827;
-  background: #eef2ff;
-  color: #111827;
-  font-weight: 700;
-}
-
-.category-picker button.active .category-emoji {
-  border-color: #111827;
-  background: #111827;
-}
 
 .dashboard-transactions {
   display: grid;
@@ -569,16 +576,5 @@ hr {
     border-radius: 12px;
     padding: 8px;
     font-size: 11px;
-  }
-
-  .category-picker {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .category-picker button {
-    border-radius: 14px;
-    padding: 9px 4px;
-    font-size: 12px;
   }
 }

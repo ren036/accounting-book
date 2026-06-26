@@ -13,15 +13,17 @@ export function CategoryPicker({ categories, value, onChange }: CategoryPickerPr
       <div className="category-picker" role="radiogroup" aria-label="分类">
         {categories.map((category) => (
           <button
-            key={category}
+            className="category-option"
             type="button"
-            className={category === value ? 'active' : ''}
             role="radio"
             aria-checked={category === value}
+            key={category}
             onClick={() => onChange(category)}
           >
-            <CategoryEmoji category={category} />
-            <span>{category}</span>
+            <span className={category === value ? 'category-icon-button active' : 'category-icon-button'}>
+              <CategoryEmoji category={category} />
+            </span>
+            <span className="category-option-label">{category}</span>
           </button>
         ))}
       </div>
