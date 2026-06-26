@@ -4,10 +4,10 @@ import { TransactionForm } from '../components/TransactionForm'
 import { todayInputValue } from '../lib/dates'
 
 describe('TransactionForm', () => {
-  it('shows today as the default transaction date', () => {
+  it('limits the date input to today or earlier', () => {
     const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
 
-    expect(html).toContain(`>${todayInputValue()}<`)
+    expect(html).toContain(`max="${todayInputValue()}"`)
   })
 
   it('autofocuses the amount input when creating a transaction', () => {
@@ -16,10 +16,10 @@ describe('TransactionForm', () => {
     expect(html).toContain('autofocus=""')
   })
 
-  it('uses a mobile date picker instead of a native date input', () => {
+  it('uses a contained native date input', () => {
     const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
 
-    expect(html).not.toContain('type="date"')
-    expect(html).toContain('class="date-picker-trigger"')
+    expect(html).toContain('class="native-date-input"')
+    expect(html).toContain('type="date"')
   })
 })
