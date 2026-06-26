@@ -55,7 +55,8 @@ button {
 
 .app {
   min-height: 100dvh;
-  padding: calc(16px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
+  padding:12px 12px 12px;
+  /* padding: calc(16px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom)); */
 }
 
 .page {
@@ -354,7 +355,7 @@ hr {
 .bottom-nav {
   position: fixed;
   right: 12px;
-  bottom: calc(12px + env(safe-area-inset-bottom));
+  bottom: calc(env(safe-area-inset-bottom));
   left: 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -480,16 +481,17 @@ hr {
 @media (max-width: 420px) {
   .app {
     min-height: 100dvh;
-    padding: calc(12px + env(safe-area-inset-top)) 12px calc(84px + env(safe-area-inset-bottom));
+    padding:12px 12px 12px;
+    /* padding: calc(12px + env(safe-area-inset-top)) 12px calc(84px + env(safe-area-inset-bottom)); */
   }
 
   .fixed-list-page {
-    height: calc(100dvh - 12px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
+    height: calc(100dvh - 0px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
     gap: 10px;
   }
 
   .entry-page {
-    height: calc(100dvh - 12px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
+    height: calc(100dvh - 0px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
   }
 
   .fixed-list-header {
@@ -598,7 +600,7 @@ hr {
 
   .bottom-nav {
     right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
+    bottom: calc(env(safe-area-inset-bottom));
     left: 10px;
     border-radius: 20px;
     padding: 6px;
