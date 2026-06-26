@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
-import { todayInputValue } from '../lib/dates'
+import { clampInputDateToMax, todayInputValue } from '../lib/dates'
+import { evaluateAmountExpression } from '../lib/money'
 import { AmountInput } from './AmountInput'
+import { CategoryPicker } from './CategoryPicker'
 
 type TransactionFormProps = {
   initialTransaction?: Transaction
@@ -18,13 +20,14 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
   const [occurredAt, setOccurredAt] = useState(initialTransaction?.occurredAt.slice(0, 10) ?? todayInputValue())
 
   const categories = type === 'income' ? incomeCategories : expenseCategories
+  const maxDate = todayInputValue()
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
 
-    const numericAmount = Number(amount)
-    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      window.alert('请输入大于 0 的金额')
+    const numericAmount = evaluateAmountExpression(amount)
+    if (numericAmount === null || numericAmount <= 0) {
+      window.alert('请输入正确的金额')
       return
     }
 
@@ -33,7 +36,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
       amount: Math.round(numericAmount * 100) / 100,
       category,
       note: note.trim(),
-      occurredAt: `${occurredAt}T00:00:00.000Z`
+      occurredAt: `${clampInputDateToMax(occurredAt, maxDate)}T00:00:00.000Z`
     }
 
     if (initialTransaction) {
@@ -68,14 +71,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
 
       <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} />
 
-      <label className="field">
-        <span>分类</span>
-        <select value={category} onChange={(event) => setCategory(event.target.value)}>
-          {categories.map((item) => (
-            <option key={item}>{item}</option>
-          ))}
-        </select>
-      </label>
+      <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
       <label className="field">
         <span>日期</span>
@@ -83,8 +79,8 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
           className="native-date-input"
           type="date"
           value={occurredAt}
-          max={todayInputValue()}
-          onChange={(event) => setOccurredAt(event.target.value)}
+          max={maxDate}
+          onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
         />
       </label>
 

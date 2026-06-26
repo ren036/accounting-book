@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  filterMonthTransactionsByType,
   getAvailableStatYears,
   groupMonthTransactionsByDay,
   summarizeExpenseCategories,
@@ -40,6 +41,19 @@ describe('summarizeExpenseCategories', () => {
       { category: '餐饮', amount: 200 },
       { category: '交通', amount: 20 }
     ])
+  })
+})
+
+describe('filterMonthTransactionsByType', () => {
+  it('returns only transactions for the requested month and type', () => {
+    const transactions: Transaction[] = [
+      makeTransaction({ id: 'expense-1', type: 'expense', occurredAt: '2026-06-02T10:00:00.000Z' }),
+      makeTransaction({ id: 'income-1', type: 'income', occurredAt: '2026-06-03T10:00:00.000Z' }),
+      makeTransaction({ id: 'expense-2', type: 'expense', occurredAt: '2026-05-02T10:00:00.000Z' })
+    ]
+
+    expect(filterMonthTransactionsByType(transactions, '2026-06', 'expense').map((transaction) => transaction.id)).toEqual(['expense-1'])
+    expect(filterMonthTransactionsByType(transactions, '2026-06', 'income').map((transaction) => transaction.id)).toEqual(['income-1'])
   })
 })
 

@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { CategoryEmoji } from '../components/CategoryEmoji'
-import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
-import type { Transaction } from '../domain/transaction'
+import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
+import type { Transaction, TransactionType } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
 
@@ -12,9 +13,12 @@ type MonthTransactionsPageProps = {
 }
 
 export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: MonthTransactionsPageProps) {
+  const [activeType, setActiveType] = useState<TransactionType>('expense')
   const summary = summarizeMonth(transactions, month)
-  const groups = groupMonthTransactionsByDay(transactions, month)
+  const filteredTransactions = filterMonthTransactionsByType(transactions, month, activeType)
+  const groups = groupMonthTransactionsByDay(filteredTransactions, month)
   const label = `${Number(month.slice(5, 7))}月账单`
+  const emptyText = activeType === 'expense' ? '这个月还没有支出' : '这个月还没有收入'
 
   return (
     <section className="page hero-page fixed-list-page">
@@ -40,11 +44,32 @@ export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: M
             <strong>{formatMoney(summary.balance)}</strong>
           </div>
         </div>
+
+        <div className="tabs" role="tablist" aria-label="账单类型">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeType === 'expense'}
+            className={activeType === 'expense' ? 'active' : ''}
+            onClick={() => setActiveType('expense')}
+          >
+            支出
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeType === 'income'}
+            className={activeType === 'income' ? 'active' : ''}
+            onClick={() => setActiveType('income')}
+          >
+            收入
+          </button>
+        </div>
       </div>
 
       <section className="fixed-list-content month-transactions-section">
         {groups.length === 0 ? (
-          <p className="empty">这个月还没有账单</p>
+          <p className="empty">{emptyText}</p>
         ) : (
           <div className="daily-groups">
             {groups.map((group) => (

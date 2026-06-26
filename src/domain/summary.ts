@@ -1,4 +1,4 @@
-import type { Transaction } from './transaction'
+import type { Transaction, TransactionType } from './transaction'
 
 export type MonthSummary = {
   income: number
@@ -52,6 +52,10 @@ export function summarizeExpenseCategories(transactions: Transaction[], month: s
   return Object.entries(totals)
     .map(([category, amount]) => ({ category, amount }))
     .sort((a, b) => b.amount - a.amount)
+}
+
+export function filterMonthTransactionsByType(transactions: Transaction[], month: string, type: TransactionType): Transaction[] {
+  return transactions.filter((transaction) => transaction.type === type).filter((transaction) => transaction.occurredAt.startsWith(month))
 }
 
 export function summarizeYear(transactions: Transaction[], year: string): MonthSummary {

@@ -181,7 +181,17 @@ button {
   gap: 8px;
 }
 
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  border-radius: 16px;
+  padding: 5px;
+  background: rgb(255 255 255 / 72%);
+}
+
 .segmented button,
+.tabs button,
 .primary,
 .bottom-nav button,
 .transaction button,
@@ -192,6 +202,7 @@ button {
 }
 
 .segmented button,
+.tabs button,
 .transaction button,
 .form > button:not(.primary) {
   background: #eef2ff;
@@ -199,6 +210,7 @@ button {
 }
 
 .segmented button.active,
+.tabs button.active,
 .primary {
   color: #ffffff;
   background: #111827;
@@ -302,6 +314,44 @@ hr {
   background: #fff7ed;
   font-size: 18px;
   line-height: 1;
+}
+
+.category-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.category-picker button {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 10px 6px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+}
+
+.category-picker button .category-emoji {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  font-size: 22px;
+}
+
+.category-picker button.active {
+  border-color: #111827;
+  background: #eef2ff;
+  color: #111827;
+  font-weight: 700;
+}
+
+.category-picker button.active .category-emoji {
+  border-color: #111827;
+  background: #111827;
 }
 
 .dashboard-transactions {
@@ -519,5 +569,16 @@ hr {
     border-radius: 12px;
     padding: 8px;
     font-size: 11px;
+  }
+
+  .category-picker {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .category-picker button {
+    border-radius: 14px;
+    padding: 9px 4px;
+    font-size: 12px;
   }
 }
