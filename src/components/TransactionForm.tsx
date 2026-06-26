@@ -79,7 +79,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
 
       <label className="field">
         <span>日期</span>
-        <input type="date" value={occurredAt} onChange={(event) => setOccurredAt(event.target.value)} />
+        <input type="date" value={occurredAt} max={todayInputValue()} onChange={(event) => setOccurredAt(event.target.value)} />
       </label>
 
       <label className="field">

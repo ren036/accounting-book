@@ -16,24 +16,26 @@ export function DashboardPage({ transactions, onEdit }: DashboardPageProps) {
   const groups = groupMonthTransactionsByDay(transactions, month)
 
   return (
-    <section className="page hero-page">
-      <div className="hero-card">
-        <span>本月结余</span>
-        <strong>{formatMoney(summary.balance)}</strong>
-        <p>纯本地保存，记得定期导出备份。</p>
-      </div>
-      <div className="summary-grid">
-        <div className="card">
-          <span>收入</span>
-          <strong className="income">{formatMoney(summary.income)}</strong>
+    <section className="page hero-page fixed-list-page">
+      <div className="fixed-list-header">
+        <div className="hero-card">
+          <span>本月结余</span>
+          <strong>{formatMoney(summary.balance)}</strong>
+          <p>纯本地保存，记得定期导出备份。</p>
         </div>
-        <div className="card">
-          <span>支出</span>
-          <strong className="expense">{formatMoney(summary.expense)}</strong>
+        <div className="summary-grid">
+          <div className="card">
+            <span>收入</span>
+            <strong className="income">{formatMoney(summary.income)}</strong>
+          </div>
+          <div className="card">
+            <span>支出</span>
+            <strong className="expense">{formatMoney(summary.expense)}</strong>
+          </div>
         </div>
       </div>
 
-      <section className="dashboard-transactions">
+      <section className="dashboard-transactions fixed-list-content">
         <h2>当月账单详情</h2>
         {groups.length === 0 ? (
           <p className="empty">这个月还没有账单</p>

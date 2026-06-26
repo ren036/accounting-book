@@ -31,6 +31,23 @@
 - xlsx：解析 `.xls` / `.xlsx` Excel 文件。
 - Vitest：单元测试。
 
+## 主要依赖
+
+- `react` / `react-dom`：构建单页应用和页面交互。
+- `antd-mobile`：移动端 UI 组件，目前主要用于确认弹窗。
+- `dexie`：封装 IndexedDB 读写，管理本地账单数据。
+- `xlsx`：生成 Excel 备份文件，解析 `.xls` / `.xlsx` 导入文件。
+- `lucide-react`：页面图标。
+- `vite-plugin-pwa`：生成 PWA 配置、manifest 和 service worker，让应用可以添加到手机主屏幕并缓存基础资源。
+
+## 开发依赖
+
+- `typescript`：提供静态类型检查。
+- `vite`：开发服务器和生产构建工具。
+- `@vitejs/plugin-react`：Vite 的 React 插件。
+- `vitest`：单元测试框架。
+- `@types/react` / `@types/react-dom`：React TypeScript 类型定义。
+
 ## 数据保存在哪里
 
 账单数据保存在当前设备浏览器的 IndexedDB 中，数据库名是：
@@ -299,7 +316,7 @@ PWA 使用 service worker 缓存资源，所以更新有时需要重新打开或
 
 ### JSON 备份
 
-设置页点击“导出备份”会下载 JSON 文件。
+设置页点击“导出 JSON”会下载 JSON 文件。
 
 建议把 JSON 保存到：
 
@@ -309,7 +326,17 @@ PWA 使用 service worker 缓存资源，所以更新有时需要重新打开或
 
 恢复数据时，在设置页选择 JSON 文件导入。
 
-### Excel 导入
+### Excel 导出和导入
+
+设置页点击“导出 Excel”会下载 `.xlsx` 文件。
+
+导出的 Excel 直接展示每笔账单数据，工作表名是 `Transactions`，字段包括：
+
+```txt
+id | type | amount | category | note | occurredAt
+```
+
+每一笔账单占一行。再次导入这个 Excel 时会保留原 `id`，如果本地已有相同 `id` 的账单，会覆盖更新。
 
 设置页支持导入：
 
@@ -318,7 +345,7 @@ PWA 使用 service worker 缓存资源，所以更新有时需要重新打开或
 .xlsx
 ```
 
-Excel 行映射规则：
+除应用自己导出的 Excel 外，也兼容旧的特殊 Excel 格式。旧格式行映射规则：
 
 ```txt
 第 1 列：日期

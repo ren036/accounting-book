@@ -17,45 +17,49 @@ export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: M
   const label = `${Number(month.slice(5, 7))}月账单`
 
   return (
-    <section className="page hero-page">
-      <div className="page-title-row">
-        <h1>{label}</h1>
-        <button type="button" onClick={onBack}>
-          返回统计
-        </button>
+    <section className="page hero-page fixed-list-page">
+      <div className="fixed-list-header">
+        <div className="page-title-row">
+          <h1>{label}</h1>
+          <button type="button" onClick={onBack}>
+            返回统计
+          </button>
+        </div>
+
+        <div className="summary-grid stats-summary">
+          <div className="card">
+            <span>收入</span>
+            <strong className="income">{formatMoney(summary.income)}</strong>
+          </div>
+          <div className="card">
+            <span>支出</span>
+            <strong className="expense">{formatMoney(summary.expense)}</strong>
+          </div>
+          <div className="card">
+            <span>结余</span>
+            <strong>{formatMoney(summary.balance)}</strong>
+          </div>
+        </div>
       </div>
 
-      <div className="summary-grid stats-summary">
-        <div className="card">
-          <span>收入</span>
-          <strong className="income">{formatMoney(summary.income)}</strong>
-        </div>
-        <div className="card">
-          <span>支出</span>
-          <strong className="expense">{formatMoney(summary.expense)}</strong>
-        </div>
-        <div className="card">
-          <span>结余</span>
-          <strong>{formatMoney(summary.balance)}</strong>
-        </div>
-      </div>
-
-      {groups.length === 0 ? (
-        <p className="empty">这个月还没有账单</p>
-      ) : (
-        <div className="daily-groups">
-          {groups.map((group) => (
-            <section className="daily-group" key={group.date}>
-              <h3>{group.label}</h3>
-              <div className="list">
-                {group.transactions.map((transaction) => (
-                  <TransactionRow key={transaction.id} transaction={transaction} onEdit={onEdit} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
+      <section className="fixed-list-content month-transactions-section">
+        {groups.length === 0 ? (
+          <p className="empty">这个月还没有账单</p>
+        ) : (
+          <div className="daily-groups">
+            {groups.map((group) => (
+              <section className="daily-group" key={group.date}>
+                <h3>{group.label}</h3>
+                <div className="list">
+                  {group.transactions.map((transaction) => (
+                    <TransactionRow key={transaction.id} transaction={transaction} onEdit={onEdit} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </section>
     </section>
   )
 }
