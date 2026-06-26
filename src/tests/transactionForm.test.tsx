@@ -1,7 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { TransactionForm } from '../components/TransactionForm'
 import { todayInputValue } from '../lib/dates'
+
+const styles = readFileSync('src/styles.css', 'utf8')
 
 describe('TransactionForm', () => {
   it('renders header, body, and footer sections', () => {
@@ -44,5 +47,9 @@ describe('TransactionForm', () => {
     expect(html).toContain('餐饮')
     expect(html).toContain('通讯')
     expect(html).not.toContain('<select')
+  })
+
+  it('keeps focused field outlines visible inside the scrollable body', () => {
+    expect(styles).toMatch(/\.transaction-form-body\s*{[^}]*padding-inline:\s*2px;/s)
   })
 })
