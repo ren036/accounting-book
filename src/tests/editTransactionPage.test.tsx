@@ -22,6 +22,19 @@ const transaction: Transaction = {
 }
 
 describe('EditTransactionPage', () => {
+  it('renders the fixed-region transaction form shell', () => {
+    const html = renderToStaticMarkup(
+      <EditTransactionPage
+        transaction={transaction}
+        onCancel={() => undefined}
+        onDeleted={async () => undefined}
+        onSaved={async () => undefined}
+      />
+    )
+
+    expect(html).toContain('class="page entry-page"')
+  })
+
   it('places a compact delete icon button beside the save button', () => {
     const html = renderToStaticMarkup(
       <EditTransactionPage

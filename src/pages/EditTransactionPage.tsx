@@ -32,7 +32,7 @@ export function EditTransactionPage({ transaction, onCancel, onDeleted, onSaved 
   }
 
   return (
-    <section className="page">
+    <section className="page entry-page">
       <div className="page-title-row">
         <h1>编辑账单</h1>
         <button type="button" onClick={onCancel}>
