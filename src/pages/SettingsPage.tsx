@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Dialog } from 'antd-mobile'
 import { parseBackup, serializeBackup } from '../lib/backup'
+import { createBackupFileName } from '../lib/backupFileName'
 import { clearTransactions, db, listTransactions, saveTransaction } from '../lib/db'
+import { downloadBlob } from '../lib/download'
+import { parseExcelBackup, parseReadableTransactionsSheet, serializeExcelBackup } from '../lib/excelBackup'
 import { parseExcelFile } from '../lib/excelImport'
 import { getStorageMode } from '../lib/storageMode'
 
@@ -13,15 +16,22 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   const [message, setMessage] = useState('')
   const storageMode = getStorageMode()
 
-  async function handleExport() {
+  async function handleJsonExport() {
     const transactions = await listTransactions()
-    const blob = new Blob([serializeBackup(transactions)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `accounting-book-${new Date().toISOString().slice(0, 10)}.json`
-    link.click()
-    URL.revokeObjectURL(url)
+    const blob = new Blob([serializeBackup(transactions)], {
+      type: 'application/json'
+    })
+
+    downloadBlob(blob, createBackupFileName('json'))
+  }
+
+  async function handleExcelExport() {
+    const transactions = await listTransactions()
+    const blob = new Blob([serializeExcelBackup(transactions)], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    })
+
+    downloadBlob(blob, createBackupFileName('xlsx'))
   }
 
   async function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
@@ -71,8 +81,11 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
         <hr />
 
-        <button className="primary" type="button" onClick={handleExport}>
-          导出备份
+        <button className="primary" type="button" onClick={handleJsonExport}>
+          导出 JSON
+        </button>
+        <button className="primary" type="button" onClick={handleExcelExport}>
+          导出 Excel
         </button>
         <label className="field">
           <span>导入备份</span>
@@ -95,15 +108,34 @@ type ImportResult = {
 }
 
 async function parseImportFile(file: File): Promise<ImportResult> {
-  if (file.name.toLowerCase().endsWith('.json')) {
+  const fileName = file.name.toLowerCase()
+
+  if (fileName.endsWith('.json')) {
     return {
       transactions: parseBackup(await file.text()),
       message: '导入完成。'
     }
   }
 
-  if (file.name.toLowerCase().endsWith('.xls') || file.name.toLowerCase().endsWith('.xlsx')) {
-    const result = parseExcelFile(await file.arrayBuffer())
+  if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
+    const buffer = await file.arrayBuffer()
+    const backupResult = parseExcelBackup(buffer)
+    if (backupResult) {
+      return {
+        transactions: backupResult.transactions,
+        message: `导入完成：成功 ${backupResult.transactions.length} 条，跳过 ${backupResult.skipped} 条。`
+      }
+    }
+
+    const readableResult = parseReadableTransactionsSheet(buffer)
+    if (readableResult) {
+      return {
+        transactions: readableResult.transactions,
+        message: `导入完成：成功 ${readableResult.transactions.length} 条，跳过 ${readableResult.skipped} 条。`
+      }
+    }
+
+    const result = parseExcelFile(buffer)
     return {
       transactions: result.transactions,
       message: `导入完成：成功 ${result.transactions.length} 条，跳过 ${result.skipped} 条。`
