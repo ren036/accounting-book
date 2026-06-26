@@ -151,7 +151,8 @@ button {
 
 .field input,
 .field select,
-.field textarea {
+.field textarea,
+.date-picker-trigger {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -159,6 +160,11 @@ button {
   border-radius: 14px;
   padding: 12px;
   background: #ffffff;
+}
+
+.date-picker-trigger {
+  color: #111827;
+  text-align: left;
 }
 
 .field textarea {
@@ -436,7 +442,8 @@ hr {
 
   .field input,
   .field select,
-  .field textarea {
+  .field textarea,
+  .date-picker-trigger {
     font-size: 16px;
   }
 

@@ -1,3 +1,4 @@
+import DatePicker from 'antd-mobile/es/components/date-picker'
 import { useState } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
@@ -18,6 +19,8 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
   const [occurredAt, setOccurredAt] = useState(initialTransaction?.occurredAt.slice(0, 10) ?? todayInputValue())
 
   const categories = type === 'income' ? incomeCategories : expenseCategories
+  const selectedDate = inputValueToDate(occurredAt)
+  const maxDate = inputValueToDate(todayInputValue())
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -66,7 +69,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
         </button>
       </div>
 
-      <AmountInput value={amount} onChange={setAmount} />
+      <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} />
 
       <label className="field">
         <span>分类</span>
@@ -77,10 +80,22 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
         </select>
       </label>
 
-      <label className="field">
+      <div className="field">
         <span>日期</span>
-        <input type="date" value={occurredAt} max={todayInputValue()} onChange={(event) => setOccurredAt(event.target.value)} />
-      </label>
+        <DatePicker
+          title="选择日期"
+          precision="day"
+          value={selectedDate}
+          max={maxDate}
+          onConfirm={(value) => setOccurredAt(dateToInputValue(value))}
+        >
+          {(_, actions) => (
+            <button className="date-picker-trigger" type="button" onClick={actions.open}>
+              {occurredAt}
+            </button>
+          )}
+        </DatePicker>
+      </div>
 
       <label className="field">
         <span>备注</span>
@@ -92,4 +107,16 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
       </button>
     </form>
   )
+}
+
+function inputValueToDate(value: string): Date {
+  const [year, month, day] = value.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+function dateToInputValue(value: Date): string {
+  const year = value.getFullYear()
+  const month = String(value.getMonth() + 1).padStart(2, '0')
+  const day = String(value.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
