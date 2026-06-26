@@ -27,6 +27,9 @@ describe('TransactionForm', () => {
     const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
 
     expect(html).toContain('class="category-picker"')
+    expect(html).toContain('data-scroll="vertical"')
+    expect(html).toContain('data-layout="responsive"')
+    expect(html).not.toContain('class="category-picker-page"')
     expect(html).toContain('class="category-icon-button active"')
     expect(html).not.toContain('class="category-option active"')
     expect(html).toContain('餐饮')

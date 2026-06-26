@@ -177,13 +177,12 @@ button {
 
 .category-picker {
   display: grid;
-  grid-auto-flow: column;
-  grid-template-rows: repeat(2, auto);
-  grid-auto-columns: 64px;
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
   gap: 8px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding: 2px 2px 8px;
+  max-height: 155px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  /* padding: 2px 2px 6px; */
   scrollbar-width: none;
 }
 
@@ -194,7 +193,6 @@ button {
 .category-option {
   display: grid;
   justify-items: center;
-  gap: 5px;
   border: 0;
   padding: 0;
   background: transparent;

@@ -10,7 +10,7 @@ export function CategoryPicker({ categories, value, onChange }: CategoryPickerPr
   return (
     <div className="field">
       <span>分类</span>
-      <div className="category-picker" role="radiogroup" aria-label="分类">
+      <div className="category-picker" role="radiogroup" aria-label="分类" data-scroll="vertical" data-layout="responsive">
         {categories.map((category) => (
           <button
             className="category-option"
