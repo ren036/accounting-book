@@ -58,39 +58,45 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
   }
 
   return (
-    <form className="card form" onSubmit={handleSubmit}>
-      <div className="segmented">
-        <button type="button" className={type === 'expense' ? 'active' : ''} onClick={() => handleTypeChange('expense')}>
-          支出
-        </button>
-        <button type="button" className={type === 'income' ? 'active' : ''} onClick={() => handleTypeChange('income')}>
-          收入
-        </button>
+    <form className="card form transaction-form" onSubmit={handleSubmit}>
+      <div className="transaction-form-header">
+        <div className="segmented">
+          <button type="button" className={type === 'expense' ? 'active' : ''} onClick={() => handleTypeChange('expense')}>
+            支出
+          </button>
+          <button type="button" className={type === 'income' ? 'active' : ''} onClick={() => handleTypeChange('income')}>
+            收入
+          </button>
+        </div>
       </div>
 
-      <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} />
+      <div className="transaction-form-body">
+        <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} />
 
-      <CategoryPicker categories={categories} value={category} onChange={setCategory} />
+        <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
-      <label className="field">
-        <span>日期</span>
-        <input
-          className="native-date-input"
-          type="date"
-          value={occurredAt}
-          max={maxDate}
-          onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
-        />
-      </label>
+        <label className="field">
+          <span>日期</span>
+          <input
+            className="native-date-input"
+            type="date"
+            value={occurredAt}
+            max={maxDate}
+            onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
+          />
+        </label>
 
-      <label className="field">
-        <span>备注</span>
-        <textarea value={note} onChange={(event) => setNote(event.target.value)} />
-      </label>
+        <label className="field">
+          <span>备注</span>
+          <textarea value={note} onChange={(event) => setNote(event.target.value)} />
+        </label>
+      </div>
 
-      <button className="primary" type="submit">
-        {submitText}
-      </button>
+      <div className="transaction-form-footer">
+        <button className="primary" type="submit">
+          {submitText}
+        </button>
+      </div>
     </form>
   )
 }

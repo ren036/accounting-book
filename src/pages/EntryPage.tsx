@@ -15,7 +15,7 @@ export function EntryPage({ onSaved }: EntryPageProps) {
   }
 
   return (
-    <section className="page">
+    <section className="page entry-page">
       <h1>记一笔</h1>
       <TransactionForm onSubmit={(transaction: Transaction | EditableTransactionFields) => handleSubmit(transaction as Transaction)} />
     </section>

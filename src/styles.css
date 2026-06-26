@@ -144,6 +144,35 @@ button {
   gap: 16px;
 }
 
+.transaction-form {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+.entry-page {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: calc(100dvh - 16px - env(safe-area-inset-top) - 96px - env(safe-area-inset-bottom));
+  min-height: 0;
+}
+
+.entry-page .transaction-form {
+  height: 100%;
+}
+
+.transaction-form-body {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+.transaction-form-footer .primary {
+  width: 100%;
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -249,6 +278,7 @@ button {
 .primary,
 .bottom-nav button,
 .transaction button,
+.transaction-form-footer button,
 .form > button {
   border: 0;
   border-radius: 14px;
@@ -456,6 +486,10 @@ hr {
   .fixed-list-page {
     height: calc(100dvh - 12px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
     gap: 10px;
+  }
+
+  .entry-page {
+    height: calc(100dvh - 12px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
   }
 
   .fixed-list-header {

@@ -4,6 +4,15 @@ import { TransactionForm } from '../components/TransactionForm'
 import { todayInputValue } from '../lib/dates'
 
 describe('TransactionForm', () => {
+  it('renders header, body, and footer sections', () => {
+    const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
+
+    expect(html).toContain('class="card form transaction-form"')
+    expect(html).toContain('class="transaction-form-header"')
+    expect(html).toContain('class="transaction-form-body"')
+    expect(html).toContain('class="transaction-form-footer"')
+  })
+
   it('limits the date input to today or earlier', () => {
     const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
 
