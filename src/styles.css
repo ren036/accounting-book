@@ -171,8 +171,25 @@ button {
   overscroll-behavior-y: contain;
 }
 
+.transaction-form-footer {
+  display: grid;
+}
+
+.transaction-form-footer.has-action {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+}
+
 .transaction-form-footer .primary {
   width: 100%;
+}
+
+.icon-danger-action {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  color: #dc2626;
+  background: #fee2e2;
 }
 
 .field {

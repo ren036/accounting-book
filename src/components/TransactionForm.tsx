@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
 import { clampInputDateToMax, todayInputValue } from '../lib/dates'
@@ -8,10 +9,11 @@ import { CategoryPicker } from './CategoryPicker'
 type TransactionFormProps = {
   initialTransaction?: Transaction
   submitText?: string
+  footerAction?: ReactNode
   onSubmit: (transaction: Transaction | EditableTransactionFields) => Promise<void>
 }
 
-export function TransactionForm({ initialTransaction, submitText = '保存', onSubmit }: TransactionFormProps) {
+export function TransactionForm({ initialTransaction, submitText = '保存', footerAction, onSubmit }: TransactionFormProps) {
   const [type, setType] = useState<TransactionType>(initialTransaction?.type ?? 'expense')
   const [amount, setAmount] = useState(initialTransaction ? String(initialTransaction.amount) : '')
   const [category, setCategory] = useState(initialTransaction?.category ?? expenseCategories[0])
@@ -92,7 +94,8 @@ export function TransactionForm({ initialTransaction, submitText = '保存', onS
         </label>
       </div>
 
-      <div className="transaction-form-footer">
+      <div className={`transaction-form-footer${footerAction ? ' has-action' : ''}`}>
+        {footerAction}
         <button className="primary" type="submit">
           {submitText}
         </button>

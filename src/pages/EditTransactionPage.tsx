@@ -1,4 +1,5 @@
 import { Dialog, Toast } from 'antd-mobile'
+import { Trash2 } from 'lucide-react'
 import { TransactionForm } from '../components/TransactionForm'
 import type { EditableTransactionFields, Transaction } from '../domain/transaction'
 import { updateTransaction } from '../domain/transaction'
@@ -38,10 +39,16 @@ export function EditTransactionPage({ transaction, onCancel, onDeleted, onSaved 
           返回
         </button>
       </div>
-      <TransactionForm initialTransaction={transaction} submitText="保存修改" onSubmit={handleSubmit} />
-      <button className="danger-action" type="button" onClick={handleDelete}>
-        删除账单
-      </button>
+      <TransactionForm
+        initialTransaction={transaction}
+        submitText="保存修改"
+        footerAction={
+          <button className="icon-danger-action" type="button" aria-label="删除账单" onClick={handleDelete}>
+            <Trash2 aria-hidden="true" size={20} strokeWidth={2.2} />
+          </button>
+        }
+        onSubmit={handleSubmit}
+      />
     </section>
   )
 }
