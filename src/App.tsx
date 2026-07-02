@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BottomNav, type PageKey } from './components/BottomNav'
+import { finishCreatingTransaction, finishEditingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
 import { deleteTransaction, listTransactions } from './lib/db'
 import { DashboardPage } from './pages/DashboardPage'
@@ -22,14 +23,27 @@ export function App() {
   async function handleDelete(id: string) {
     await deleteTransaction(id)
     await reloadTransactions()
-    setEditingTransactionId(null)
-    setViewingStatsMonth(null)
-    setCurrentPage('dashboard')
+    applyNavigationState(finishCreatingTransaction())
   }
 
   async function handleEditSaved() {
     await reloadTransactions()
-    setEditingTransactionId(null)
+    applyNavigationState(finishEditingTransaction(currentPage))
+  }
+
+  async function handleEntrySaved() {
+    await reloadTransactions()
+    applyNavigationState(finishCreatingTransaction())
+  }
+
+  function applyNavigationState(state: {
+    currentPage: PageKey
+    editingTransactionId: string | null
+    viewingStatsMonth: string | null
+  }) {
+    setCurrentPage(state.currentPage)
+    setEditingTransactionId(state.editingTransactionId)
+    setViewingStatsMonth(state.viewingStatsMonth)
   }
 
   useEffect(() => {
@@ -52,7 +66,7 @@ export function App() {
       ) : (
         <>
           {currentPage === 'dashboard' && <DashboardPage transactions={transactions} onEdit={setEditingTransactionId} />}
-          {currentPage === 'entry' && <EntryPage onSaved={reloadTransactions} />}
+          {currentPage === 'entry' && <EntryPage onSaved={handleEntrySaved} />}
           {currentPage === 'stats' && viewingStatsMonth === null && (
             <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
           )}
@@ -69,10 +83,7 @@ export function App() {
       )}
       <BottomNav
         currentPage={currentPage}
-        onChange={(page) => {
-          setCurrentPage(page)
-          setViewingStatsMonth(null)
-        }}
+        onChange={(page) => applyNavigationState(switchMainTab(page))}
       />
     </main>
   )
