@@ -197,6 +197,10 @@ button {
   gap: 8px;
 }
 
+.field > label {
+  color: #6b7280;
+}
+
 .field input,
 .field select,
 .field textarea {
@@ -207,6 +211,53 @@ button {
   border-radius: 14px;
   padding: 12px;
   background: #ffffff;
+}
+
+.amount-field {
+  gap: 10px;
+}
+
+.amount-display {
+  display: grid;
+  gap: 6px;
+}
+
+.amount-display input {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.amount-result {
+  min-height: 18px;
+  color: #059669;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.amount-result.invalid {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.amount-keyboard {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.amount-key {
+  min-height: 46px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.amount-key.action {
+  color: #ffffff;
+  background: #111827;
 }
 
 .native-date-input {
@@ -557,6 +608,16 @@ hr {
   .field select,
   .field textarea {
     font-size: 16px;
+  }
+
+  .amount-display input {
+    font-size: 22px;
+  }
+
+  .amount-key {
+    min-height: 42px;
+    border-radius: 12px;
+    font-size: 17px;
   }
 
   .card strong {

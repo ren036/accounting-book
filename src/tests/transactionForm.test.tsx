@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { AmountInput } from '../components/AmountInput'
 import { TransactionForm } from '../components/TransactionForm'
 import { todayInputValue } from '../lib/dates'
 
@@ -26,6 +27,33 @@ describe('TransactionForm', () => {
     const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
 
     expect(html).toContain('autofocus=""')
+  })
+
+  it('allows amount calculation expressions', () => {
+    const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
+
+    expect(html).toContain('inputMode="none"')
+    expect(html).toContain('placeholder="0.00 或 1+2"')
+    expect(html).toContain('pattern="[0-9+\\-.\\s]*"')
+  })
+
+  it('renders a custom amount keyboard for mobile entry', () => {
+    const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
+
+    expect(html).toContain('class="amount-keyboard"')
+    expect(html).toContain('aria-label="金额键盘"')
+    expect(html).toContain('aria-label="输入 +"')
+    expect(html).toContain('aria-label="输入 -"')
+    expect(html).toContain('aria-label="删除一位"')
+    expect(html).toContain('aria-label="计算金额"')
+    expect(html).toContain('readOnly=""')
+  })
+
+  it('shows calculated amount results while editing an expression', () => {
+    const html = renderToStaticMarkup(<AmountInput value="1+1" onChange={() => undefined} />)
+
+    expect(html).toContain('class="amount-result"')
+    expect(html).toContain('= 2')
   })
 
   it('uses a contained native date input', () => {
