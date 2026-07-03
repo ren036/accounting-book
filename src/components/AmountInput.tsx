@@ -53,11 +53,11 @@ export function AmountInput({ value, onChange, autoFocus = false }: AmountInputP
           value={value}
           onChange={(event) => onChange(event.target.value)}
         />
-        {hasExpression && (
+        {/* {hasExpression && (
           <span className={`amount-result${canShowResult ? '' : ' invalid'}`}>
             {canShowResult ? `= ${formatAmount(calculatedAmount)}` : '算式未完成'}
           </span>
-        )}
+        )} */}
       </div>
       <div className="amount-keyboard" aria-label="金额键盘">
         {keyRows.flat().map((key) => (
