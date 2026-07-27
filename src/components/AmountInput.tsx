@@ -7,9 +7,9 @@ type AmountInputProps = {
 }
 
 const keyRows = [
-  ['7', '8', '9', '+'],
+  ['1', '2', '3', '+'],
   ['4', '5', '6', '-'],
-  ['1', '2', '3', 'backspace'],
+  ['7', '8', '9', 'backspace'],
   ['.', '0', 'clear', 'equals']
 ]
 

@@ -47,6 +47,7 @@ describe('TransactionForm', () => {
     expect(html).toContain('aria-label="删除一位"')
     expect(html).toContain('aria-label="计算金额"')
     expect(html).toContain('readOnly=""')
+    expect(html.indexOf('>1</button>')).toBeLessThan(html.indexOf('>7</button>'))
   })
 
   it('shows calculated amount results while editing an expression', () => {
