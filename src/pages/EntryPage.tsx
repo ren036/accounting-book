@@ -1,6 +1,6 @@
 import { Toast } from 'antd-mobile'
 import { TransactionForm } from '../components/TransactionForm'
-import type { EditableTransactionFields, Transaction } from '../domain/transaction'
+import type { EditableTransactionFields } from '../domain/transaction'
 import { saveTransaction } from '../lib/db'
 
 type EntryPageProps = {
@@ -8,8 +8,8 @@ type EntryPageProps = {
 }
 
 export function EntryPage({ onSaved }: EntryPageProps) {
-  async function handleSubmit(transaction: Transaction) {
-    await saveTransaction(transaction)
+  async function handleSubmit(fields: EditableTransactionFields) {
+    await saveTransaction({ id: crypto.randomUUID(), ...fields })
     await onSaved()
     Toast.show({ content: '保存成功' })
   }
@@ -17,7 +17,7 @@ export function EntryPage({ onSaved }: EntryPageProps) {
   return (
     <section className="page entry-page">
       <h1>记一笔</h1>
-      <TransactionForm onSubmit={(transaction: Transaction | EditableTransactionFields) => handleSubmit(transaction as Transaction)} />
+      <TransactionForm onSubmit={handleSubmit} />
     </section>
   )
 }

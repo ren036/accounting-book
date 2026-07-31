@@ -23,21 +23,7 @@ export type DailyTransactionGroup = {
 }
 
 export function summarizeMonth(transactions: Transaction[], month: string): MonthSummary {
-  return transactions
-    .filter((transaction) => transaction.occurredAt.startsWith(month))
-    .reduce(
-      (summary, transaction) => {
-        if (transaction.type === 'income') {
-          summary.income += transaction.amount
-        } else {
-          summary.expense += transaction.amount
-        }
-
-        summary.balance = summary.income - summary.expense
-        return summary
-      },
-      { income: 0, expense: 0, balance: 0 }
-    )
+  return summarizeByDatePrefix(transactions, month)
 }
 
 export function summarizeExpenseCategories(transactions: Transaction[], month: string): CategorySummary[] {
@@ -55,25 +41,11 @@ export function summarizeExpenseCategories(transactions: Transaction[], month: s
 }
 
 export function filterMonthTransactionsByType(transactions: Transaction[], month: string, type: TransactionType): Transaction[] {
-  return transactions.filter((transaction) => transaction.type === type).filter((transaction) => transaction.occurredAt.startsWith(month))
+  return transactions.filter((transaction) => transaction.type === type && transaction.occurredAt.startsWith(month))
 }
 
 export function summarizeYear(transactions: Transaction[], year: string): MonthSummary {
-  return transactions
-    .filter((transaction) => transaction.occurredAt.startsWith(year))
-    .reduce(
-      (summary, transaction) => {
-        if (transaction.type === 'income') {
-          summary.income += transaction.amount
-        } else {
-          summary.expense += transaction.amount
-        }
-
-        summary.balance = summary.income - summary.expense
-        return summary
-      },
-      { income: 0, expense: 0, balance: 0 }
-    )
+  return summarizeByDatePrefix(transactions, year)
 }
 
 export function summarizeYearMonths(transactions: Transaction[], year: string, currentMonth?: string): MonthDetailSummary[] {
@@ -129,4 +101,21 @@ export function groupMonthTransactionsByDay(transactions: Transaction[], month: 
         transactions: [...dayTransactions].sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
       }
     })
+}
+
+function summarizeByDatePrefix(transactions: Transaction[], prefix: string): MonthSummary {
+  const totals = transactions.reduce(
+    (summary, transaction) => {
+      if (!transaction.occurredAt.startsWith(prefix)) return summary
+
+      summary[transaction.type] += transaction.amount
+      return summary
+    },
+    { income: 0, expense: 0 }
+  )
+
+  return {
+    ...totals,
+    balance: totals.income - totals.expense
+  }
 }

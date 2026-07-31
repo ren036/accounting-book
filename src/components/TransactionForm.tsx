@@ -11,7 +11,7 @@ type TransactionFormProps = {
   initialTransaction?: Transaction
   submitText?: string
   footerAction?: ReactNode
-  onSubmit: (transaction: Transaction | EditableTransactionFields) => Promise<void>
+  onSubmit: (fields: EditableTransactionFields) => Promise<void>
 }
 
 export function TransactionForm({ initialTransaction, submitText = '保存', footerAction, onSubmit }: TransactionFormProps) {
@@ -41,18 +41,12 @@ export function TransactionForm({ initialTransaction, submitText = '保存', foo
       occurredAt: `${clampInputDateToMax(occurredAt, maxDate)}T00:00:00.000Z`
     }
 
-    if (initialTransaction) {
-      await onSubmit(fields)
-      return
+    await onSubmit(fields)
+
+    if (!initialTransaction) {
+      setAmount('')
+      setNote('')
     }
-
-    await onSubmit({
-      id: crypto.randomUUID(),
-      ...fields
-    })
-
-    setAmount('')
-    setNote('')
   }
 
   function handleTypeChange(nextType: TransactionType) {

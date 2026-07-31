@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, finishEditingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
@@ -7,8 +7,12 @@ import { DashboardPage } from './pages/DashboardPage'
 import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
-import { SettingsPage } from './pages/SettingsPage'
 import { StatsPage } from './pages/StatsPage'
+
+const SettingsPage = lazy(async () => {
+  const module = await import('./pages/SettingsPage')
+  return { default: module.SettingsPage }
+})
 
 export function App() {
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
@@ -78,7 +82,11 @@ export function App() {
               onEdit={setEditingTransactionId}
             />
           )}
-          {currentPage === 'settings' && <SettingsPage onChanged={reloadTransactions} />}
+          {currentPage === 'settings' && (
+            <Suspense fallback={<section className="page"><p className="empty">正在加载设置...</p></section>}>
+              <SettingsPage onChanged={reloadTransactions} />
+            </Suspense>
+          )}
         </>
       )}
       <BottomNav

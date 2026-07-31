@@ -2,10 +2,8 @@ import { useRef, useState } from 'react'
 import { Dialog } from 'antd-mobile'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
-import { clearTransactions, db, listTransactions, saveTransaction } from '../lib/db'
+import { clearTransactions, listTransactions, saveTransactions } from '../lib/db'
 import { downloadBlob } from '../lib/download'
-import { parseExcelBackup, parseReadableTransactionsSheet, serializeExcelBackup } from '../lib/excelBackup'
-import { parseExcelFile } from '../lib/excelImport'
 import { getStorageMode } from '../lib/storageMode'
 
 type SettingsPageProps = {
@@ -29,6 +27,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   async function handleExcelExport() {
+    const { serializeExcelBackup } = await import('../lib/excelBackup')
     const transactions = await listTransactions()
     const blob = new Blob([serializeExcelBackup(transactions)], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -53,11 +52,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
       setIsImporting(true)
       const importResult = await parseImportFile(selectedImportFile)
 
-      await db.transaction('rw', db.transactions, async () => {
-        for (const transaction of importResult.transactions) {
-          await saveTransaction(transaction)
-        }
-      })
+      await saveTransactions(importResult.transactions)
 
       await onChanged()
       setMessage(importResult.message)
@@ -143,6 +138,10 @@ async function parseImportFile(file: File): Promise<ImportResult> {
 
   if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
     const buffer = await file.arrayBuffer()
+    const [{ parseExcelBackup, parseReadableTransactionsSheet }, { parseExcelFile }] = await Promise.all([
+      import('../lib/excelBackup'),
+      import('../lib/excelImport')
+    ])
     const backupResult = parseExcelBackup(buffer)
     if (backupResult) {
       return {

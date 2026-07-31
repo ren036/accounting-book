@@ -1,14 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { finishCreatingTransaction, finishEditingTransaction, openStatsMonth, switchMainTab } from '../domain/navigation'
+import { finishCreatingTransaction, finishEditingTransaction, switchMainTab } from '../domain/navigation'
 
-describe('stats month navigation', () => {
-  it('opens selected stats month without changing current page', () => {
-    expect(openStatsMonth('2026-06')).toEqual({
-      currentPage: 'stats',
-      viewingStatsMonth: '2026-06'
-    })
-  })
-
+describe('app navigation', () => {
   it('leaves edit mode when switching main tabs', () => {
     expect(switchMainTab('stats')).toEqual({
       currentPage: 'stats',

@@ -13,8 +13,8 @@ type EditTransactionPageProps = {
 }
 
 export function EditTransactionPage({ transaction, onCancel, onDeleted, onSaved }: EditTransactionPageProps) {
-  async function handleSubmit(fields: Transaction | EditableTransactionFields) {
-    await saveTransaction(updateTransaction(transaction, fields as EditableTransactionFields))
+  async function handleSubmit(fields: EditableTransactionFields) {
+    await saveTransaction(updateTransaction(transaction, fields))
     await onSaved()
     Toast.show({ content: '修改成功' })
   }

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { CategoryEmoji } from '../components/CategoryEmoji'
 import { TransactionSearch } from '../components/TransactionSearch'
+import { TransactionRow } from '../components/TransactionRow'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
-import { getTransactionNoteDisplay, searchTransactions } from '../domain/transaction'
+import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 
@@ -60,29 +60,5 @@ export function DashboardPage({ transactions, onEdit }: DashboardPageProps) {
         )}
       </section>
     </section>
-  )
-}
-
-type TransactionRowProps = {
-  transaction: Transaction
-  onEdit: (id: string) => void
-}
-
-function TransactionRow({ transaction, onEdit }: TransactionRowProps) {
-  const note = getTransactionNoteDisplay(transaction.note)
-
-  return (
-    <button className="transaction transaction-button" type="button" onClick={() => onEdit(transaction.id)}>
-      <div className="icon-label">
-        <CategoryEmoji category={transaction.category} />
-        <div>
-          <strong>{transaction.category}</strong>
-          {note && <p>{note}</p>}
-        </div>
-      </div>
-      <div className={transaction.type === 'income' ? 'income' : 'expense'}>
-        {transaction.type === 'income' ? '+' : '-'}{formatMoney(transaction.amount)}
-      </div>
-    </button>
   )
 }

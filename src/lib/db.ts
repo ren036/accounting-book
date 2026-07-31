@@ -39,18 +39,18 @@ class AccountingDatabase extends Dexie {
   }
 }
 
-export const db = new AccountingDatabase()
+const db = new AccountingDatabase()
 
 export async function listTransactions(): Promise<Transaction[]> {
   return db.transactions.orderBy('occurredAt').reverse().toArray()
 }
 
-export async function getTransaction(id: string): Promise<Transaction | undefined> {
-  return db.transactions.get(id)
-}
-
 export async function saveTransaction(transaction: Transaction): Promise<void> {
   await db.transactions.put(transaction)
+}
+
+export async function saveTransactions(transactions: Transaction[]): Promise<void> {
+  await db.transactions.bulkPut(transactions)
 }
 
 export async function deleteTransaction(id: string): Promise<void> {

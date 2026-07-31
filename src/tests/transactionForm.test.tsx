@@ -57,6 +57,13 @@ describe('TransactionForm', () => {
     expect(html).toContain('= 2')
   })
 
+  it('distinguishes a zero result from an unfinished expression', () => {
+    const html = renderToStaticMarkup(<AmountInput value="1-1" onChange={() => undefined} />)
+
+    expect(html).toContain('= 0')
+    expect(html).not.toContain('算式未完成')
+  })
+
   it('uses a contained native date input', () => {
     const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
 

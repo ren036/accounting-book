@@ -16,7 +16,7 @@ const keyRows = [
 export function AmountInput({ value, onChange, autoFocus = false }: AmountInputProps) {
   const calculatedAmount = parseAmountExpression(value)
   const hasExpression = /[+-]/.test(value)
-  const canShowResult = Number.isFinite(calculatedAmount) && calculatedAmount > 0
+  const hasCalculatedResult = Number.isFinite(calculatedAmount)
 
   function handleKeyPress(key: string) {
     if (key === 'backspace') {
@@ -30,7 +30,7 @@ export function AmountInput({ value, onChange, autoFocus = false }: AmountInputP
     }
 
     if (key === 'equals') {
-      if (canShowResult) {
+      if (hasCalculatedResult) {
         onChange(formatAmount(calculatedAmount))
       }
       return
@@ -53,11 +53,11 @@ export function AmountInput({ value, onChange, autoFocus = false }: AmountInputP
           value={value}
           onChange={(event) => onChange(event.target.value)}
         />
-        {/* {hasExpression && (
-          <span className={`amount-result${canShowResult ? '' : ' invalid'}`}>
-            {canShowResult ? `= ${formatAmount(calculatedAmount)}` : '算式未完成'}
+        {hasExpression && (
+          <span className={`amount-result${hasCalculatedResult ? '' : ' invalid'}`}>
+            {hasCalculatedResult ? `= ${formatAmount(calculatedAmount)}` : '算式未完成'}
           </span>
-        )} */}
+        )}
       </div>
       <div className="amount-keyboard" aria-label="金额键盘">
         {keyRows.flat().map((key) => (
