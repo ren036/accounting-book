@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getTransactionNoteDisplay, updateTransaction } from '../domain/transaction'
+import { getTransactionNoteDisplay, searchTransactions, updateTransaction } from '../domain/transaction'
 
 describe('updateTransaction', () => {
   it('keeps identity fields and updates editable fields', () => {
@@ -36,5 +36,38 @@ describe('getTransactionNoteDisplay', () => {
     expect(getTransactionNoteDisplay(' 午饭 ')).toBe('午饭')
     expect(getTransactionNoteDisplay('')).toBeNull()
     expect(getTransactionNoteDisplay('   ')).toBeNull()
+  })
+})
+
+describe('searchTransactions', () => {
+  const transactions = [
+    {
+      id: 'lunch',
+      type: 'expense' as const,
+      amount: 28.5,
+      category: '餐饮',
+      note: '同事午饭',
+      occurredAt: '2026-06-25T12:00:00.000Z'
+    },
+    {
+      id: 'salary',
+      type: 'income' as const,
+      amount: 8000,
+      category: '工资',
+      note: '六月工资',
+      occurredAt: '2026-06-10T09:00:00.000Z'
+    }
+  ]
+
+  it('matches category, note, amount, date, and transaction type', () => {
+    expect(searchTransactions(transactions, '餐饮').map(({ id }) => id)).toEqual(['lunch'])
+    expect(searchTransactions(transactions, '同事 午饭').map(({ id }) => id)).toEqual(['lunch'])
+    expect(searchTransactions(transactions, '28.50').map(({ id }) => id)).toEqual(['lunch'])
+    expect(searchTransactions(transactions, '2026-06-10').map(({ id }) => id)).toEqual(['salary'])
+    expect(searchTransactions(transactions, '收入').map(({ id }) => id)).toEqual(['salary'])
+  })
+
+  it('returns all transactions for a blank query', () => {
+    expect(searchTransactions(transactions, '   ')).toBe(transactions)
   })
 })

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { CategoryEmoji } from '../components/CategoryEmoji'
+import { TransactionSearch } from '../components/TransactionSearch'
 import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
 import type { Transaction, TransactionType } from '../domain/transaction'
-import { getTransactionNoteDisplay } from '../domain/transaction'
+import { getTransactionNoteDisplay, searchTransactions } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
 
 type MonthTransactionsPageProps = {
@@ -14,11 +15,17 @@ type MonthTransactionsPageProps = {
 
 export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: MonthTransactionsPageProps) {
   const [activeType, setActiveType] = useState<TransactionType>('expense')
+  const [searchQuery, setSearchQuery] = useState('')
   const summary = summarizeMonth(transactions, month)
-  const filteredTransactions = filterMonthTransactionsByType(transactions, month, activeType)
+  const filteredTransactions = searchTransactions(
+    filterMonthTransactionsByType(transactions, month, activeType),
+    searchQuery
+  )
   const groups = groupMonthTransactionsByDay(filteredTransactions, month)
   const label = `${Number(month.slice(5, 7))}月账单`
-  const emptyText = activeType === 'expense' ? '这个月还没有支出' : '这个月还没有收入'
+  const emptyText = searchQuery.trim()
+    ? '没有找到匹配的账单'
+    : activeType === 'expense' ? '这个月还没有支出' : '这个月还没有收入'
 
   return (
     <section className="page hero-page fixed-list-page">
@@ -65,6 +72,7 @@ export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: M
             收入
           </button>
         </div>
+        <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
       <section className="fixed-list-content month-transactions-section">

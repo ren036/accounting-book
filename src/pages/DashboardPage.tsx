@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { CategoryEmoji } from '../components/CategoryEmoji'
+import { TransactionSearch } from '../components/TransactionSearch'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
-import { getTransactionNoteDisplay } from '../domain/transaction'
+import { getTransactionNoteDisplay, searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 
@@ -11,9 +13,11 @@ type DashboardPageProps = {
 }
 
 export function DashboardPage({ transactions, onEdit }: DashboardPageProps) {
+  const [searchQuery, setSearchQuery] = useState('')
   const month = currentMonth()
   const summary = summarizeMonth(transactions, month)
-  const groups = groupMonthTransactionsByDay(transactions, month)
+  const groups = groupMonthTransactionsByDay(searchTransactions(transactions, searchQuery), month)
+  const hasSearchQuery = searchQuery.trim().length > 0
 
   return (
     <section className="page hero-page fixed-list-page">
@@ -33,12 +37,13 @@ export function DashboardPage({ transactions, onEdit }: DashboardPageProps) {
             <strong className="expense">{formatMoney(summary.expense)}</strong>
           </div>
         </div>
+        <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
       <section className="dashboard-transactions fixed-list-content">
         <h2>当月账单详情</h2>
         {groups.length === 0 ? (
-          <p className="empty">这个月还没有账单</p>
+          <p className="empty">{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</p>
         ) : (
           <div className="daily-groups">
             {groups.map((group) => (

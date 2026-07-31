@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { TransactionSearch } from '../components/TransactionSearch'
 import { getAvailableStatYears, summarizeYear, summarizeYearMonths } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
+import { searchTransactions } from '../domain/transaction'
 import { currentMonth, currentYear } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 
@@ -11,9 +13,18 @@ type StatsPageProps = {
 
 export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
   const [year, setYear] = useState(currentYear())
+  const [searchQuery, setSearchQuery] = useState('')
+  const hasSearchQuery = searchQuery.trim().length > 0
   const availableYears = getAvailableStatYears(transactions, currentMonth())
-  const summary = summarizeYear(transactions, year)
-  const months = summarizeYearMonths(transactions, year, currentMonth())
+  const filteredTransactions = searchTransactions(transactions, searchQuery)
+  const summary = summarizeYear(filteredTransactions, year)
+  const matchingMonths = new Set(
+    filteredTransactions
+      .filter((transaction) => transaction.occurredAt.startsWith(year))
+      .map((transaction) => transaction.occurredAt.slice(0, 7))
+  )
+  const months = summarizeYearMonths(filteredTransactions, year, currentMonth())
+    .filter((month) => !hasSearchQuery || matchingMonths.has(month.month))
 
   return (
     <section className="page fixed-list-page stats-page">
@@ -29,6 +40,8 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
             ))}
           </select>
         </label>
+
+        <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
 
         <div className="summary-grid stats-summary">
           <div className="card">
@@ -47,26 +60,30 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
       </div>
 
       <section className="fixed-list-content stats-months-section">
-        <h2>月度明细</h2>
-        <div className="month-stats-list">
-          {months.map((month) => (
-            <button className="month-stats-row month-stats-button" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
-              <strong>{month.label}</strong>
-              <div>
-                <span>收入</span>
-                <b className="income">{formatMoney(month.income)}</b>
-              </div>
-              <div>
-                <span>支出</span>
-                <b className="expense">{formatMoney(month.expense)}</b>
-              </div>
-              <div>
-                <span>结余</span>
-                <b>{formatMoney(month.balance)}</b>
-              </div>
-            </button>
-          ))}
-        </div>
+        <h2>{hasSearchQuery ? '搜索结果' : '月度明细'}</h2>
+        {months.length === 0 && hasSearchQuery ? (
+          <p className="empty">这一年没有找到匹配的账单</p>
+        ) : (
+          <div className="month-stats-list">
+            {months.map((month) => (
+              <button className="month-stats-row month-stats-button" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
+                <strong>{month.label}</strong>
+                <div>
+                  <span>收入</span>
+                  <b className="income">{formatMoney(month.income)}</b>
+                </div>
+                <div>
+                  <span>支出</span>
+                  <b className="expense">{formatMoney(month.expense)}</b>
+                </div>
+                <div>
+                  <span>结余</span>
+                  <b>{formatMoney(month.balance)}</b>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </section>
     </section>
   )
