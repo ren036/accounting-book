@@ -18,4 +18,8 @@ describe('DashboardPage', () => {
   it('keeps sparse monthly transactions aligned to the top', () => {
     expect(styles).toMatch(/\.dashboard-transactions\s*{[^}]*align-content:\s*start;/s)
   })
+
+  it('keeps the search input large enough to prevent mobile focus zoom', () => {
+    expect(styles).toMatch(/\.transaction-search input\s*{[^}]*font-size:\s*16px;/s)
+  })
 })

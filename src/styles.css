@@ -500,6 +500,7 @@ hr {
   padding: 11px 0;
   background: transparent;
   color: #111827;
+  font-size: 16px;
 }
 
 .transaction-search input::-webkit-search-cancel-button {
