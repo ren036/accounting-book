@@ -30,11 +30,11 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
   return (
     <section className="page transaction-detail-page">
       <div className="page-title-row">
-        <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="返回" onClick={onBack}>
-          <LeftOutline fontSize={22} />
+        <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
+          <LeftOutline fontSize={22} color='black' scale={2.2} />
         </Button>
-        <h4>账单详情</h4>
-        <Button className="page-text-button" color="danger" fill="none" size="mini" aria-label="删除账单" onClick={handleDelete}>
+        <h3>账单详情</h3>
+        <Button className="page-text-button" color="danger" fill="none" size="middle" aria-label="删除账单" onClick={handleDelete}>
           <DeleteOutline fontSize={22} />
         </Button>
       </div>

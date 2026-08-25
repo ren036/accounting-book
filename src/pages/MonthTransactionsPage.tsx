@@ -34,10 +34,10 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
     <section className="page hero-page fixed-list-page">
       <div className="fixed-list-header">
         <div className="page-title-row">
-          <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="返回" onClick={onBack}>
+          <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
             <LeftOutline fontSize={22} />
           </Button>
-          <h4>{label}</h4>
+          <h3>{label}</h3>
         </div>
 
         <div className="summary-grid stats-summary">

@@ -32,10 +32,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     <section className="page fixed-list-page stats-page">
       <div className="fixed-list-header">
         <div className="stats-title-row">
-          <div>
-            <span className="eyebrow">财务洞察</span>
             <h1>统计分析</h1>
-          </div>
           <label className="stats-year-filter">
             <span className="visually-hidden">年份</span>
             <select aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>

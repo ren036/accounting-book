@@ -18,15 +18,15 @@ export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
   return (
     <section className="page entry-page">
       <div className="page-title-row">
-        <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="取消" onClick={onCancel}>
+        <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="取消" onClick={onCancel}>
           取消
         </Button>
-        <h4>记一笔</h4>
+        <h3>记一笔</h3>
         <Button
           className="page-text-button"
           color="primary"
           fill="none"
-          size="mini"
+          size="middle"
           type="submit"
           form="entry-transaction-form"
           aria-label="保存"

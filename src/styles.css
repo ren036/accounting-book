@@ -45,7 +45,7 @@ button {
   padding: 10px 14px;
 }
 
-.page-title-row h4 {
+.page-title-row h3 {
   margin: 0;
   overflow: hidden;
   text-align: center;
@@ -467,10 +467,6 @@ hr {
   box-shadow: 0 16px 40px rgb(15 23 42 / 18%);
 }
 
-.bottom-nav .adm-tab-bar-item-active {
-  color: #ffffff;
-  background: #111827;
-}
 
 
 .icon-label {
@@ -587,7 +583,6 @@ hr {
   gap: 12px;
 }
 
-.stats-title-row h1,
 .analytics-heading h2,
 .section-heading-row h2 {
   margin: 0;
@@ -1055,11 +1050,6 @@ hr {
     font-size: 13px;
   }
 
-
-  .bottom-nav .adm-tab-bar-item {
-    border-radius: 12px;
-    padding: 8px;
-  }
 
 }
 

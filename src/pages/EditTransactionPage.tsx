@@ -21,15 +21,15 @@ export function EditTransactionPage({ transaction, onCancel, onSaved }: EditTran
   return (
     <section className="page entry-page">
       <div className="page-title-row">
-        <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="取消" onClick={onCancel}>
+        <Button className="page-text-button" color="primary" fill="none" size='middle' aria-label="取消" onClick={onCancel}>
           取消
         </Button>
-        <h4>编辑账单</h4>
+        <h3>编辑账单</h3>
         <Button
           className="page-text-button"
           color="primary"
           fill="none"
-          size="mini"
+          size="middle"
           type="submit"
           form="edit-transaction-form"
           aria-label="保存"
