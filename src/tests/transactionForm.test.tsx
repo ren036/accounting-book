@@ -95,6 +95,6 @@ describe('TransactionForm', () => {
   })
 
   it('keeps focused field outlines visible inside the scrollable body', () => {
-    expect(styles).toMatch(/\.transaction-form-body\s*{[^}]*padding-inline:\s*2px;/s)
+    expect(styles).toMatch(/\.transaction-form-body\s*{[^}]*padding:\s*0 2px 8px;/s)
   })
 })

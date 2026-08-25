@@ -64,9 +64,10 @@ export function App() {
   const viewingTransaction = viewingTransactionId
     ? transactions.find((transaction) => transaction.id === viewingTransactionId)
     : null
+  const isTransactionFormPage = Boolean(editingTransaction) || (!viewingTransaction && currentPage === 'entry')
 
   return (
-    <main className="app">
+    <main className={`app${isTransactionFormPage ? ' transaction-form-mode' : ''}`}>
       {editingTransaction ? (
         <EditTransactionPage
           transaction={editingTransaction}
@@ -83,7 +84,12 @@ export function App() {
       ) : (
         <>
           {currentPage === 'dashboard' && <DashboardPage transactions={transactions} onOpen={setViewingTransactionId} />}
-          {currentPage === 'entry' && <EntryPage onSaved={handleEntrySaved} />}
+          {currentPage === 'entry' && (
+            <EntryPage
+              onCancel={() => applyNavigationState(finishCreatingTransaction())}
+              onSaved={handleEntrySaved}
+            />
+          )}
           {currentPage === 'stats' && viewingStatsMonth === null && (
             <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
           )}
@@ -102,10 +108,12 @@ export function App() {
           )}
         </>
       )}
-      <BottomNav
-        currentPage={currentPage}
-        onChange={(page) => applyNavigationState(switchMainTab(page))}
-      />
+      {!isTransactionFormPage && (
+        <BottomNav
+          currentPage={currentPage}
+          onChange={(page) => applyNavigationState(switchMainTab(page))}
+        />
+      )}
     </main>
   )
 }
