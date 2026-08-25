@@ -486,7 +486,7 @@ hr {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
-  height: calc(100dvh - 16px - env(safe-area-inset-top) - 96px - env(safe-area-inset-bottom));
+  height: calc(100dvh - 16px - env(safe-area-inset-top) - 76px - env(safe-area-inset-bottom));
   min-height: 0;
 }
 
@@ -901,7 +901,7 @@ hr {
   }
 
   .fixed-list-page {
-    height: calc(100dvh - 0px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
+    height: calc(100dvh - 0px - env(safe-area-inset-top) - 76px - env(safe-area-inset-bottom));
     gap: 10px;
   }
 
