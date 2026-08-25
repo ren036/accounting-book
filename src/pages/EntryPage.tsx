@@ -1,4 +1,5 @@
 import { Toast } from 'antd-mobile'
+import { Check, X } from 'lucide-react'
 import { TransactionForm } from '../components/TransactionForm'
 import type { EditableTransactionFields } from '../domain/transaction'
 import { saveTransaction } from '../lib/db'
@@ -18,10 +19,15 @@ export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
   return (
     <section className="page entry-page">
       <div className="page-title-row">
+        <button className="page-icon-button" type="button" aria-label="取消" onClick={onCancel}>
+          <X aria-hidden="true" size={22} />
+        </button>
         <h1>记一笔</h1>
-        <button type="button" onClick={onCancel}>返回</button>
+        <button className="page-icon-button page-save-button" type="submit" form="entry-transaction-form" aria-label="保存">
+          <Check aria-hidden="true" size={22} />
+        </button>
       </div>
-      <TransactionForm onSubmit={handleSubmit} />
+      <TransactionForm id="entry-transaction-form" onSubmit={handleSubmit} />
     </section>
   )
 }

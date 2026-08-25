@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import type { ReactNode } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
 import { clampInputDateToMax, todayInputValue } from '../lib/dates'
@@ -8,13 +7,12 @@ import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
 
 type TransactionFormProps = {
+  id?: string
   initialTransaction?: Transaction
-  submitText?: string
-  footerAction?: ReactNode
   onSubmit: (fields: EditableTransactionFields) => Promise<void>
 }
 
-export function TransactionForm({ initialTransaction, submitText = '保存', footerAction, onSubmit }: TransactionFormProps) {
+export function TransactionForm({ id = 'transaction-form', initialTransaction, onSubmit }: TransactionFormProps) {
   const [type, setType] = useState<TransactionType>(initialTransaction?.type ?? 'expense')
   const [amount, setAmount] = useState(initialTransaction ? String(initialTransaction.amount) : '')
   const [category, setCategory] = useState(initialTransaction?.category ?? expenseCategories[0])
@@ -55,7 +53,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', foo
   }
 
   return (
-    <form className="card form transaction-form" onSubmit={handleSubmit}>
+    <form id={id} className="card form transaction-form" onSubmit={handleSubmit}>
       <div className="transaction-form-header">
         <div className="segmented">
           <button type="button" className={type === 'expense' ? 'active' : ''} onClick={() => handleTypeChange('expense')}>
@@ -89,13 +87,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', foo
         </label>
       </div>
 
-      <div className={`transaction-form-footer${footerAction ? ' has-action' : ''}`}>
-        <div className="transaction-form-actions">
-          {footerAction}
-          <button className="primary" type="submit">
-            {submitText}
-          </button>
-        </div>
+      <div className="transaction-form-footer">
         <AmountKeyboard value={amount} onChange={setAmount} />
       </div>
     </form>

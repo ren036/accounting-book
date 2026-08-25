@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ArrowLeft } from 'lucide-react'
 import { TransactionSearch } from '../components/TransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
@@ -31,10 +32,11 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
     <section className="page hero-page fixed-list-page">
       <div className="fixed-list-header">
         <div className="page-title-row">
-          <h1>{label}</h1>
-          <button type="button" onClick={onBack}>
-            返回统计
+          <button className="page-icon-button" type="button" aria-label="返回统计" onClick={onBack}>
+            <ArrowLeft aria-hidden="true" size={22} />
           </button>
+          <h1>{label}</h1>
+          <span className="page-title-spacer" aria-hidden="true" />
         </div>
 
         <div className="summary-grid stats-summary">

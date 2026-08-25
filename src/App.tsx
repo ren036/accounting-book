@@ -72,13 +72,13 @@ export function App() {
         <EditTransactionPage
           transaction={editingTransaction}
           onCancel={() => setEditingTransactionId(null)}
-          onDeleted={handleDelete}
           onSaved={handleEditSaved}
         />
       ) : viewingTransaction ? (
         <TransactionDetailPage
           transaction={viewingTransaction}
           onBack={() => setViewingTransactionId(null)}
+          onDeleted={handleDelete}
           onEdit={() => setEditingTransactionId(viewingTransaction.id)}
         />
       ) : (

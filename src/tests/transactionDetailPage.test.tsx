@@ -1,7 +1,13 @@
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { TransactionDetailPage } from '../pages/TransactionDetailPage'
 import type { Transaction } from '../domain/transaction'
+
+vi.mock('antd-mobile', () => ({
+  Dialog: {
+    confirm: vi.fn()
+  }
+}))
 
 const transaction: Transaction = {
   id: 'tx-1',
@@ -15,7 +21,12 @@ const transaction: Transaction = {
 describe('TransactionDetailPage', () => {
   it('shows the transaction before offering an edit action', () => {
     const html = renderToStaticMarkup(
-      <TransactionDetailPage transaction={transaction} onBack={() => undefined} onEdit={() => undefined} />
+      <TransactionDetailPage
+        transaction={transaction}
+        onBack={() => undefined}
+        onDeleted={async () => undefined}
+        onEdit={() => undefined}
+      />
     )
 
     expect(html).toContain('账单详情')
@@ -25,6 +36,9 @@ describe('TransactionDetailPage', () => {
     expect(html).toContain('2026-06-26')
     expect(html).toContain('class="primary transaction-detail-edit"')
     expect(html).toContain('编辑')
+    expect(html).toContain('aria-label="返回"')
+    expect(html).toContain('aria-label="删除账单"')
+    expect(html).not.toContain('>返回<')
     expect(html).not.toContain('编辑账单')
   })
 })

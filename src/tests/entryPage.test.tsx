@@ -16,6 +16,9 @@ describe('EntryPage', () => {
 
     expect(html).toContain('class="page entry-page"')
     expect(html).toContain('class="page-title-row"')
-    expect(html).toContain('返回')
+    expect(html).toContain('aria-label="取消"')
+    expect(html).toContain('aria-label="保存"')
+    expect(html).toContain('form="entry-transaction-form"')
+    expect(html).not.toContain('>返回<')
   })
 })

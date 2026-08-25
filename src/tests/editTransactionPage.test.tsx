@@ -27,7 +27,6 @@ describe('EditTransactionPage', () => {
       <EditTransactionPage
         transaction={transaction}
         onCancel={() => undefined}
-        onDeleted={async () => undefined}
         onSaved={async () => undefined}
       />
     )
@@ -35,20 +34,18 @@ describe('EditTransactionPage', () => {
     expect(html).toContain('class="page entry-page"')
   })
 
-  it('places a compact delete icon button beside the save button', () => {
+  it('places cancel and save icon buttons in the top bar', () => {
     const html = renderToStaticMarkup(
       <EditTransactionPage
         transaction={transaction}
         onCancel={() => undefined}
-        onDeleted={async () => undefined}
         onSaved={async () => undefined}
       />
     )
 
-    expect(html).toContain('class="transaction-form-footer has-action"')
-    expect(html).toContain('class="icon-danger-action"')
-    expect(html).toContain('aria-label="删除账单"')
-    expect(html).toContain('保存修改')
-    expect(html).not.toContain('>删除账单<')
+    expect(html).toContain('aria-label="取消"')
+    expect(html).toContain('aria-label="保存"')
+    expect(html).toContain('form="edit-transaction-form"')
+    expect(html).not.toContain('aria-label="删除账单"')
   })
 })

@@ -33,17 +33,52 @@ button {
 }
 
 .page-title-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
 }
 
-.page-title-row button,
 .danger-action {
   border: 0;
   border-radius: 14px;
   padding: 10px 14px;
+}
+
+.page-title-row h1 {
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  padding: 0;
+  background: rgb(255 255 255 / 88%);
+  color: #111827;
+  box-shadow: 0 6px 18px rgb(15 23 42 / 8%);
+}
+
+.page-save-button {
+  color: #ffffff;
+  background: #111827;
+}
+
+.page-delete-button {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.page-title-spacer {
+  width: 44px;
+  height: 44px;
 }
 
 .danger-action {
@@ -188,27 +223,6 @@ button {
   display: grid;
   gap: 10px;
   background: rgb(255 255 255 / 88%);
-}
-
-.transaction-form-actions {
-  display: grid;
-}
-
-.transaction-form-footer.has-action .transaction-form-actions {
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
-}
-
-.transaction-form-actions .primary {
-  width: 100%;
-}
-
-.icon-danger-action {
-  display: inline-grid;
-  place-items: center;
-  width: 48px;
-  color: #dc2626;
-  background: #fee2e2;
 }
 
 .field {
