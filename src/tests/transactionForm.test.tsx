@@ -50,6 +50,15 @@ describe('TransactionForm', () => {
     expect(html.indexOf('>1</button>')).toBeLessThan(html.indexOf('>7</button>'))
   })
 
+  it('keeps the amount keyboard outside the scrollable form body', () => {
+    const html = renderToStaticMarkup(<TransactionForm onSubmit={async () => undefined} />)
+
+    const bodyEnd = html.indexOf('class="transaction-form-footer')
+    const keyboard = html.indexOf('class="amount-keyboard"')
+    expect(keyboard).toBeGreaterThan(bodyEnd)
+    expect(styles).toMatch(/\.transaction-form-body\s*{[^}]*overflow-y:\s*auto;/s)
+  })
+
   it('shows calculated amount results while editing an expression', () => {
     const html = renderToStaticMarkup(<AmountInput value="1+1" onChange={() => undefined} />)
 

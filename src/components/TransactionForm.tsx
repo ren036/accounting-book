@@ -4,7 +4,7 @@ import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
 import { clampInputDateToMax, todayInputValue } from '../lib/dates'
 import { parseAmountExpression } from '../lib/money'
-import { AmountInput } from './AmountInput'
+import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
 
 type TransactionFormProps = {
@@ -68,7 +68,7 @@ export function TransactionForm({ initialTransaction, submitText = '保存', foo
       </div>
 
       <div className="transaction-form-body">
-        <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} />
+        <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
@@ -90,10 +90,13 @@ export function TransactionForm({ initialTransaction, submitText = '保存', foo
       </div>
 
       <div className={`transaction-form-footer${footerAction ? ' has-action' : ''}`}>
-        {footerAction}
-        <button className="primary" type="submit">
-          {submitText}
-        </button>
+        <div className="transaction-form-actions">
+          {footerAction}
+          <button className="primary" type="submit">
+            {submitText}
+          </button>
+        </div>
+        <AmountKeyboard value={amount} onChange={setAmount} />
       </div>
     </form>
   )

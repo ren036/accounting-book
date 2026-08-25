@@ -27,9 +27,17 @@ export function summarizeMonth(transactions: Transaction[], month: string): Mont
 }
 
 export function summarizeExpenseCategories(transactions: Transaction[], month: string): CategorySummary[] {
+  return summarizeCategoriesByPrefix(transactions, month, 'expense')
+}
+
+export function summarizeCategoriesByPrefix(
+  transactions: Transaction[],
+  prefix: string,
+  type: TransactionType
+): CategorySummary[] {
   const totals = transactions
-    .filter((transaction) => transaction.type === 'expense')
-    .filter((transaction) => transaction.occurredAt.startsWith(month))
+    .filter((transaction) => transaction.type === type)
+    .filter((transaction) => transaction.occurredAt.startsWith(prefix))
     .reduce<Record<string, number>>((result, transaction) => {
       result[transaction.category] = (result[transaction.category] ?? 0) + transaction.amount
       return result

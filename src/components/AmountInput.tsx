@@ -4,7 +4,10 @@ type AmountInputProps = {
   value: string
   onChange: (value: string) => void
   autoFocus?: boolean
+  showKeyboard?: boolean
 }
+
+type AmountKeyboardProps = Pick<AmountInputProps, 'value' | 'onChange'>
 
 const keyRows = [
   ['1', '2', '3', '+'],
@@ -13,31 +16,10 @@ const keyRows = [
   ['.', '0', 'clear', 'equals']
 ]
 
-export function AmountInput({ value, onChange, autoFocus = false }: AmountInputProps) {
+export function AmountInput({ value, onChange, autoFocus = false, showKeyboard = true }: AmountInputProps) {
   const calculatedAmount = parseAmountExpression(value)
   const hasExpression = /[+-]/.test(value)
   const hasCalculatedResult = Number.isFinite(calculatedAmount)
-
-  function handleKeyPress(key: string) {
-    if (key === 'backspace') {
-      onChange(value.slice(0, -1))
-      return
-    }
-
-    if (key === 'clear') {
-      onChange('')
-      return
-    }
-
-    if (key === 'equals') {
-      if (hasCalculatedResult) {
-        onChange(formatAmount(calculatedAmount))
-      }
-      return
-    }
-
-    onChange(nextAmountExpression(value, key))
-  }
 
   return (
     <div className="field amount-field">
@@ -59,19 +41,45 @@ export function AmountInput({ value, onChange, autoFocus = false }: AmountInputP
           </span>
         )}
       </div>
-      <div className="amount-keyboard" aria-label="金额键盘">
-        {keyRows.flat().map((key) => (
-          <button
-            key={key}
-            type="button"
-            className={key === 'equals' ? 'amount-key action' : 'amount-key'}
-            aria-label={keyLabel(key)}
-            onClick={() => handleKeyPress(key)}
-          >
-            {keyText(key)}
-          </button>
-        ))}
-      </div>
+      {showKeyboard && <AmountKeyboard value={value} onChange={onChange} />}
+    </div>
+  )
+}
+
+export function AmountKeyboard({ value, onChange }: AmountKeyboardProps) {
+  function handleKeyPress(key: string) {
+    if (key === 'backspace') {
+      onChange(value.slice(0, -1))
+      return
+    }
+
+    if (key === 'clear') {
+      onChange('')
+      return
+    }
+
+    if (key === 'equals') {
+      const calculatedAmount = parseAmountExpression(value)
+      if (Number.isFinite(calculatedAmount)) onChange(formatAmount(calculatedAmount))
+      return
+    }
+
+    onChange(nextAmountExpression(value, key))
+  }
+
+  return (
+    <div className="amount-keyboard" aria-label="金额键盘">
+      {keyRows.flat().map((key) => (
+        <button
+          key={key}
+          type="button"
+          className={key === 'equals' ? 'amount-key action' : 'amount-key'}
+          aria-label={keyLabel(key)}
+          onClick={() => handleKeyPress(key)}
+        >
+          {keyText(key)}
+        </button>
+      ))}
     </div>
   )
 }

@@ -9,10 +9,10 @@ import { formatMoney } from '../lib/money'
 
 type DashboardPageProps = {
   transactions: Transaction[]
-  onEdit: (id: string) => void
+  onOpen: (id: string) => void
 }
 
-export function DashboardPage({ transactions, onEdit }: DashboardPageProps) {
+export function DashboardPage({ transactions, onOpen }: DashboardPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const month = currentMonth()
   const summary = summarizeMonth(transactions, month)
@@ -51,7 +51,7 @@ export function DashboardPage({ transactions, onEdit }: DashboardPageProps) {
                 <h3>{group.label}</h3>
                 <div className="list">
                   {group.transactions.map((transaction) => (
-                    <TransactionRow key={transaction.id} transaction={transaction} onEdit={onEdit} />
+                    <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
                   ))}
                 </div>
               </section>

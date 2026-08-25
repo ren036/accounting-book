@@ -10,10 +10,10 @@ type MonthTransactionsPageProps = {
   month: string
   transactions: Transaction[]
   onBack: () => void
-  onEdit: (id: string) => void
+  onOpen: (id: string) => void
 }
 
-export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: MonthTransactionsPageProps) {
+export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: MonthTransactionsPageProps) {
   const [activeType, setActiveType] = useState<TransactionType>('expense')
   const [searchQuery, setSearchQuery] = useState('')
   const summary = summarizeMonth(transactions, month)
@@ -85,7 +85,7 @@ export function MonthTransactionsPage({ month, transactions, onBack, onEdit }: M
                 <h3>{group.label}</h3>
                 <div className="list">
                   {group.transactions.map((transaction) => (
-                    <TransactionRow key={transaction.id} transaction={transaction} onEdit={onEdit} />
+                    <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
                   ))}
                 </div>
               </section>

@@ -3,6 +3,7 @@ import {
   filterMonthTransactionsByType,
   getAvailableStatYears,
   groupMonthTransactionsByDay,
+  summarizeCategoriesByPrefix,
   summarizeExpenseCategories,
   summarizeMonth,
   summarizeYear,
@@ -40,6 +41,20 @@ describe('summarizeExpenseCategories', () => {
     expect(summarizeExpenseCategories(transactions, '2026-06')).toEqual([
       { category: '餐饮', amount: 200 },
       { category: '交通', amount: 20 }
+    ])
+  })
+})
+
+describe('summarizeCategoriesByPrefix', () => {
+  it('summarizes a selected transaction type for a year', () => {
+    const transactions: Transaction[] = [
+      makeTransaction({ type: 'expense', amount: 120, category: '餐饮', occurredAt: '2026-01-02T10:00:00.000Z' }),
+      makeTransaction({ type: 'expense', amount: 80, category: '餐饮', occurredAt: '2026-06-03T10:00:00.000Z' }),
+      makeTransaction({ type: 'expense', amount: 50, category: '交通', occurredAt: '2025-06-04T10:00:00.000Z' })
+    ]
+
+    expect(summarizeCategoriesByPrefix(transactions, '2026', 'expense')).toEqual([
+      { category: '餐饮', amount: 200 }
     ])
   })
 })

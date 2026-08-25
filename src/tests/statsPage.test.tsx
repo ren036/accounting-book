@@ -9,5 +9,8 @@ describe('StatsPage', () => {
     expect(html).toContain('aria-label="搜索账单"')
     expect(html).toContain('placeholder="搜索分类、备注、金额或日期"')
     expect(html).toContain('月度明细')
+    expect(html).toContain('月度收支')
+    expect(html).toContain('支出分类')
+    expect(html).toContain('aria-label="统计年份"')
   })
 })

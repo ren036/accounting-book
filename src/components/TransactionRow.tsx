@@ -5,15 +5,15 @@ import { CategoryEmoji } from './CategoryEmoji'
 
 type TransactionRowProps = {
   transaction: Transaction
-  onEdit: (id: string) => void
+  onOpen: (id: string) => void
 }
 
-export function TransactionRow({ transaction, onEdit }: TransactionRowProps) {
+export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
   const note = getTransactionNoteDisplay(transaction.note)
   const isIncome = transaction.type === 'income'
 
   return (
-    <button className="transaction transaction-button" type="button" onClick={() => onEdit(transaction.id)}>
+    <button className="transaction transaction-button" type="button" onClick={() => onOpen(transaction.id)}>
       <div className="icon-label">
         <CategoryEmoji category={transaction.category} />
         <div>

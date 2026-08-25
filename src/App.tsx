@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { BottomNav, type PageKey } from './components/BottomNav'
-import { finishCreatingTransaction, finishEditingTransaction, switchMainTab } from './domain/navigation'
+import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
 import { deleteTransaction, listTransactions } from './lib/db'
 import { DashboardPage } from './pages/DashboardPage'
@@ -8,6 +8,7 @@ import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { StatsPage } from './pages/StatsPage'
+import { TransactionDetailPage } from './pages/TransactionDetailPage'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
@@ -18,6 +19,7 @@ export function App() {
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
+  const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
   const [viewingStatsMonth, setViewingStatsMonth] = useState<string | null>(null)
 
   async function reloadTransactions() {
@@ -27,12 +29,13 @@ export function App() {
   async function handleDelete(id: string) {
     await deleteTransaction(id)
     await reloadTransactions()
-    applyNavigationState(finishCreatingTransaction())
+    setEditingTransactionId(null)
+    setViewingTransactionId(null)
   }
 
   async function handleEditSaved() {
     await reloadTransactions()
-    applyNavigationState(finishEditingTransaction(currentPage))
+    setEditingTransactionId(null)
   }
 
   async function handleEntrySaved() {
@@ -47,6 +50,7 @@ export function App() {
   }) {
     setCurrentPage(state.currentPage)
     setEditingTransactionId(state.editingTransactionId)
+    setViewingTransactionId(null)
     setViewingStatsMonth(state.viewingStatsMonth)
   }
 
@@ -56,6 +60,9 @@ export function App() {
 
   const editingTransaction = editingTransactionId
     ? transactions.find((transaction) => transaction.id === editingTransactionId)
+    : null
+  const viewingTransaction = viewingTransactionId
+    ? transactions.find((transaction) => transaction.id === viewingTransactionId)
     : null
 
   return (
@@ -67,9 +74,15 @@ export function App() {
           onDeleted={handleDelete}
           onSaved={handleEditSaved}
         />
+      ) : viewingTransaction ? (
+        <TransactionDetailPage
+          transaction={viewingTransaction}
+          onBack={() => setViewingTransactionId(null)}
+          onEdit={() => setEditingTransactionId(viewingTransaction.id)}
+        />
       ) : (
         <>
-          {currentPage === 'dashboard' && <DashboardPage transactions={transactions} onEdit={setEditingTransactionId} />}
+          {currentPage === 'dashboard' && <DashboardPage transactions={transactions} onOpen={setViewingTransactionId} />}
           {currentPage === 'entry' && <EntryPage onSaved={handleEntrySaved} />}
           {currentPage === 'stats' && viewingStatsMonth === null && (
             <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
@@ -79,7 +92,7 @@ export function App() {
               month={viewingStatsMonth}
               transactions={transactions}
               onBack={() => setViewingStatsMonth(null)}
-              onEdit={setEditingTransactionId}
+              onOpen={setViewingTransactionId}
             />
           )}
           {currentPage === 'settings' && (
