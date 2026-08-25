@@ -1,9 +1,10 @@
-import { Dialog } from 'antd-mobile'
+import { Button, Dialog } from 'antd-mobile'
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
 import { CategoryEmoji } from '../components/CategoryEmoji'
 import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
+import { DeleteOutline, LeftOutline } from 'antd-mobile-icons'
 
 type TransactionDetailPageProps = {
   transaction: Transaction
@@ -29,13 +30,13 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
   return (
     <section className="page transaction-detail-page">
       <div className="page-title-row">
-        <button className="page-icon-button" type="button" aria-label="返回" onClick={onBack}>
-          <ArrowLeft aria-hidden="true" size={22} />
-        </button>
-        <h1>账单详情</h1>
-        <button className="page-icon-button page-delete-button" type="button" aria-label="删除账单" onClick={handleDelete}>
-          <Trash2 aria-hidden="true" size={21} />
-        </button>
+        <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="返回" onClick={onBack}>
+          <LeftOutline fontSize={22} />
+        </Button>
+        <h4>账单详情</h4>
+        <Button className="page-text-button" color="danger" fill="none" size="mini" aria-label="删除账单" onClick={handleDelete}>
+          <DeleteOutline fontSize={22} />
+        </Button>
       </div>
 
       <article className="card transaction-detail-card">
@@ -55,10 +56,9 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
           <div><dt>备注</dt><dd>{note ?? '无备注'}</dd></div>
         </dl>
 
-        <button className="primary transaction-detail-edit" type="button" onClick={onEdit}>
-          <Pencil aria-hidden="true" size={18} />
-          编辑
-        </button>
+        <Button color='primary' fill='outline' shape='rounded' type="button" onClick={onEdit} >
+           编辑
+          </Button>
       </article>
     </section>
   )

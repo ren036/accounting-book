@@ -2,11 +2,16 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import { EntryPage } from '../pages/EntryPage'
 
-vi.mock('antd-mobile', () => ({
-  Toast: {
-    show: vi.fn()
+vi.mock('antd-mobile', async () => {
+  const { createElement } = await import('react')
+  return {
+    Button: ({ children, color: _color, fill: _fill, size: _size, ...props }: any) =>
+      createElement('button', props, children),
+    Toast: {
+      show: vi.fn()
+    }
   }
-}))
+})
 
 describe('EntryPage', () => {
   it('renders a fixed-region entry page shell', () => {

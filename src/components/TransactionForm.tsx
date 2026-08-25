@@ -5,6 +5,7 @@ import { clampInputDateToMax, todayInputValue } from '../lib/dates'
 import { parseAmountExpression } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
+import { Segmented } from 'antd-mobile'
 
 type TransactionFormProps = {
   id?: string
@@ -54,16 +55,15 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
 
   return (
     <form id={id} className="card form transaction-form" onSubmit={handleSubmit}>
-      <div className="transaction-form-header">
-        <div className="segmented">
-          <button type="button" className={type === 'expense' ? 'active' : ''} onClick={() => handleTypeChange('expense')}>
-            支出
-          </button>
-          <button type="button" className={type === 'income' ? 'active' : ''} onClick={() => handleTypeChange('income')}>
-            收入
-          </button>
-        </div>
-      </div>
+      <Segmented style={{
+        width: '100%',
+      }} options={[
+        { label: '支出', value: 'expense' },
+        { label: '收入', value: 'income' },
+      ]} 
+        value={type}
+        onChange={(value) => handleTypeChange(value as TransactionType)}
+      />
 
       <div className="transaction-form-body">
         <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} />

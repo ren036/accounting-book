@@ -3,14 +3,19 @@ import { describe, expect, it, vi } from 'vitest'
 import { EditTransactionPage } from '../pages/EditTransactionPage'
 import type { Transaction } from '../domain/transaction'
 
-vi.mock('antd-mobile', () => ({
-  Dialog: {
-    confirm: vi.fn()
-  },
-  Toast: {
-    show: vi.fn()
+vi.mock('antd-mobile', async () => {
+  const { createElement } = await import('react')
+  return {
+    Button: ({ children, color: _color, fill: _fill, size: _size, ...props }: any) =>
+      createElement('button', props, children),
+    Dialog: {
+      confirm: vi.fn()
+    },
+    Toast: {
+      show: vi.fn()
+    }
   }
-}))
+})
 
 const transaction: Transaction = {
   id: 'tx-1',

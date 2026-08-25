@@ -1,5 +1,6 @@
-import { getNavigationIconName } from '../domain/icons'
-import { AppIcon } from './AppIcon'
+import { TabBar } from 'antd-mobile'
+import { ChartPie, CirclePlus, Home, Icon, Settings } from 'lucide-react'
+import { JSX } from 'react/jsx-runtime'
 
 export type PageKey = 'dashboard' | 'entry' | 'stats' | 'settings'
 
@@ -8,27 +9,29 @@ type BottomNavProps = {
   onChange: (page: PageKey) => void
 }
 
-const items: Array<{ key: PageKey; label: string }> = [
-  { key: 'dashboard', label: '首页' },
-  { key: 'entry', label: '记账' },
-  { key: 'stats', label: '统计' },
-  { key: 'settings', label: '设置' }
+const items: Array<{ key: PageKey; label: string, icon: JSX.Element }> = [
+  { key: 'dashboard', label: '首页' ,icon:<Home size={20} strokeWidth={2.2} />},
+  { key: 'entry', label: '记账' ,icon:<CirclePlus size={20} strokeWidth={2.2} />},
+  { key: 'stats', label: '统计' ,icon:<ChartPie size={20} strokeWidth={2.2} />},
+  { key: 'settings', label: '设置' ,icon:<Settings size={20} strokeWidth={2.2} />}
 ]
 
 export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
-    <nav className="bottom-nav" aria-label="底部导航">
+    <TabBar
+      className="bottom-nav"
+      activeKey={currentPage}
+      aria-label="底部导航"
+      onChange={(key) => onChange(key as PageKey)}
+    >
+      
       {items.map((item) => (
-        <button
+        <TabBar.Item
           key={item.key}
-          className={currentPage === item.key ? 'active' : ''}
-          type="button"
-          onClick={() => onChange(item.key)}
-        >
-          <AppIcon name={getNavigationIconName(item.key)} size={20} />
-          {item.label}
-        </button>
+          icon={item.icon}
+          title={item.label}
+        />
       ))}
-    </nav>
+    </TabBar>
   )
 }

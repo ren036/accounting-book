@@ -6,6 +6,8 @@ import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMo
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
+import { Button, Segmented } from 'antd-mobile'
+import { LeftOutline } from 'antd-mobile-icons'
 
 type MonthTransactionsPageProps = {
   month: string
@@ -32,11 +34,10 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
     <section className="page hero-page fixed-list-page">
       <div className="fixed-list-header">
         <div className="page-title-row">
-          <button className="page-icon-button" type="button" aria-label="返回统计" onClick={onBack}>
-            <ArrowLeft aria-hidden="true" size={22} />
-          </button>
-          <h1>{label}</h1>
-          <span className="page-title-spacer" aria-hidden="true" />
+          <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="返回" onClick={onBack}>
+            <LeftOutline fontSize={22} />
+          </Button>
+          <h4>{label}</h4>
         </div>
 
         <div className="summary-grid stats-summary">
@@ -53,27 +54,15 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
             <strong>{formatMoney(summary.balance)}</strong>
           </div>
         </div>
-
-        <div className="tabs" role="tablist" aria-label="账单类型">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeType === 'expense'}
-            className={activeType === 'expense' ? 'active' : ''}
-            onClick={() => setActiveType('expense')}
-          >
-            支出
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeType === 'income'}
-            className={activeType === 'income' ? 'active' : ''}
-            onClick={() => setActiveType('income')}
-          >
-            收入
-          </button>
-        </div>
+        <Segmented style={{
+          width: '100%',
+        }} options={[
+          { label: '支出', value: 'expense' },
+          { label: '收入', value: 'income' },
+        ]}
+          value={activeType}
+          onChange={(value) => setActiveType(value as TransactionType)}
+        />
         <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 

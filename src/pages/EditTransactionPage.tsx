@@ -1,4 +1,4 @@
-import { Toast } from 'antd-mobile'
+import { Button, Toast } from 'antd-mobile'
 import { Check, X } from 'lucide-react'
 import { TransactionForm } from '../components/TransactionForm'
 import type { EditableTransactionFields, Transaction } from '../domain/transaction'
@@ -21,13 +21,21 @@ export function EditTransactionPage({ transaction, onCancel, onSaved }: EditTran
   return (
     <section className="page entry-page">
       <div className="page-title-row">
-        <button className="page-icon-button" type="button" aria-label="取消" onClick={onCancel}>
-          <X aria-hidden="true" size={22} />
-        </button>
-        <h1>编辑账单</h1>
-        <button className="page-icon-button page-save-button" type="submit" form="edit-transaction-form" aria-label="保存">
-          <Check aria-hidden="true" size={22} />
-        </button>
+        <Button className="page-text-button" color="primary" fill="none" size="mini" aria-label="取消" onClick={onCancel}>
+          取消
+        </Button>
+        <h4>编辑账单</h4>
+        <Button
+          className="page-text-button"
+          color="primary"
+          fill="none"
+          size="mini"
+          type="submit"
+          form="edit-transaction-form"
+          aria-label="保存"
+        >
+          保存
+        </Button>
       </div>
       <TransactionForm
         id="edit-transaction-form"

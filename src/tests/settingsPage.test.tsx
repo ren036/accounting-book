@@ -2,11 +2,16 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it, vi } from 'vitest'
 import { SettingsPage } from '../pages/SettingsPage'
 
-vi.mock('antd-mobile', () => ({
-  Dialog: {
-    confirm: vi.fn()
+vi.mock('antd-mobile', async () => {
+  const { createElement } = await import('react')
+  return {
+    Button: ({ children, color: _color, fill: _fill, shape: _shape, ...props }: any) =>
+      createElement('button', props, children),
+    Dialog: {
+      confirm: vi.fn()
+    }
   }
-}))
+})
 
 describe('SettingsPage', () => {
   it('renders a separate import button next to backup import controls', () => {

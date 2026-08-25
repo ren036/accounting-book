@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Dialog } from 'antd-mobile'
+import { Button, Dialog } from 'antd-mobile'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
 import { clearTransactions, listTransactions, saveTransactions } from '../lib/db'
@@ -92,12 +92,12 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
         <hr />
 
-        <button className="primary" type="button" onClick={handleJsonExport}>
+        <Button color='primary' type="button" shape='rounded' onClick={handleJsonExport}>
           导出 JSON
-        </button>
-        <button className="primary" type="button" onClick={handleExcelExport}>
+        </Button>
+        <Button color='primary' type="button" shape='rounded' onClick={handleExcelExport}>
           导出 Excel
-        </button>
+        </Button>
         <label className="field">
           <span>导入备份</span>
           <input
@@ -107,13 +107,12 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
             onChange={handleImportFileChange}
           />
         </label>
-        <button className="primary" type="button" onClick={handleImport} disabled={!selectedImportFile || isImporting}>
-          {isImporting ? '导入中...' : '导入'}
-        </button>
+        <Button color='primary' type="button" shape='rounded' onClick={handleImport} disabled={!selectedImportFile || isImporting}>
+          {isImporting ? '导入中...' : '导入'}</Button>
 
-        <button className="danger-action" type="button" onClick={handleClearAll}>
+        <Button color='danger' type="button" shape='rounded' onClick={handleClearAll}>
           清空全部数据
-        </button>
+        </Button>
 
         {message && <p className="message">{message}</p>}
       </div>
