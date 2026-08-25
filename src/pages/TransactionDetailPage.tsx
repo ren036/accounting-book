@@ -28,7 +28,7 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
   }
 
   return (
-    <section className="page transaction-detail-page">
+    <section className="page">
       <div className="page-title-row">
         <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
           <LeftOutline fontSize={22} color='black' scale={2.2} />

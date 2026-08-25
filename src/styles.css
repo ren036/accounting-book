@@ -266,9 +266,6 @@ button {
   background: #111827;
 }
 
-.transaction-detail-page {
-  height: calc(100dvh - 16px - env(safe-area-inset-top) - 96px - env(safe-area-inset-bottom));
-}
 
 .transaction-detail-card {
   display: grid;
@@ -486,7 +483,7 @@ hr {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
-  height: calc(100dvh - 16px - env(safe-area-inset-top) - 76px - env(safe-area-inset-bottom));
+  height: calc(100dvh - 16px - env(safe-area-inset-top) - 63px - env(safe-area-inset-bottom));
   min-height: 0;
 }
 
@@ -893,168 +890,3 @@ hr {
   font-size: 15px;
 }
 
-@media (max-width: 420px) {
-  .app {
-    min-height: 100dvh;
-    padding:12px 12px 12px;
-    /* padding: calc(12px + env(safe-area-inset-top)) 12px calc(84px + env(safe-area-inset-bottom)); */
-  }
-
-  .fixed-list-page {
-    height: calc(100dvh - 0px - env(safe-area-inset-top) - 76px - env(safe-area-inset-bottom));
-    gap: 10px;
-  }
-
-  .entry-page {
-    height: 100%;
-  }
-
-  .transaction-detail-page {
-    height: calc(100dvh - 0px - env(safe-area-inset-top) - 84px - env(safe-area-inset-bottom));
-  }
-
-  .fixed-list-header {
-    gap: 10px;
-  }
-
-  .page h1 {
-    margin: 4px 0 12px;
-    font-size: 22px;
-  }
-
-  .page h2 {
-    margin: 4px 0 10px;
-    font-size: 17px;
-  }
-
-  .hero-page {
-    gap: 10px;
-  }
-
-  .hero-card {
-    border-radius: 22px;
-    padding: 20px;
-  }
-
-  .hero-card strong {
-    font-size: 32px;
-  }
-
-
-  .card {
-    border-radius: 18px;
-    padding: 14px;
-  }
-
-  .field input,
-  .field select,
-  .field textarea {
-    font-size: 16px;
-  }
-
-  .amount-display input {
-    font-size: 22px;
-  }
-
-  .amount-key {
-    min-height: 42px;
-    border-radius: 12px;
-    font-size: 17px;
-  }
-
-  .card strong {
-    font-size: 22px;
-  }
-
-  .summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .stats-summary {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .stats-summary .card {
-    padding: 12px 8px;
-  }
-
-  .stats-summary .card span {
-    font-size: 12px;
-  }
-
-  .stats-summary .card strong {
-    font-size: 17px;
-  }
-
-  .stats-page {
-    gap: 10px;
-  }
-
-  .stats-charts-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .analytics-card {
-    border-radius: 18px;
-    padding: 15px;
-  }
-
-  .bar-chart {
-    height: 142px;
-  }
-
-  .bar-column {
-    grid-template-rows: 112px 18px;
-  }
-
-  .category-chart-layout {
-    grid-template-columns: 104px minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .donut-chart {
-    width: 104px;
-  }
-
-  .transaction {
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    border-radius: 15px;
-    padding: 11px;
-  }
-
-  .transaction p {
-    font-size: 12px;
-  }
-
-  .month-stats-row {
-    grid-template-columns: 42px repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    border-radius: 15px;
-    padding: 11px 8px;
-  }
-
-  .month-stats-row span {
-    font-size: 11px;
-  }
-
-  .month-stats-row b {
-    font-size: 12px;
-  }
-
-  .transaction button {
-    grid-column: 1 / -1;
-    padding: 9px;
-    font-size: 13px;
-  }
-
-
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chart-bar {
-    animation: none;
-  }
-}
