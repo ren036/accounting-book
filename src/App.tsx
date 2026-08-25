@@ -65,9 +65,12 @@ export function App() {
     ? transactions.find((transaction) => transaction.id === viewingTransactionId)
     : null
   const isTransactionFormPage = Boolean(editingTransaction) || (!viewingTransaction && currentPage === 'entry')
+  const isFixedListPage = !editingTransaction
+    && !viewingTransaction
+    && (currentPage === 'dashboard' || currentPage === 'stats')
 
   return (
-    <main className={`app${isTransactionFormPage ? ' transaction-form-mode' : ''}`}>
+    <main className={`app${isTransactionFormPage ? ' transaction-form-mode' : ''}${isFixedListPage ? ' fixed-list-mode' : ''}`}>
       {editingTransaction ? (
         <EditTransactionPage
           transaction={editingTransaction}

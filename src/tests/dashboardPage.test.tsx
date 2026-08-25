@@ -19,6 +19,11 @@ describe('DashboardPage', () => {
     expect(styles).toMatch(/\.dashboard-transactions\s*{[^}]*align-content:\s*start;/s)
   })
 
+  it('fills the remaining app height without a viewport calculation', () => {
+    expect(styles).toMatch(/\.fixed-list-page\s*{[^}]*flex:\s*1 1 0;/s)
+    expect(styles).toMatch(/\.fixed-list-page\s*{[^}]*height:\s*auto;/s)
+  })
+
   it('keeps the search input large enough to prevent mobile focus zoom', () => {
     expect(styles).toMatch(/\.transaction-search input\s*{[^}]*font-size:\s*16px;/s)
   })
