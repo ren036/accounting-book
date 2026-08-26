@@ -200,13 +200,6 @@ button {
   scroll-padding-bottom: 16px;
 }
 
-.transaction-form-footer {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 10px;
-  background: rgb(255 255 255 / 88%);
-}
 
 .field {
   display: grid;
@@ -258,15 +251,13 @@ button {
 .amount-keyboard {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  background: rgba(155, 38, 38, 0.92);
 }
 
 .amount-key {
   min-height: 46px;
   border: 1px solid #e5e7eb;
-  border-radius: 14px;
   background: #f9fafb;
-  color: #111827;
   font-size: 18px;
   font-weight: 700;
 }

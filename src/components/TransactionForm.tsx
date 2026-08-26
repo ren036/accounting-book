@@ -54,7 +54,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
   }
 
   return (
-    <form id={id} className="card form transaction-form" onSubmit={handleSubmit}>
+    <form id={id} className="form transaction-form" onSubmit={handleSubmit}>
       <Segmented style={{
         width: '100%',
       }} options={[
@@ -87,7 +87,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         </label>
       </div>
 
-      <div className="transaction-form-footer">
+      <div>
         <AmountKeyboard value={amount} onChange={setAmount} />
       </div>
     </form>
