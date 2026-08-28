@@ -48,16 +48,16 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#ecfdf5,#fff)] p-[15px] text-emerald-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
-            <span>总收入</span>
-            <strong>{formatMoney(summary.income)}</strong>
+            <span>总收入</span><br/>
+            {formatMoney(summary.income)}
           </div>
           <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#fff7ed,#fff)] p-[15px] text-orange-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
-            <span>总支出</span>
-            <strong>{formatMoney(summary.expense)}</strong>
+            <span>总支出</span><br/>
+            {formatMoney(summary.expense)}
           </div>
           <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#f5f3ff,#fff)] p-[15px] text-violet-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
-            <span>结余</span>
-            <strong>{summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}</strong>
+            <span>结余</span><br/>
+            {summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}
           </div>
         </div>
 
