@@ -5,6 +5,7 @@ import { createBackupFileName } from '../lib/backupFileName'
 import { clearTransactions, listTransactions, saveTransactions } from '../lib/db'
 import { downloadBlob } from '../lib/download'
 import { getStorageMode } from '../lib/storageMode'
+import { cardClass, fieldClass, pageClass } from '../ui/classes'
 
 type SettingsPageProps = {
   onChanged: () => Promise<void>
@@ -82,15 +83,15 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   return (
-    <section className="page">
+    <section className={`${pageClass} [&>h1]:my-[8px_18px]`}>
       <h1>设置</h1>
-      <div className="card form">
+      <div className={`${cardClass} grid gap-4`}>
         <div>
           <strong>{storageMode.label}</strong>
-          <p className="muted">{storageMode.description}</p>
+          <p className="text-gray-500">{storageMode.description}</p>
         </div>
 
-        <hr />
+        <hr className="w-full border-0 border-t border-gray-200" />
 
         <Button color='primary' type="button" shape='rounded' onClick={handleJsonExport}>
           导出 JSON
@@ -98,7 +99,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
         <Button color='primary' type="button" shape='rounded' onClick={handleExcelExport}>
           导出 Excel
         </Button>
-        <label className="field">
+        <label className={fieldClass}>
           <span>导入备份</span>
           <input
             ref={importInputRef}
@@ -114,7 +115,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
           清空全部数据
         </Button>
 
-        {message && <p className="message">{message}</p>}
+        {message && <p className="m-0 text-blue-600">{message}</p>}
       </div>
     </section>
   )

@@ -1,5 +1,5 @@
 import { TabBar } from 'antd-mobile'
-import { ChartPie, CirclePlus, Home, Icon, Settings } from 'lucide-react'
+import { ChartPie, CirclePlus, Home, Settings } from 'lucide-react'
 import { JSX } from 'react/jsx-runtime'
 
 export type PageKey = 'dashboard' | 'entry' | 'stats' | 'settings'
@@ -19,7 +19,7 @@ const items: Array<{ key: PageKey; label: string, icon: JSX.Element }> = [
 export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
     <TabBar
-      className="bottom-nav"
+      className="fixed inset-x-0 bottom-0 mx-auto max-w-[720px] bg-white/90 px-2 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_16px_40px_rgb(15_23_42/18%)] [&_.adm-tab-bar-item-title]:whitespace-nowrap"
       activeKey={currentPage}
       aria-label="底部导航"
       onChange={(key) => onChange(key as PageKey)}

@@ -6,6 +6,7 @@ import { parseAmountExpression } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
 import { Segmented } from 'antd-mobile'
+import { fieldClass } from '../ui/classes'
 
 type TransactionFormProps = {
   id?: string
@@ -54,10 +55,8 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
   }
 
   return (
-    <form id={id} className="form transaction-form" onSubmit={handleSubmit}>
-      <Segmented style={{
-        width: '100%',
-      }} options={[
+    <form id={id} className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 overflow-hidden" onSubmit={handleSubmit}>
+      <Segmented block className="w-full" options={[
         { label: '支出', value: 'expense' },
         { label: '收入', value: 'income' },
       ]} 
@@ -65,15 +64,15 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         onChange={(value) => handleTypeChange(value as TransactionType)}
       />
 
-      <div className="transaction-form-body">
+      <div className="grid min-h-0 content-start gap-4 overflow-y-auto overscroll-y-contain px-0.5 pb-2 [scroll-padding-bottom:16px]">
         <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
-        <label className="field">
+        <label className={fieldClass}>
           <span>日期</span>
           <input
-            className="native-date-input"
+            className="block w-full max-w-full appearance-none overflow-hidden"
             type="date"
             value={occurredAt}
             max={maxDate}
@@ -81,7 +80,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
           />
         </label>
 
-        <label className="field">
+        <label className={fieldClass}>
           <span>备注</span>
           <textarea value={note} onChange={(event) => setNote(event.target.value)} />
         </label>

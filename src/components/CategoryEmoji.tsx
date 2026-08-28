@@ -6,7 +6,7 @@ type CategoryEmojiProps = {
 
 export function CategoryEmoji({ category }: CategoryEmojiProps) {
   return (
-    <span className="category-emoji" aria-hidden="true">
+    <span aria-hidden="true">
       {getCategoryEmoji(category)}
     </span>
   )

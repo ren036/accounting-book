@@ -6,6 +6,7 @@ import type { Transaction } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth, currentYear } from '../lib/dates'
 import { formatMoney } from '../lib/money'
+import { emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
 
 type StatsPageProps = {
   transactions: Transaction[]
@@ -29,13 +30,13 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     .filter((month) => !hasSearchQuery || matchingMonths.has(month.month))
 
   return (
-    <section className="page fixed-list-page stats-page">
-      <div className="fixed-list-header">
-        <div className="stats-title-row">
+    <section className={fixedListPageClass}>
+      <div className={fixedListHeaderClass}>
+        <div className="flex items-center justify-between gap-3">
             <h1>统计分析</h1>
-          <label className="stats-year-filter">
-            <span className="visually-hidden">年份</span>
-            <select aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
+          <label >
+            <span className="sr-only">年份</span>
+            <select className="rounded-full border border-violet-200 bg-white/90 py-[9px] pr-8 pl-[13px] text-sm font-extrabold text-violet-800 shadow-[0_8px_20px_rgb(91_33_182/9%)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
               {availableYears.map((item) => (
                 <option key={item} value={item}>
                   {item}年
@@ -45,16 +46,16 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
           </label>
         </div>
 
-        <div className="summary-grid stats-summary">
-          <div className="card stats-total-card income-total-card">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#ecfdf5,#fff)] p-[15px] text-emerald-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
             <span>总收入</span>
             <strong>{formatMoney(summary.income)}</strong>
           </div>
-          <div className="card stats-total-card expense-total-card">
+          <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#fff7ed,#fff)] p-[15px] text-orange-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
             <span>总支出</span>
             <strong>{formatMoney(summary.expense)}</strong>
           </div>
-          <div className="card stats-total-card balance-total-card">
+          <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#f5f3ff,#fff)] p-[15px] text-violet-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
             <span>结余</span>
             <strong>{summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}</strong>
           </div>
@@ -63,33 +64,33 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
-      <section className="fixed-list-content stats-months-section">
-        <div className="stats-charts-grid">
+      <section className={`${fixedListContentClass} grid content-start gap-2.5`}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-3">
           <MonthlyTrendChart months={months} />
           <ExpenseCategoryChart categories={expenseCategories} />
         </div>
 
-        <div className="section-heading-row">
+        <div className="mt-2 flex items-end justify-between gap-3 [&>span]:text-xs [&>span]:text-slate-400 [&_h2]:m-0">
           <div>
-            <span className="eyebrow">账目明细</span>
+            <span className="mb-1 block text-[11px] font-extrabold tracking-[.12em] text-violet-600">账目明细</span>
             <h2>{hasSearchQuery ? '搜索结果' : '月度明细'}</h2>
           </div>
           <span>{months.length} 个月</span>
         </div>
         {months.length === 0 && hasSearchQuery ? (
-          <p className="empty">这一年没有找到匹配的账单</p>
+          <p className={emptyClass}>这一年没有找到匹配的账单</p>
         ) : (
-          <div className="month-stats-list">
+          <div className="grid gap-2.5">
             {months.map((month) => (
-              <button className="month-stats-row month-stats-button" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
+              <button className="grid w-full grid-cols-[56px_repeat(3,1fr)] items-center gap-2.5 rounded-[18px] border-0 bg-white/90 p-3.5 text-left text-inherit [&>div]:grid [&>div]:gap-1 [&_span]:text-xs [&_span]:text-gray-500 [&_b]:text-[15px]" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
                 <strong>{month.label}</strong>
                 <div>
                   <span>收入</span>
-                  <b className="income">{formatMoney(month.income)}</b>
+                  <b className={incomeClass}>{formatMoney(month.income)}</b>
                 </div>
                 <div>
                   <span>支出</span>
-                  <b className="expense">{formatMoney(month.expense)}</b>
+                  <b className={expenseClass}>{formatMoney(month.expense)}</b>
                 </div>
                 <div>
                   <span>结余</span>

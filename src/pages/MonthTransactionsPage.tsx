@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { ArrowLeft } from 'lucide-react'
 import { TransactionSearch } from '../components/TransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
@@ -8,6 +7,7 @@ import { searchTransactions } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
 import { Button, Segmented } from 'antd-mobile'
 import { LeftOutline } from 'antd-mobile-icons'
+import { cardClass, dailyGroupsClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass, pageTitleClass } from '../ui/classes'
 
 type MonthTransactionsPageProps = {
   month: string
@@ -31,32 +31,30 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
     : activeType === 'expense' ? '这个月还没有支出' : '这个月还没有收入'
 
   return (
-    <section className="page hero-page fixed-list-page">
-      <div className="fixed-list-header">
-        <div className="page-title-row">
-          <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
+    <section className={fixedListPageClass}>
+      <div className={fixedListHeaderClass}>
+        <div className={pageTitleClass}>
+          <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
             <LeftOutline fontSize={22} />
           </Button>
           <h3>{label}</h3>
         </div>
 
-        <div className="summary-grid stats-summary">
-          <div className="card">
+        <div className="grid grid-cols-3 gap-3">
+          <div className={cardClass}>
             <span>收入</span>
-            <strong className="income">{formatMoney(summary.income)}</strong>
+            <strong className={incomeClass}>{formatMoney(summary.income)}</strong>
           </div>
-          <div className="card">
+          <div className={cardClass}>
             <span>支出</span>
-            <strong className="expense">{formatMoney(summary.expense)}</strong>
+            <strong className={expenseClass}>{formatMoney(summary.expense)}</strong>
           </div>
-          <div className="card">
+          <div className={cardClass}>
             <span>结余</span>
             <strong>{formatMoney(summary.balance)}</strong>
           </div>
         </div>
-        <Segmented style={{
-          width: '100%',
-        }} options={[
+        <Segmented block className="w-full" options={[
           { label: '支出', value: 'expense' },
           { label: '收入', value: 'income' },
         ]}
@@ -66,15 +64,15 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
         <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
-      <section className="fixed-list-content month-transactions-section">
+      <section className={`${fixedListContentClass} grid content-start gap-2.5`}>
         {groups.length === 0 ? (
-          <p className="empty">{emptyText}</p>
+          <p className={emptyClass}>{emptyText}</p>
         ) : (
-          <div className="daily-groups">
+          <div className={dailyGroupsClass}>
             {groups.map((group) => (
               <section className="daily-group" key={group.date}>
                 <h3>{group.label}</h3>
-                <div className="list">
+                <div className="grid gap-2.5">
                   {group.transactions.map((transaction) => (
                     <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
                   ))}

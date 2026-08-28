@@ -1,10 +1,10 @@
 import { Button, Dialog } from 'antd-mobile'
-import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
 import { CategoryEmoji } from '../components/CategoryEmoji'
 import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
 import { DeleteOutline, LeftOutline } from 'antd-mobile-icons'
+import { cardClass, expenseClass, incomeClass, pageClass, pageTitleClass } from '../ui/classes'
 
 type TransactionDetailPageProps = {
   transaction: Transaction
@@ -28,30 +28,30 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
   }
 
   return (
-    <section className="page">
-      <div className="page-title-row">
-        <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
+    <section className={pageClass}>
+      <div className={pageTitleClass}>
+        <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
           <LeftOutline fontSize={22} color='black' scale={2.2} />
         </Button>
         <h3>账单详情</h3>
-        <Button className="page-text-button" color="danger" fill="none" size="middle" aria-label="删除账单" onClick={handleDelete}>
+        <Button color="danger" fill="none" size="middle" aria-label="删除账单" onClick={handleDelete}>
           <DeleteOutline fontSize={22} />
         </Button>
       </div>
 
-      <article className="card transaction-detail-card">
-        <div className="transaction-detail-summary">
-          <span className="transaction-detail-category">
+      <article className={`${cardClass} grid gap-[22px]`}>
+        <div className="grid justify-items-center gap-1.5 py-3.5 [&>small]:text-gray-500 [&>strong]:text-[38px]">
+          <span className="!m-0 !inline-flex items-center gap-2">
             <CategoryEmoji category={transaction.category} />
             {transaction.category}
           </span>
-          <strong className={isIncome ? 'income' : 'expense'}>
+          <strong className={isIncome ? incomeClass : expenseClass}>
             {isIncome ? '+' : '-'}{formatMoney(transaction.amount)}
           </strong>
           <small>{isIncome ? '收入' : '支出'}</small>
         </div>
 
-        <dl className="transaction-detail-list">
+        <dl className="m-0 grid gap-0 [&>div]:grid [&>div]:grid-cols-[auto_minmax(0,1fr)] [&>div]:gap-6 [&>div]:border-t [&>div]:border-gray-200 [&>div]:py-3.5 [&_dt]:text-gray-500 [&_dd]:m-0 [&_dd]:text-right [&_dd]:[overflow-wrap:anywhere]">
           <div><dt>日期</dt><dd>{transaction.occurredAt.slice(0, 10)}</dd></div>
           <div><dt>备注</dt><dd>{note ?? '无备注'}</dd></div>
         </dl>

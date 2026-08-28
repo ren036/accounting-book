@@ -2,6 +2,7 @@ import { Button, Toast } from 'antd-mobile'
 import { TransactionForm } from '../components/TransactionForm'
 import type { EditableTransactionFields } from '../domain/transaction'
 import { saveTransaction } from '../lib/db'
+import { pageClass, pageTitleClass } from '../ui/classes'
 
 type EntryPageProps = {
   onCancel: () => void
@@ -16,14 +17,14 @@ export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
   }
 
   return (
-    <section className="page entry-page">
-      <div className="page-title-row">
-        <Button className="page-text-button" color="primary" fill="none" size="middle" aria-label="取消" onClick={onCancel}>
+    <section className={`${pageClass} grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden`}>
+      <div className={pageTitleClass}>
+        <Button color="primary" fill="none" size="middle" aria-label="取消" onClick={onCancel}>
           取消
         </Button>
         <h3>记一笔</h3>
         <Button
-          className="page-text-button"
+
           color="primary"
           fill="none"
           size="middle"

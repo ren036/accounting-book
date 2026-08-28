@@ -1,4 +1,5 @@
 import { parseAmountExpression } from '../lib/money'
+import { fieldClass } from '../ui/classes'
 
 type AmountInputProps = {
   value: string
@@ -20,11 +21,14 @@ export function AmountInput({ value, onChange, autoFocus = false, showKeyboard =
   const calculatedAmount = parseAmountExpression(value)
   const hasExpression = /[+-]/.test(value)
   const hasCalculatedResult = Number.isFinite(calculatedAmount)
+  const amountResultClass = hasCalculatedResult
+    ? 'min-h-[18px] text-sm font-bold text-emerald-600'
+    : 'min-h-[18px] text-sm font-medium text-gray-400'
 
   return (
-    <div className="field amount-field">
+    <div className={`${fieldClass} gap-2.5`}>
       <label htmlFor="transaction-amount">金额</label>
-      <div className="amount-display">
+      <div className="grid gap-1.5 [&_input]:text-2xl [&_input]:font-bold">
         <input
           id="transaction-amount"
           autoFocus={autoFocus}
@@ -36,7 +40,7 @@ export function AmountInput({ value, onChange, autoFocus = false, showKeyboard =
           onChange={(event) => onChange(event.target.value)}
         />
         {hasExpression && (
-          <span className={`amount-result${hasCalculatedResult ? '' : ' invalid'}`}>
+          <span className={amountResultClass}>
             {hasCalculatedResult ? `= ${formatAmount(calculatedAmount)}` : '算式未完成'}
           </span>
         )}
@@ -68,12 +72,12 @@ export function AmountKeyboard({ value, onChange }: AmountKeyboardProps) {
   }
 
   return (
-    <div className="amount-keyboard" aria-label="金额键盘">
+    <div className="grid grid-cols-4 bg-red-900/90" aria-label="金额键盘">
       {keyRows.flat().map((key) => (
         <button
           key={key}
           type="button"
-          className={key === 'equals' ? 'amount-key action' : 'amount-key'}
+          className={amountKeyClass(key)}
           aria-label={keyLabel(key)}
           onClick={() => handleKeyPress(key)}
         >
@@ -82,6 +86,12 @@ export function AmountKeyboard({ value, onChange }: AmountKeyboardProps) {
       ))}
     </div>
   )
+}
+
+function amountKeyClass(key: string): string {
+  return key === 'equals'
+    ? 'min-h-[46px] border border-gray-200 bg-gray-900 text-lg font-bold text-white'
+    : 'min-h-[46px] border border-gray-200 bg-gray-50 text-lg font-bold'
 }
 
 function nextAmountExpression(current: string, key: string): string {

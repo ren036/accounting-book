@@ -9,6 +9,7 @@ import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { StatsPage } from './pages/StatsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
+import { emptyClass, pageClass } from './ui/classes'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
@@ -70,7 +71,7 @@ export function App() {
     && (currentPage === 'dashboard' || currentPage === 'stats')
 
   return (
-    <main className={`app${isTransactionFormPage ? ' transaction-form-mode' : ''}${isFixedListPage ? ' fixed-list-mode' : ''}`}>
+    <main className={`min-h-dvh bg-[linear-gradient(180deg,#eef2ff_0%,#f9fafb_42%)] p-3 font-sans text-gray-900 ${isTransactionFormPage ? 'h-dvh min-h-0 w-full' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}>
       {editingTransaction ? (
         <EditTransactionPage
           transaction={editingTransaction}
@@ -105,7 +106,7 @@ export function App() {
             />
           )}
           {currentPage === 'settings' && (
-            <Suspense fallback={<section className="page"><p className="empty">正在加载设置...</p></section>}>
+            <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载设置...</p></section>}>
               <SettingsPage onChanged={reloadTransactions} />
             </Suspense>
           )}
