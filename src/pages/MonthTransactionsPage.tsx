@@ -5,9 +5,9 @@ import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMo
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
-import { Button, Segmented } from 'antd-mobile'
+import { AutoCenter, Button, Segmented } from 'antd-mobile'
 import { LeftOutline } from 'antd-mobile-icons'
-import { cardClass, dailyGroupsClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass, pageTitleClass } from '../ui/classes'
+import { cardClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass, pageTitleClass } from '../ui/classes'
 
 type MonthTransactionsPageProps = {
   month: string
@@ -37,7 +37,7 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
           <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
             <LeftOutline fontSize={22} />
           </Button>
-          <h3>{label}</h3>
+          <AutoCenter>{label}</AutoCenter>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
@@ -68,10 +68,10 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
         {groups.length === 0 ? (
           <p className={emptyClass}>{emptyText}</p>
         ) : (
-          <div className={dailyGroupsClass}>
+          <div>
             {groups.map((group) => (
               <section className="daily-group" key={group.date}>
-                <h3>{group.label}</h3>
+                {group.label}
                 <div className="grid gap-2.5">
                   {group.transactions.map((transaction) => (
                     <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />

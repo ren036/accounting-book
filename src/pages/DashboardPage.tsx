@@ -6,7 +6,8 @@ import type { Transaction } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { cardClass, dailyGroupsClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
+import { cardClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
+import { AutoCenter } from 'antd-mobile'
 
 type DashboardPageProps = {
   transactions: Transaction[]
@@ -46,10 +47,10 @@ export function DashboardPage({ transactions, onOpen }: DashboardPageProps) {
         {groups.length === 0 ? (
           <p className={emptyClass}>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</p>
         ) : (
-          <div className={dailyGroupsClass}>
+          <div>
             {groups.map((group) => (
               <section className="daily-group" key={group.date}>
-                <h3>{group.label}</h3>
+                {group.label}
                 <div className="grid gap-2.5">
                   {group.transactions.map((transaction) => (
                     <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />

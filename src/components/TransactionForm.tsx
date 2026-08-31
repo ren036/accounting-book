@@ -55,8 +55,8 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
   }
 
   return (
-    <form id={id} className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-4 overflow-hidden" onSubmit={handleSubmit}>
-      <Segmented block className="w-full" options={[
+    <form id={id} className="grid h-full" onSubmit={handleSubmit}>
+      <Segmented block className="w-full mb-4" options={[
         { label: '支出', value: 'expense' },
         { label: '收入', value: 'income' },
       ]} 
@@ -64,7 +64,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         onChange={(value) => handleTypeChange(value as TransactionType)}
       />
 
-      <div className="grid min-h-0 content-start gap-4 overflow-y-auto overscroll-y-contain px-0.5 pb-2 [scroll-padding-bottom:16px]">
+      <div className="grid gap-4 overflow-y-auto overscroll-y-contain pb-2">
         <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
@@ -72,7 +72,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         <label className={fieldClass}>
           <span>日期</span>
           <input
-            className="block w-full max-w-full appearance-none overflow-hidden"
+            className="w-full"
             type="date"
             value={occurredAt}
             max={maxDate}

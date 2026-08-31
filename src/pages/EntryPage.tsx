@@ -1,4 +1,4 @@
-import { Button, Toast } from 'antd-mobile'
+import { AutoCenter, Button, Toast } from 'antd-mobile'
 import { TransactionForm } from '../components/TransactionForm'
 import type { EditableTransactionFields } from '../domain/transaction'
 import { saveTransaction } from '../lib/db'
@@ -22,7 +22,7 @@ export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
         <Button color="primary" fill="none" size="middle" aria-label="取消" onClick={onCancel}>
           取消
         </Button>
-        <h3>记一笔</h3>
+        <AutoCenter>记一笔</AutoCenter>
         <Button
 
           color="primary"

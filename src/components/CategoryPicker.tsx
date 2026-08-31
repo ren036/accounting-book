@@ -11,7 +11,7 @@ export function CategoryPicker({ categories, value, onChange }: CategoryPickerPr
   return (
     <div className={fieldClass}>
       <span>分类</span>
-      <div className="grid max-h-[155px] grid-cols-[repeat(auto-fill,minmax(54px,1fr))] gap-2 overflow-y-auto overscroll-y-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="radiogroup" aria-label="分类" data-scroll="vertical" data-layout="responsive">
+      <div className="grid max-h-[155px] grid-cols-[repeat(auto-fill,minmax(54px,1fr))] gap-2 overflow-y-auto overscroll-y-contain [&::-webkit-scrollbar]:hidden" role="radiogroup" aria-label="分类" data-scroll="vertical" data-layout="responsive">
         {categories.map((category) => (
           <button
             className="grid justify-items-center border-0 bg-transparent p-0 text-xs text-gray-600"

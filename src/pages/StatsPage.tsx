@@ -7,6 +7,7 @@ import { searchTransactions } from '../domain/transaction'
 import { currentMonth, currentYear } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 import { emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
+import { AutoCenter } from 'antd-mobile'
 
 type StatsPageProps = {
   transactions: Transaction[]
@@ -33,10 +34,9 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     <section className={fixedListPageClass}>
       <div className={fixedListHeaderClass}>
         <div className="flex items-center justify-between gap-3">
-            <h1>统计分析</h1>
-          <label >
-            <span className="sr-only">年份</span>
-            <select className="rounded-full border border-violet-200 bg-white/90 py-[9px] pr-8 pl-[13px] text-sm font-extrabold text-violet-800 shadow-[0_8px_20px_rgb(91_33_182/9%)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
+            <AutoCenter className='text-xl'>统计分析</AutoCenter>
+          <label className="flex-1">
+            <select className="w-full px-4 rounded-full border border-violet-200 bg-white/90 py-[9px] font-extrabold text-violet-800" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
               {availableYears.map((item) => (
                 <option key={item} value={item}>
                   {item}年
@@ -47,15 +47,15 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#ecfdf5,#fff)] p-[15px] text-emerald-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
+          <div className="rounded-[22px] bg-[linear-gradient(145deg,#ecfdf5,#fff)] p-[15px] text-emerald-700 shadow-[0_10px_26px_rgb(15_23_42/7%)]">
             <span>总收入</span><br/>
             {formatMoney(summary.income)}
           </div>
-          <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#fff7ed,#fff)] p-[15px] text-orange-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
+          <div className="rounded-[22px] bg-[linear-gradient(145deg,#fff7ed,#fff)] p-[15px] text-orange-700 shadow-[0_10px_26px_rgb(15_23_42/7%)]">
             <span>总支出</span><br/>
             {formatMoney(summary.expense)}
           </div>
-          <div className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#f5f3ff,#fff)] p-[15px] text-violet-700 shadow-[0_10px_26px_rgb(15_23_42/7%)] [&>span]:mb-[5px] [&>span]:text-xs [&>strong]:text-[21px] [&>strong]:tracking-[-.03em]">
+          <div className="rounded-[22px] bg-[linear-gradient(145deg,#f5f3ff,#fff)] p-[15px] text-violet-700 shadow-[0_10px_26px_rgb(15_23_42/7%)]">
             <span>结余</span><br/>
             {summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}
           </div>

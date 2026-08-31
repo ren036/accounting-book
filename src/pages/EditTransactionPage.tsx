@@ -1,4 +1,4 @@
-import { Button, Toast } from 'antd-mobile'
+import { AutoCenter, Button, Toast } from 'antd-mobile'
 import { TransactionForm } from '../components/TransactionForm'
 import type { EditableTransactionFields, Transaction } from '../domain/transaction'
 import { updateTransaction } from '../domain/transaction'
@@ -24,7 +24,8 @@ export function EditTransactionPage({ transaction, onCancel, onSaved }: EditTran
         <Button color="primary" fill="none" size='middle' aria-label="取消" onClick={onCancel}>
           取消
         </Button>
-        <h3>编辑账单</h3>
+        <AutoCenter>编辑账单</AutoCenter>
+
         <Button
 
           color="primary"

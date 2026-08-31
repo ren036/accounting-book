@@ -27,9 +27,9 @@ export function AmountInput({ value, onChange, autoFocus = false, showKeyboard =
     : 'min-h-[18px] text-sm font-medium text-gray-400'
 
   return (
-    <div className={`${fieldClass} gap-2.5`}>
+    <div className={`${fieldClass}`}>
       <label htmlFor="transaction-amount">金额</label>
-      <div className="grid gap-1.5 [&_input]:text-2xl [&_input]:font-bold">
+      <div className="[&_input]:text-xl [&_input]:font-bold">
         <input
           id="transaction-amount"
           autoFocus={autoFocus}

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Button, Dialog } from 'antd-mobile'
+import { AutoCenter, Button, Dialog } from 'antd-mobile'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
 import { clearTransactions, listTransactions, saveTransactions } from '../lib/db'
@@ -83,8 +83,8 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   return (
-    <section className={`${pageClass} [&>h1]:my-[8px_18px]`}>
-      <h1>设置</h1>
+    <section className={`${pageClass}`}>
+       <AutoCenter className='text-xl mb-2 '>设置</AutoCenter>
       <div className={`${cardClass} grid gap-4`}>
         <div>
           <strong>{storageMode.label}</strong>

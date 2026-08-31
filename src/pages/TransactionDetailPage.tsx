@@ -1,4 +1,4 @@
-import { Button, Dialog } from 'antd-mobile'
+import { AutoCenter, Button, Dialog } from 'antd-mobile'
 import { CategoryEmoji } from '../components/CategoryEmoji'
 import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
@@ -33,7 +33,7 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
         <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
           <LeftOutline fontSize={22} color='black' scale={2.2} />
         </Button>
-        <h3>账单详情</h3>
+        <AutoCenter>账单详情</AutoCenter>
         <Button color="danger" fill="none" size="middle" aria-label="删除账单" onClick={handleDelete}>
           <DeleteOutline fontSize={22} />
         </Button>
@@ -51,7 +51,7 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
           <small>{isIncome ? '收入' : '支出'}</small>
         </div>
 
-        <dl className="m-0 grid gap-0 [&>div]:grid [&>div]:grid-cols-[auto_minmax(0,1fr)] [&>div]:gap-6 [&>div]:border-t [&>div]:border-gray-200 [&>div]:py-3.5 [&_dt]:text-gray-500 [&_dd]:m-0 [&_dd]:text-right [&_dd]:[overflow-wrap:anywhere]">
+        <dl className="m-0 grid gap-0 [&>div]:grid [&>div]:grid-cols-[auto_minmax(0,1fr)] [&>div]:gap-6 [&>div]:border-t [&>div]:border-gray-200 [&>div]:py-3.5 [&_dd]:text-right">
           <div><dt>日期</dt><dd>{transaction.occurredAt.slice(0, 10)}</dd></div>
           <div><dt>备注</dt><dd>{note ?? '无备注'}</dd></div>
         </dl>
