@@ -19,7 +19,7 @@ const items: Array<{ key: PageKey; label: string, icon: JSX.Element }> = [
 export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
     <TabBar
-      className="fixed inset-x-0 bottom-0 p-2 shadow-[0_16px_40px_rgb(15_23_42/18%)]"
+      className="fixed inset-x-0 bottom-0 p-2 pb-4 shadow-[0_16px_40px_rgb(15_23_42/18%)]"
       activeKey={currentPage}
       aria-label="底部导航"
       onChange={(key) => onChange(key as PageKey)}
