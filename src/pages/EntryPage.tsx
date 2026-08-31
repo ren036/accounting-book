@@ -22,7 +22,7 @@ export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
         <Button color="primary" fill="none" size="middle" aria-label="取消" onClick={onCancel}>
           取消
         </Button>
-        <AutoCenter>记一笔</AutoCenter>
+        <AutoCenter className="text-lg">记一笔</AutoCenter>
         <Button
 
           color="primary"

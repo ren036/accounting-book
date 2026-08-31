@@ -24,7 +24,7 @@ export function EditTransactionPage({ transaction, onCancel, onSaved }: EditTran
         <Button color="primary" fill="none" size='middle' aria-label="取消" onClick={onCancel}>
           取消
         </Button>
-        <AutoCenter>编辑账单</AutoCenter>
+        <AutoCenter className="text-lg">编辑账单</AutoCenter>
 
         <Button
 

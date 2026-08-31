@@ -33,7 +33,7 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
         <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
           <LeftOutline fontSize={22} color='black' scale={2.2} />
         </Button>
-        <AutoCenter>账单详情</AutoCenter>
+        <AutoCenter className="text-lg">账单详情</AutoCenter>
         <Button color="danger" fill="none" size="middle" aria-label="删除账单" onClick={handleDelete}>
           <DeleteOutline fontSize={22} />
         </Button>
