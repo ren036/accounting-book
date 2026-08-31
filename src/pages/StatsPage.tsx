@@ -82,7 +82,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         ) : (
           <div className="grid gap-2.5">
             {months.map((month) => (
-              <button className="grid w-full grid-cols-[56px_repeat(3,1fr)] items-center gap-2.5 rounded-[18px] border-0 bg-white/90 p-3.5 text-left text-inherit [&>div]:grid [&>div]:gap-1 [&_span]:text-xs [&_span]:text-gray-500 [&_b]:text-[15px]" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
+              <button className="grid w-full grid-cols-[56px_repeat(3,1fr)] items-center gap-2.5 rounded-[18px] border-0 bg-white/90 p-3.5 text-left text-[14px] text-inherit [&>div]:grid [&>div]:gap-1 [&_span]:text-[11px] [&_span]:text-gray-500 [&_b]:text-[13px]" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
                 <strong>{month.label}</strong>
                 <div>
                   <span>收入</span>
