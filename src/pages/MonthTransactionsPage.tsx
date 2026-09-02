@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { TransactionSearch } from '../components/TransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
-import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
+import { CategoryChart } from '../components/StatisticsCharts'
+import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeCategoriesByPrefix, summarizeMonth } from '../domain/summary'
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
@@ -24,6 +25,7 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
     filterMonthTransactionsByType(transactions, month, activeType),
     searchQuery
   )
+  const categories = summarizeCategoriesByPrefix(filteredTransactions, month, activeType)
   const groups = groupMonthTransactionsByDay(filteredTransactions, month)
   const label = `${Number(month.slice(5, 7))}月账单`
   const emptyText = searchQuery.trim()
@@ -65,6 +67,12 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
       </div>
 
       <section className={`${fixedListContentClass} grid content-start gap-2.5`}>
+        <CategoryChart
+          categories={categories}
+          eyebrow="月度构成"
+          title={`${activeType === 'expense' ? '支出' : '收入'}分类`}
+          totalLabel={`总${activeType === 'expense' ? '支出' : '收入'}`}
+        />
         {groups.length === 0 ? (
           <p className={emptyClass}>{emptyText}</p>
         ) : (

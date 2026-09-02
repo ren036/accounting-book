@@ -28,11 +28,25 @@ export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) 
 }
 
 export function ExpenseCategoryChart({ categories }: { categories: CategorySummary[] }) {
+  return <CategoryChart categories={categories} eyebrow="消费构成" title="支出分类" totalLabel="总支出" />
+}
+
+export function CategoryChart({
+  categories,
+  eyebrow,
+  title,
+  totalLabel,
+}: {
+  categories: CategorySummary[]
+  eyebrow: string
+  title: string
+  totalLabel: string
+}) {
   const data = groupSmallCategories(categories)
   const total = data.reduce((sum, item) => sum + item.amount, 0)
 
   return (
-    <ChartCard eyebrow="消费构成" title="支出分类">
+    <ChartCard eyebrow={eyebrow} title={title}>
       {total === 0 ? <EmptyChart /> : (
         <div className="grid grid-cols-[minmax(0,1fr)_112px] items-center gap-2">
           <div className="relative h-48 min-w-0">
@@ -45,7 +59,7 @@ export function ExpenseCategoryChart({ categories }: { categories: CategorySumma
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xs text-[var(--book-muted)]">总支出</span>
+              <span className="text-xs text-[var(--book-muted)]">{totalLabel}</span>
               <strong className="mt-1 text-lg">¥{compactMoney(total)}</strong>
             </div>
           </div>
@@ -54,7 +68,9 @@ export function ExpenseCategoryChart({ categories }: { categories: CategorySumma
               <div key={item.category} className="grid grid-cols-[8px_minmax(0,1fr)] items-center gap-x-2 text-xs">
                 <i className="size-2 rounded-full" style={{ background: colors[index % colors.length] }} />
                 <span className="flex min-w-0 items-center gap-1 truncate"><CategoryEmoji category={item.category} size={14} />{item.category}</span>
-                <span className="col-start-2 text-[10px] text-[var(--book-muted)]">{Math.round(item.amount / total * 100)}%</span>
+                <span className="col-start-2 text-[10px] text-[var(--book-muted)]">
+                  {Math.round(item.amount / total * 100)}% · ¥{formatMoney(item.amount)}
+                </span>
               </div>
             ))}
           </div>
