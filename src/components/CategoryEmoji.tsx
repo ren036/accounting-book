@@ -7,7 +7,7 @@ import {
 type CategoryVisual = { icon: LucideIcon; color: string; background: string }
 type CategoryEmojiProps = { category: string; size?: number }
 
-const fallback: CategoryVisual = { icon: CircleEllipsis, color: '#737b76', background: '#f1f3f1' }
+const fallback: CategoryVisual = { icon: CircleEllipsis, color: '#6f727c', background: '#f0f1f4' }
 
 const visuals: Record<string, CategoryVisual> = {
   餐饮: { icon: Utensils, color: '#f97316', background: '#fff2e8' },

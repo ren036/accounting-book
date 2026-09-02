@@ -1,25 +1,28 @@
 @import "tailwindcss";
 
 :root:root {
-  --adm-color-primary: #07c160;
-  --adm-color-success: #07c160;
-  --adm-color-background: #f6f7f6;
-  --adm-color-box: #f6f7f6;
-  --adm-color-text: #1f2320;
-  --adm-color-text-secondary: #646b66;
-  --adm-color-weak: #969c98;
-  --adm-color-border: #edf0ed;
-  --book-green: #07c160;
-  --book-green-dark: #059b4d;
-  --book-green-soft: #e9f9ef;
-  --book-bg: #f6f7f6;
-  --book-card: #fff;
-  --book-text: #1f2320;
-  --book-muted: #8a918c;
-  --book-expense: #ff7a45;
+  --adm-color-primary: #16a574;
+  --adm-color-success: #16a574;
+  --adm-color-background: #f7f9f7;
+  --adm-color-box: #ffffff;
+  --adm-color-text: #20231f;
+  --adm-color-text-secondary: #666c67;
+  --adm-color-weak: #989e99;
+  --adm-color-border: #e7ebe7;
+  --book-green: #16a574;
+  --book-green-dark: #10875f;
+  --book-green-soft: #e5f7ef;
+  --book-bg: #f7f9f7;
+  --book-card: #ffffff;
+  --book-text: #20231f;
+  --book-muted: #747b75;
+  --book-income: #168c67;
+  --book-expense: #df626d;
+  --book-border: #e7ebe7;
+  --book-ink: #20332c;
   --book-radius-card: 20px;
   --book-radius-control: 14px;
-  --book-shadow-card: 0 6px 24px rgb(31 35 32 / 5%);
+  --book-shadow-card: 0 10px 30px rgb(38 68 55 / 6%);
 }
 
 html, body, #root { min-height: 100%; background: var(--book-bg); }

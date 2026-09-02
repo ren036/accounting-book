@@ -84,19 +84,19 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
   return (
     <section className={`${pageClass} p-3`}>
-       <AutoCenter className='text-xl mb-2 '>设置</AutoCenter>
+      <AutoCenter className="mb-2 text-xl">设置</AutoCenter>
       <div className={`${cardClass} grid gap-4`}>
         <div>
           <strong>{storageMode.label}</strong>
-          <p className="text-gray-500">{storageMode.description}</p>
+          <p className="text-[var(--book-muted)]">{storageMode.description}</p>
         </div>
 
-        <hr className="w-full border-0 border-t border-gray-200" />
+        <hr className="w-full border-0 border-t border-[var(--book-border)]" />
 
-        <Button color='primary' type="button" shape='rounded' onClick={handleJsonExport}>
+        <Button color="primary" type="button" shape="rounded" onClick={handleJsonExport}>
           导出 JSON
         </Button>
-        <Button color='primary' type="button" shape='rounded' onClick={handleExcelExport}>
+        <Button color='primary' fill='solid' className="!bg-[#5b8def]" type="button" shape="rounded" onClick={handleExcelExport}>
           导出 Excel
         </Button>
         <label className={fieldClass}>
@@ -108,14 +108,15 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
             onChange={handleImportFileChange}
           />
         </label>
-        <Button color='primary' type="button" shape='rounded' onClick={handleImport} disabled={!selectedImportFile || isImporting}>
-          {isImporting ? '导入中...' : '导入'}</Button>
+        <Button color="primary" type="button" shape="rounded" onClick={handleImport} disabled={!selectedImportFile || isImporting}>
+          {isImporting ? '导入中...' : '导入'}
+        </Button>
 
-        <Button color='danger' type="button" shape='rounded' onClick={handleClearAll}>
+        <Button className="!border-[#f4cdd2] !bg-[#fff1f2] !text-[#c74f5b]" type="button" shape="rounded" onClick={handleClearAll}>
           清空全部数据
         </Button>
 
-        {message && <p className="m-0 text-blue-600">{message}</p>}
+        {message && <p className="m-0 text-[#4f6fae]">{message}</p>}
       </div>
     </section>
   )

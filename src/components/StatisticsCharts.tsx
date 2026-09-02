@@ -3,7 +3,7 @@ import type { CategorySummary, MonthDetailSummary } from '../domain/summary'
 import { formatMoney } from '../lib/money'
 import { CategoryEmoji } from './CategoryEmoji'
 
-const colors = ['#07c160', '#ff9f43', '#5b8ff9', '#8b5cf6', '#ec4899', '#94a3b8']
+const colors = ['#16a574', '#5b8def', '#f0a94a', '#8b74d6', '#e36f87', '#50a6b2']
 
 export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) {
   const data = [...months].reverse().map((month) => ({ name: `${Number(month.month.slice(5))}月`, income: month.income, expense: month.expense }))
@@ -14,11 +14,11 @@ export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) 
         <div className="h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 10, right: 8, bottom: 0, left: -20 }}>
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#969c98', fontSize: 11 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#969c98', fontSize: 10 }} width={48} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#747782', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#747782', fontSize: 10 }} width={48} />
               <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
-              <Line type="monotone" dataKey="income" name="收入" stroke="#07c160" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-              <Line type="monotone" dataKey="expense" name="支出" stroke="#ff7a45" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+              <Line type="monotone" dataKey="income" name="收入" stroke="#16a574" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+              <Line type="monotone" dataKey="expense" name="支出" stroke="#df626d" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -47,7 +47,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-green)] shadow-[var(--book-shadow-card)]">
+          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-income)] shadow-[var(--book-shadow-card)]">
             <span>总收入</span><br/>
             {formatMoney(summary.income)}
           </div>
