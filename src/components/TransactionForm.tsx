@@ -114,7 +114,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
         <label className={`${fieldClass} scroll-mb-4`}>
           <span>日期</span>
           <input
-            className="w-full"
+            // className="w-full"
             type="date"
             value={occurredAt}
             max={maxDate}

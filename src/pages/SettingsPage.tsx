@@ -7,6 +7,15 @@ import { downloadBlob } from '../lib/download'
 import { getStorageMode } from '../lib/storageMode'
 import { cardClass, fieldClass, pageClass } from '../ui/classes'
 
+const versionUpdatedAt = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false
+}).format(new Date(__APP_BUILD_TIME__))
+
 type SettingsPageProps = {
   onChanged: () => Promise<void>
 }
@@ -117,6 +126,10 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
         </Button>
 
         {message && <p className="m-0 text-[#4f6fae]">{message}</p>}
+
+        <p className="m-0 text-center text-xs text-[var(--book-muted)]">
+          版本 v{__APP_VERSION__} · 更新于 {versionUpdatedAt}
+        </p>
       </div>
     </section>
   )
