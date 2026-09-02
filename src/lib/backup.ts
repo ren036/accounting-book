@@ -40,6 +40,7 @@ export function parseBackup(content: string): Transaction[] {
       amount: transaction.amount,
       category: transaction.category,
       note: transaction.note,
-      occurredAt: transaction.occurredAt
+      occurredAt: transaction.occurredAt,
+      includeInBudget: transaction.type === 'expense' && transaction.includeInBudget !== false
     }))
 }

@@ -7,9 +7,10 @@ export type Transaction = {
   category: string
   note: string
   occurredAt: string
+  includeInBudget: boolean
 }
 
-export type EditableTransactionFields = Pick<Transaction, 'type' | 'amount' | 'category' | 'note' | 'occurredAt'>
+export type EditableTransactionFields = Pick<Transaction, 'type' | 'amount' | 'category' | 'note' | 'occurredAt' | 'includeInBudget'>
 
 export function updateTransaction(
   transaction: Transaction,

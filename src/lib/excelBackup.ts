@@ -12,14 +12,15 @@ const readableHeaders = ['日期', '类型', '金额', '分类', '备注']
 export function serializeExcelBackup(transactions: Transaction[]): ArrayBuffer {
   const workbook = XLSX.utils.book_new()
   const worksheet = XLSX.utils.aoa_to_sheet([
-    exportedHeaders,
+    [...exportedHeaders, 'includeInBudget'],
     ...transactions.map((transaction) => [
       transaction.id,
       transaction.type,
       transaction.amount,
       transaction.category,
       transaction.note,
-      transaction.occurredAt
+      transaction.occurredAt,
+      transaction.includeInBudget
     ])
   ])
 
@@ -86,7 +87,7 @@ function parseExportedRow(row: unknown[]): Transaction | null {
 
   if (!id || !type || amount === null || !category || !isIsoDateTime(occurredAt)) return null
 
-  return { id, type, amount, category, note, occurredAt }
+  return { id, type, amount, category, note, occurredAt, includeInBudget: row[6] !== false && String(row[6]).toLowerCase() !== 'false' }
 }
 
 function parseReadableRow(row: unknown[]): Transaction | null {
@@ -103,7 +104,8 @@ function parseReadableRow(row: unknown[]): Transaction | null {
     amount,
     category: String(row[3] ?? '').trim() || '其他',
     note: String(row[4] ?? '').trim(),
-    occurredAt: `${date}T00:00:00.000Z`
+    occurredAt: `${date}T00:00:00.000Z`,
+    includeInBudget: type === 'expense'
   }
 }
 

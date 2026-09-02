@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { AutoCenter, Button, Dialog } from 'antd-mobile'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
-import { clearTransactions, listTransactions, saveTransactions } from '../lib/db'
+import { clearAllData, listTransactions, saveTransactions } from '../lib/db'
 import { downloadBlob } from '../lib/download'
 import { getStorageMode } from '../lib/storageMode'
 import { cardClass, fieldClass, pageClass } from '../ui/classes'
@@ -77,7 +77,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
     if (!confirmed) return
 
-    await clearTransactions()
+    await clearAllData()
     await onChanged()
     setMessage('已清空全部数据。')
   }

@@ -5,7 +5,7 @@ import { clampInputDateToMax, todayInputValue } from '../lib/dates'
 import { parseAmountExpression } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
-import { Toast } from 'antd-mobile'
+import { Switch, Toast } from 'antd-mobile'
 import { fieldClass } from '../ui/classes'
 
 type TransactionFormProps = {
@@ -21,6 +21,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
   const [category, setCategory] = useState(initialTransaction?.category ?? expenseCategories[0])
   const [note, setNote] = useState(initialTransaction?.note ?? '')
   const [occurredAt, setOccurredAt] = useState(initialTransaction?.occurredAt.slice(0, 10) ?? todayInputValue())
+  const [includeInBudget, setIncludeInBudget] = useState(initialTransaction ? initialTransaction.includeInBudget !== false : true)
   const [showAmountKeyboard, setShowAmountKeyboard] = useState(true)
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const focusedFieldRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
@@ -42,7 +43,8 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
       amount: Math.round(numericAmount * 100) / 100,
       category,
       note: note.trim(),
-      occurredAt: `${clampInputDateToMax(occurredAt, maxDate)}T00:00:00.000Z`
+      occurredAt: `${clampInputDateToMax(occurredAt, maxDate)}T00:00:00.000Z`,
+      includeInBudget: type === 'expense' && includeInBudget
     }
 
     await onSubmit(fields)
@@ -56,6 +58,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
   function handleTypeChange(nextType: TransactionType) {
     setType(nextType)
     setCategory(nextType === 'income' ? incomeCategories[0] : expenseCategories[0])
+    if (nextType === 'expense') setIncludeInBudget(true)
   }
 
   function showKeyboard() {
@@ -120,6 +123,16 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
             onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
           />
         </label>
+
+        {type === 'expense' && (
+          <label className={`${fieldClass} scroll-mb-4 grid-cols-[minmax(0,1fr)_auto] items-center`}>
+            <span>
+              <strong className="block">计入月度预算</strong>
+              <small className="mt-1 block text-[var(--book-muted)]">关闭后，这笔支出不会占用预算</small>
+            </span>
+            <Switch checked={includeInBudget} onChange={setIncludeInBudget} aria-label="计入月度预算" />
+          </label>
+        )}
 
         <label className={`${fieldClass} scroll-mb-4`}>
           <span>备注</span>

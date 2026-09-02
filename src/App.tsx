@@ -2,7 +2,9 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
-import { deleteTransaction, listTransactions } from './lib/db'
+import type { MonthlyBudget } from './domain/budget'
+import { deleteTransaction, getPreference, listBudgets, listTransactions, setPreference } from './lib/db'
+import { BudgetPage } from './pages/BudgetPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
@@ -26,12 +28,31 @@ export function App() {
 
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [budgets, setBudgets] = useState<MonthlyBudget[]>([])
+  const [balanceCardBackground, setBalanceCardBackground] = useState<string | null>(null)
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
   const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
   const [viewingStatsMonth, setViewingStatsMonth] = useState<string | null>(null)
 
   async function reloadTransactions() {
     setTransactions(await listTransactions())
+  }
+
+  async function reloadBudgets() {
+    setBudgets(await listBudgets())
+  }
+
+  async function reloadAllData() {
+    await Promise.all([
+      reloadTransactions(),
+      reloadBudgets(),
+      getPreference('balance-card-background').then(setBalanceCardBackground)
+    ])
+  }
+
+  async function handleBalanceCardBackgroundChange(value: string | null) {
+    await setPreference('balance-card-background', value)
+    setBalanceCardBackground(value)
   }
 
   async function handleDelete(id: string) {
@@ -63,7 +84,7 @@ export function App() {
   }
 
   useEffect(() => {
-    void reloadTransactions()
+    void reloadAllData()
   }, [])
 
   const editingTransaction = editingTransactionId
@@ -75,7 +96,7 @@ export function App() {
   const isTransactionFormPage = Boolean(editingTransaction) || (!viewingTransaction && currentPage === 'entry')
   const isFixedListPage = !editingTransaction
     && !viewingTransaction
-    && (currentPage === 'dashboard' || currentPage === 'stats')
+    && (currentPage === 'dashboard' || currentPage === 'budget' || currentPage === 'stats')
 
   return (
     <main
@@ -102,7 +123,16 @@ export function App() {
         />
       ) : (
         <>
-          {currentPage === 'dashboard' && <DashboardPage transactions={transactions} onOpen={setViewingTransactionId} />}
+          {currentPage === 'dashboard' && (
+            <DashboardPage
+              transactions={transactions}
+              budgets={budgets}
+              balanceCardBackground={balanceCardBackground}
+              onOpen={setViewingTransactionId}
+              onOpenBudget={() => applyNavigationState(switchMainTab('budget'))}
+              onBalanceCardBackgroundChange={handleBalanceCardBackgroundChange}
+            />
+          )}
           {currentPage === 'entry' && (
             <EntryPage
               viewportHeight={viewportHeight}
@@ -110,6 +140,7 @@ export function App() {
               onSaved={handleEntrySaved}
             />
           )}
+          {currentPage === 'budget' && <BudgetPage transactions={transactions} budgets={budgets} onChanged={reloadBudgets} />}
           {currentPage === 'stats' && viewingStatsMonth === null && (
             <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载统计...</p></section>}>
               <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
@@ -125,7 +156,7 @@ export function App() {
           )}
           {currentPage === 'settings' && (
             <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载设置...</p></section>}>
-              <SettingsPage onChanged={reloadTransactions} />
+              <SettingsPage onChanged={reloadAllData} />
             </Suspense>
           )}
         </>

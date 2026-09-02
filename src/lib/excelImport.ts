@@ -48,7 +48,8 @@ function parseExcelRow(row: unknown[]): Transaction | null {
     amount,
     category: String(row[6] ?? '').trim() || '其他',
     note: String(row[4] ?? '').trim(),
-    occurredAt: `${date}T00:00:00.000Z`
+    occurredAt: `${date}T00:00:00.000Z`,
+    includeInBudget: type === 'expense'
   }
 }
 
