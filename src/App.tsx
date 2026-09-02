@@ -79,7 +79,7 @@ export function App() {
 
   return (
     <main
-      className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'fixed inset-x-0 top-0 box-border min-h-0 w-full overflow-hidden' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
+      className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'relative box-border min-h-0 w-full overflow-hidden' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
       style={isTransactionFormPage ? { height: 'var(--dvh, 100dvh)', minHeight: 0 } : undefined}
     >
       {editingTransaction ? (

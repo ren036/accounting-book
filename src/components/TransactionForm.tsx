@@ -61,7 +61,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
   }
 
   return (
-    <form id={id} className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-3" onSubmit={handleSubmit}>
+    <form id={id} className="flex h-full min-h-0 flex-col gap-3 overflow-hidden" onSubmit={handleSubmit}>
       <div className="mx-auto grid w-44 grid-cols-2 rounded-full bg-neutral-200/70 p-1">
         {(['expense', 'income'] as const).map((item) => (
           <button key={item} type="button" onClick={() => handleTypeChange(item)} className={`h-9 rounded-full border-0 text-sm transition-colors ${type === item ? 'bg-white font-semibold text-[var(--book-green)] shadow-sm' : 'bg-transparent text-neutral-500'}`}>
@@ -70,12 +70,12 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         ))}
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pb-4 [&>*]:shrink-0">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pb-4 [&>*]:shrink-0">
         <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
-        <label className={fieldClass}>
+        <label className={`${fieldClass} scroll-mb-4`}>
           <span>日期</span>
           <input
             className="w-full"
@@ -87,14 +87,14 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
           />
         </label>
 
-        <label className={fieldClass}>
+        <label className={`${fieldClass} scroll-mb-4`}>
           <span>备注</span>
           <textarea value={note} onFocus={() => setShowAmountKeyboard(false)} onChange={(event) => setNote(event.target.value)} />
         </label>
       </div>
 
       {showAmountKeyboard && (
-        <div className="bg-white pb-[max(0px,env(safe-area-inset-bottom))]">
+        <div className="shrink-0 bg-white pb-[max(0px,env(safe-area-inset-bottom))]">
           <AmountKeyboard value={amount} onChange={setAmount} onSubmit={() => document.getElementById(id)?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))} />
         </div>
       )}
