@@ -96,7 +96,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
         <Button color="primary" type="button" shape="rounded" onClick={handleJsonExport}>
           导出 JSON
         </Button>
-        <Button color='primary' fill='solid' className="!bg-[#5b8def]" type="button" shape="rounded" onClick={handleExcelExport}>
+        <Button color='primary' fill='solid' className="!bg-[#5b8def] !border-[#5b8def]" type="button" shape="rounded" onClick={handleExcelExport}>
           导出 Excel
         </Button>
         <label className={fieldClass}>

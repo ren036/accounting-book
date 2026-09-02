@@ -35,8 +35,8 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
       <div className={fixedListHeaderClass}>
         <div className="flex items-center justify-between gap-3">
           <AutoCenter className="text-xl font-semibold">统计分析</AutoCenter>
-          <label className="flex-1">
-            <select className="w-full rounded-full border border-neutral-200 bg-white px-4 py-[9px] font-semibold text-[var(--book-green)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
+          <label>
+            <select className="w-[150px] rounded-full border border-neutral-200 bg-white px-4 py-[9px] font-semibold text-[var(--book-green)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
               {availableYears.map((item) => (
                 <option key={item} value={item}>
                   {item}年
