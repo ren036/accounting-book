@@ -28,3 +28,23 @@
 html, body, #root { min-height: 100%; background: var(--book-bg); }
 body { margin: 0; color: var(--book-text); -webkit-tap-highlight-color: transparent; }
 button { font: inherit; touch-action: manipulation; }
+
+.native-date-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.native-date-input::-webkit-date-and-time-value {
+  min-width: 0;
+  text-align: left;
+}
+
+.native-date-input::-webkit-datetime-edit {
+  min-width: 0;
+  padding: 0;
+}
