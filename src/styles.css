@@ -28,3 +28,21 @@
 html, body, #root { min-height: 100%; background: var(--book-bg); }
 body { margin: 0; color: var(--book-text); -webkit-tap-highlight-color: transparent; }
 button { font: inherit; touch-action: manipulation; }
+
+input[type='date'] {
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    min-width: 0;
+    max-width: 100%;
+    font-size: 16px;
+  }
+}

@@ -98,7 +98,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
 
   return (
     <form id={id} className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={handleSubmit}>
-      <div className="mx-auto my-3 grid w-44 shrink-0 grid-cols-2 rounded-full bg-neutral-200/70 p-1">
+      <div className="mx-auto my-2 grid w-44 shrink-0 grid-cols-2 rounded-full bg-neutral-200/70 p-1">
         {(['expense', 'income'] as const).map((item) => (
           <button key={item} type="button" onClick={() => handleTypeChange(item)} className={`h-9 rounded-full border-0 text-sm transition-colors ${type === item ? 'bg-white font-semibold text-[var(--book-green)] shadow-sm' : 'bg-transparent text-neutral-500'}`}>
             {item === 'expense' ? '支出' : '收入'}
@@ -106,7 +106,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
         ))}
       </div>
 
-      <div ref={scrollContainerRef} className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain px-3 pb-4 [&>*]:shrink-0">
+      <div ref={scrollContainerRef} className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain px-3 pb-4 [&>*]:shrink-0">
         <AmountInput value={amount} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
