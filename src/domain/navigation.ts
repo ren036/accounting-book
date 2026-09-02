@@ -21,11 +21,3 @@ export function finishCreatingTransaction(): AppNavigationState {
     viewingStatsMonth: null
   }
 }
-
-export function finishEditingTransaction(currentPage: PageKey): AppNavigationState {
-  return {
-    currentPage,
-    editingTransactionId: null,
-    viewingStatsMonth: null
-  }
-}

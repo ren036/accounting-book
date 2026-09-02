@@ -26,10 +26,6 @@ export function summarizeMonth(transactions: Transaction[], month: string): Mont
   return summarizeByDatePrefix(transactions, month)
 }
 
-export function summarizeExpenseCategories(transactions: Transaction[], month: string): CategorySummary[] {
-  return summarizeCategoriesByPrefix(transactions, month, 'expense')
-}
-
 export function summarizeCategoriesByPrefix(
   transactions: Transaction[],
   prefix: string,

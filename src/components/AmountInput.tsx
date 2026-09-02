@@ -1,12 +1,12 @@
 import { Check, ChevronDown, Delete } from 'lucide-react'
 import { parseAmountExpression } from '../lib/money'
 
-type AmountInputProps = { value: string; onChange: (value: string) => void; autoFocus?: boolean; showKeyboard?: boolean; onActivateKeyboard?: () => void }
-type AmountKeyboardProps = Pick<AmountInputProps, 'value' | 'onChange'> & { onSubmit?: () => void; onDismiss?: () => void }
+type AmountInputProps = { value: string; onActivateKeyboard: () => void }
+type AmountKeyboardProps = { value: string; onChange: (value: string) => void; onSubmit?: () => void; onDismiss?: () => void }
 
 const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace']
 
-export function AmountInput({ value, onChange, showKeyboard = true, onActivateKeyboard }: AmountInputProps) {
+export function AmountInput({ value, onActivateKeyboard }: AmountInputProps) {
   const calculated = parseAmountExpression(value)
   const hasExpression = /[+-]/.test(value)
 
@@ -24,7 +24,6 @@ export function AmountInput({ value, onChange, showKeyboard = true, onActivateKe
         </output>
       </div>
       {hasExpression && <p className="m-0 mt-2 text-right text-sm font-semibold text-[var(--book-green)]">{Number.isFinite(calculated) ? `= ${formatAmount(calculated)}` : '算式未完成'}</p>}
-      {showKeyboard && <AmountKeyboard value={value} onChange={onChange} />}
     </section>
   )
 }

@@ -104,7 +104,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
       </div>
 
       <div ref={scrollContainerRef} className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain px-3 pb-4 [&>*]:shrink-0">
-        <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} onActivateKeyboard={showKeyboard} />
+        <AmountInput value={amount} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 

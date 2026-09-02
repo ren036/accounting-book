@@ -7,8 +7,6 @@ import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 import { cardClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
-import { AutoCenter } from 'antd-mobile'
-
 type DashboardPageProps = {
   transactions: Transaction[]
   onOpen: (id: string) => void
