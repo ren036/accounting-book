@@ -32,11 +32,21 @@ export function AmountInput({ value, onChange, showKeyboard = true, onActivateKe
 export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountKeyboardProps) {
   function press(key: string) {
     if (key === 'backspace') return onChange(value.slice(0, -1))
+    if (key === 'equals') {
+      const calculated = parseAmountExpression(value)
+      if (Number.isFinite(calculated)) onChange(formatAmount(calculated))
+      return
+    }
     onChange(nextAmountExpression(value, key))
   }
 
   return (
-    <section className="bg-white pt-3" aria-label="金额键盘">
+    <section className="bg-white pt-1" aria-label="金额键盘">
+      {onDismiss && (
+        <button type="button" aria-label="收起数字键盘" onClick={onDismiss} className="h-4 w-full place-items-center">
+          <ChevronDown aria-hidden size={17} strokeWidth={2.2} />
+        </button>
+      )}
       <div className={`grid gap-2 ${onSubmit ? 'grid-cols-[3fr_1fr]' : ''}`}>
         <div className="grid grid-cols-3 gap-2">
           {keys.map((key) => (
@@ -46,14 +56,12 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
           ))}
         </div>
         {onSubmit && (
-          <div className={`grid min-h-0 gap-2 ${onDismiss ? 'grid-rows-[28px_1fr]' : 'grid-rows-1'}`}>
-            {onDismiss && (
-              <button type="button" aria-label="收起数字键盘" onClick={onDismiss} className="grid h-7 w-full place-items-center rounded-xl border-0 bg-neutral-100 text-neutral-500 active:bg-neutral-200">
-                <ChevronDown aria-hidden size={18} strokeWidth={2.2} />
-              </button>
-            )}
-            <button type="button" onClick={onSubmit} className="flex min-h-0 flex-col items-center justify-center gap-2 rounded-2xl border-0 bg-[var(--book-green)] font-semibold text-white transition active:scale-[.98] active:bg-[var(--book-green-dark)]">
-              <Check aria-hidden size={25} />完成
+          <div className="grid min-h-0 grid-rows-4 gap-2">
+            <button type="button" aria-label="输入加号" onClick={() => press('+')} className="grid min-h-0 place-items-center rounded-xl border-0 bg-[var(--book-green-soft)] text-2xl font-semibold text-[var(--book-green)] active:opacity-70">+</button>
+            <button type="button" aria-label="输入减号" onClick={() => press('-')} className="grid min-h-0 place-items-center rounded-xl border-0 bg-[var(--book-green-soft)] text-2xl font-semibold text-[var(--book-green)] active:opacity-70">−</button>
+            <button type="button" aria-label="计算金额" onClick={() => press('equals')} className="grid min-h-0 place-items-center rounded-xl border-0 bg-neutral-100 text-xl font-semibold text-neutral-700 active:bg-neutral-200">=</button>
+            <button type="button" onClick={onSubmit} className="flex min-h-12 items-center justify-center gap-1.5 rounded-2xl border-0 bg-[var(--book-green)] font-semibold text-white transition active:scale-[.98] active:bg-[var(--book-green-dark)]">
+              <Check aria-hidden size={19} />完成
             </button>
           </div>
         )}
