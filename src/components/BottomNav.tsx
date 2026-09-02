@@ -11,8 +11,8 @@ type BottomNavProps = {
 
 const items: Array<{ key: PageKey; label: string, icon: JSX.Element }> = [
   { key: 'dashboard', label: '首页' ,icon:<Home size={20} strokeWidth={2.2} />},
-  { key: 'entry', label: '记账' ,icon:<CirclePlus size={20} strokeWidth={2.2} />},
   { key: 'budget', label: '预算' ,icon:<PiggyBank size={20} strokeWidth={2.2} />},
+    { key: 'entry', label: '记账' ,icon:<CirclePlus size={20} strokeWidth={2.2} />},
   { key: 'stats', label: '统计' ,icon:<ChartPie size={20} strokeWidth={2.2} />},
   { key: 'settings', label: '设置' ,icon:<Settings size={20} strokeWidth={2.2} />}
 ]

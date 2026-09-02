@@ -12,9 +12,10 @@ type BudgetPageProps = {
   transactions: Transaction[]
   budgets: MonthlyBudget[]
   onChanged: () => Promise<void>
+  onOpenMonth: (month: string) => void
 }
 
-export function BudgetPage({ transactions, budgets, onChanged }: BudgetPageProps) {
+export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: BudgetPageProps) {
   const [month, setMonth] = useState(currentMonth())
   const activeBudget = useMemo(() => budgets.find((budget) => budget.month === month), [budgets, month])
   const [amount, setAmount] = useState('')
@@ -62,7 +63,7 @@ export function BudgetPage({ transactions, budgets, onChanged }: BudgetPageProps
           <input type="month" value={month} onChange={(event) => setMonth(event.target.value || currentMonth())} />
         </label>
 
-        <article className={`${cardClass} grid gap-4`}>
+        <button type="button" className={`${cardClass} grid w-full gap-4 text-left text-inherit`} onClick={() => onOpenMonth(month)} aria-label={`查看${month}月详细账单`}>
           <div className="flex items-end justify-between gap-3">
             <div>
               <span className="text-sm text-[var(--book-muted)]">{activeBudget ? '本月预算' : '尚未设置预算'}</span>
@@ -82,7 +83,8 @@ export function BudgetPage({ transactions, budgets, onChanged }: BudgetPageProps
             <div><span className="block text-[var(--book-muted)]">已计入支出</span><strong className="mt-1 block text-lg">{formatMoney(progress?.spent ?? 0)}</strong></div>
             <div><span className="block text-[var(--book-muted)]">{progress && progress.remaining < 0 ? '已超出' : '剩余'}</span><strong className={`mt-1 block text-lg ${progress && progress.remaining < 0 ? 'text-[var(--book-expense)]' : ''}`}>{formatMoney(Math.abs(progress?.remaining ?? 0))}</strong></div>
           </div>
-        </article>
+          <span className="text-right text-xs font-semibold text-[var(--book-green)]">查看本月详细账单 →</span>
+        </button>
 
         <form className={`${cardClass} grid gap-3`} onSubmit={handleSave}>
           <label className="grid gap-2">

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { TransactionSearch } from '../components/TransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { CategoryChart } from '../components/StatisticsCharts'
+import type { MonthlyBudget } from '../domain/budget'
+import { summarizeBudget } from '../domain/budget'
 import { filterMonthTransactionsByType, groupMonthTransactionsByDay, summarizeCategoriesByPrefix, summarizeMonth } from '../domain/summary'
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
@@ -13,14 +15,17 @@ import { cardClass, emptyClass, expenseClass, fixedListContentClass, fixedListHe
 type MonthTransactionsPageProps = {
   month: string
   transactions: Transaction[]
+  budget?: MonthlyBudget
   onBack: () => void
   onOpen: (id: string) => void
 }
 
-export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: MonthTransactionsPageProps) {
+export function MonthTransactionsPage({ month, transactions, budget, onBack, onOpen }: MonthTransactionsPageProps) {
   const [activeType, setActiveType] = useState<TransactionType>('expense')
   const [searchQuery, setSearchQuery] = useState('')
   const summary = summarizeMonth(transactions, month)
+  const budgetProgress = budget ? summarizeBudget(transactions, budget) : null
+  const budgetBarPercentage = budgetProgress ? Math.min(Math.max(budgetProgress.percentage, 0), 100) : 0
   const filteredTransactions = searchTransactions(
     filterMonthTransactionsByType(transactions, month, activeType),
     searchQuery
@@ -39,7 +44,7 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
           <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
             <LeftOutline fontSize={22} />
           </Button>
-          <AutoCenter>{label}</AutoCenter>
+          <AutoCenter className='text-lg'>{label}</AutoCenter>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
@@ -55,6 +60,26 @@ export function MonthTransactionsPage({ month, transactions, onBack, onOpen }: M
             <span>结余</span>
             <strong>{formatMoney(summary.balance)}</strong>
           </div>
+        </div>
+        <div className={`${cardClass} grid gap-3`}>
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <span className="text-sm text-[var(--book-muted)]">本月预算</span>
+              <strong className="mt-1 block text-xl">{budget ? formatMoney(budget.amount) : '未设置'}</strong>
+            </div>
+            {budgetProgress && <span className={budgetProgress.remaining < 0 ? expenseClass : incomeClass}>{budgetProgress.percentage.toFixed(0)}%</span>}
+          </div>
+          {budgetProgress && (
+            <>
+              <div className="h-2.5 overflow-hidden rounded-full bg-gray-100" aria-label="预算使用进度">
+                <div className={`h-full rounded-full ${budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${budgetBarPercentage}%` }} />
+              </div>
+              <div className="flex justify-between text-xs text-[var(--book-muted)]">
+                <span>已计入支出 {formatMoney(budgetProgress.spent)}</span>
+                <span>{budgetProgress.remaining < 0 ? '超出' : '剩余'} {formatMoney(Math.abs(budgetProgress.remaining))}</span>
+              </div>
+            </>
+          )}
         </div>
         <Segmented block className="w-full" options={[
           { label: '支出', value: 'expense' },

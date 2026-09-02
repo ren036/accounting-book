@@ -140,7 +140,10 @@ export function App() {
               onSaved={handleEntrySaved}
             />
           )}
-          {currentPage === 'budget' && <BudgetPage transactions={transactions} budgets={budgets} onChanged={reloadBudgets} />}
+          {currentPage === 'budget' && <BudgetPage transactions={transactions} budgets={budgets} onChanged={reloadBudgets} onOpenMonth={(month) => {
+            setCurrentPage('stats')
+            setViewingStatsMonth(month)
+          }} />}
           {currentPage === 'stats' && viewingStatsMonth === null && (
             <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载统计...</p></section>}>
               <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
@@ -150,6 +153,7 @@ export function App() {
             <MonthTransactionsPage
               month={viewingStatsMonth}
               transactions={transactions}
+              budget={budgets.find((budget) => budget.month === viewingStatsMonth)}
               onBack={() => setViewingStatsMonth(null)}
               onOpen={setViewingTransactionId}
             />

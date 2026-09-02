@@ -12,13 +12,17 @@ type TransactionRowProps = {
 export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
   const note = getTransactionNoteDisplay(transaction.note)
   const isIncome = transaction.type === 'income'
+  const isExcludedFromBudget = !isIncome && transaction.includeInBudget === false
 
   return (
-    <button className="grid w-full grid-cols-[1fr_auto_auto] items-center gap-3 rounded-[18px] border-0 bg-white/90 p-3.5 text-left text-inherit" type="button" onClick={() => onOpen(transaction.id)}>
+    <button className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 rounded-[18px] border p-3.5 text-left text-inherit ${isExcludedFromBudget ? 'border-amber-200 bg-amber-50/90' : 'border-transparent bg-white/90'}`} type="button" onClick={() => onOpen(transaction.id)}>
       <div className="inline-flex items-center gap-2 [&_p]:mt-1 [&_p]:mb-0 [&_p]:text-gray-500">
         <CategoryEmoji category={transaction.category} />
-        <div>
-          <strong>{transaction.category}</strong>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <strong>{transaction.category}</strong>
+            {isExcludedFromBudget && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">未计预算</span>}
+          </div>
           {note && <p>{note}</p>}
         </div>
       </div>
