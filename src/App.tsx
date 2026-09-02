@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { useDynamicViewport } from 'use-dynamic-viewport'
 import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
@@ -10,6 +9,7 @@ import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { emptyClass, pageClass } from './ui/classes'
+import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
@@ -22,7 +22,7 @@ const StatsPage = lazy(async () => {
 })
 
 export function App() {
-  const { isKeyboardOpen } = useDynamicViewport()
+  const { isKeyboardOpen, viewportHeight, offsetTop } = useKeyboardViewportFrame()
 
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -79,8 +79,12 @@ export function App() {
 
   return (
     <main
-      className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'relative box-border min-h-0 w-full overflow-hidden' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
-      style={isTransactionFormPage ? { height: 'var(--dvh, 100dvh)', minHeight: 0 } : undefined}
+      className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'fixed inset-x-0 box-border min-h-0 w-full overflow-hidden' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
+      style={isTransactionFormPage ? {
+        height: viewportHeight > 0 ? `${viewportHeight}px` : '100dvh',
+        minHeight: 0,
+        top: `${offsetTop}px`,
+      } : undefined}
     >
       {editingTransaction ? (
         <EditTransactionPage
