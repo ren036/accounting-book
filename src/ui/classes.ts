@@ -1,6 +1,6 @@
 export const pageClass = 'mx-auto w-full'
 
-export const cardClass = 'rounded-[22px] border border-white/70 bg-white/90 p-[18px] shadow-[0_12px_30px_rgb(15_23_42/8%)]'
+export const cardClass = 'rounded-[var(--book-radius-card)] bg-white p-[18px] shadow-[var(--book-shadow-card)]'
 
 export const pageTitleClass = 'grid grid-cols-[52px_minmax(0,1fr)_52px] items-center gap-3 [&>.adm-button]:w-full [&>.adm-button]:!px-0 [&_.adm-button-content]:whitespace-nowrap'
 
@@ -10,11 +10,10 @@ export const fixedListHeaderClass = 'grid gap-3.5'
 
 export const fixedListContentClass = 'min-h-0 overflow-y-auto overscroll-contain pb-1'
 
-export const fieldClass = 'grid gap-2 [&_input]:w-full [&_input]:rounded-[14px] [&_input]:border [&_input]:border-gray-300 [&_input]:bg-white [&_input]:p-3 [&_select]:w-full [&_select]:min-w-0 [&_select]:max-w-full [&_select]:rounded-[14px] [&_select]:border [&_select]:border-gray-300 [&_select]:bg-white [&_select]:p-3 [&_textarea]:min-h-[88px] [&_textarea]:w-full [&_textarea]:min-w-0 [&_textarea]:max-w-full [&_textarea]:resize-y [&_textarea]:rounded-[14px] [&_textarea]:border [&_textarea]:border-gray-300 [&_textarea]:bg-white [&_textarea]:p-3'
+export const fieldClass = 'grid gap-2 rounded-[var(--book-radius-card)] bg-white p-4 shadow-[var(--book-shadow-card)] [&_input]:w-full [&_input]:rounded-[var(--book-radius-control)] [&_input]:border [&_input]:border-neutral-200 [&_input]:bg-neutral-50 [&_input]:p-3 [&_textarea]:min-h-[72px] [&_textarea]:w-full [&_textarea]:resize-none [&_textarea]:rounded-[var(--book-radius-control)] [&_textarea]:border [&_textarea]:border-neutral-200 [&_textarea]:bg-neutral-50 [&_textarea]:p-3'
 
-export const incomeClass = 'text-emerald-600'
+export const incomeClass = 'text-[var(--book-green)]'
 
 export const expenseClass = 'text-red-600'
 
 export const emptyClass = 'text-gray-500'
-

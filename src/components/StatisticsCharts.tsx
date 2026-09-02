@@ -1,133 +1,78 @@
-import type { CSSProperties } from 'react'
-import { CategoryEmoji } from './CategoryEmoji'
+import { Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { CategorySummary, MonthDetailSummary } from '../domain/summary'
 import { formatMoney } from '../lib/money'
+import { CategoryEmoji } from './CategoryEmoji'
 
-type MonthlyTrendChartProps = {
-  months: MonthDetailSummary[]
-}
+const colors = ['#07c160', '#ff9f43', '#5b8ff9', '#8b5cf6', '#ec4899', '#94a3b8']
 
-export function MonthlyTrendChart({ months }: MonthlyTrendChartProps) {
-  const chronologicalMonths = [...months].reverse()
-  const maxAmount = Math.max(1, ...chronologicalMonths.flatMap((month) => [month.income, month.expense]))
+export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) {
+  const data = [...months].reverse().map((month) => ({ name: `${Number(month.month.slice(5))}月`, income: month.income, expense: month.expense }))
 
   return (
-    <section className="min-w-0 rounded-[22px] border border-white/80 bg-white/90 p-[18px] shadow-[0_12px_30px_rgb(15_23_42/7%)]" aria-labelledby="monthly-trend-title">
-      <div className="mb-4 flex items-start justify-between gap-3 [&_h2]:m-0 [&_h2]:text-lg">
-        <div>
-          <span className="mb-1 block text-[11px] font-extrabold tracking-[.12em] text-violet-600">年度走势</span>
-          <h2 id="monthly-trend-title">月度收支</h2>
+    <ChartCard eyebrow="年度走势" title="月度收支">
+      {data.length === 0 ? <EmptyChart /> : (
+        <div className="h-52 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 10, right: 8, bottom: 0, left: -20 }}>
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#969c98', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#969c98', fontSize: 10 }} width={48} />
+              <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
+              <Line type="monotone" dataKey="income" name="收入" stroke="#07c160" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+              <Line type="monotone" dataKey="expense" name="支出" stroke="#ff7a45" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-        <div className="flex gap-2.5 text-[11px] text-slate-500 [&>span]:inline-flex [&>span]:items-center [&>span]:gap-1" aria-label="图例">
-          <span><i className="h-[7px] w-[7px] rounded-full bg-[linear-gradient(180deg,#34d399,#059669)]" />收入</span>
-          <span><i className="h-[7px] w-[7px] rounded-full bg-[linear-gradient(180deg,#fb923c,#ea580c)]" />支出</span>
-        </div>
-      </div>
-
-      <div className="overflow-x-auto overscroll-x-contain pb-1">
-        <div className="grid h-[156px] min-w-[480px] grid-cols-12 items-end gap-1.5 bg-[repeating-linear-gradient(to_bottom,#e2e8f0_0_1px,transparent_1px_48px)] pt-1.5" role="img" aria-label="各月收入与支出柱状图">
-          {chronologicalMonths.map((month) => (
-            <div className="grid min-w-0 grid-rows-[126px_18px] items-end gap-1.5" key={month.month} title={`${month.label}：收入 ${formatMoney(month.income)}，支出 ${formatMoney(month.expense)}`}>
-              <div className="flex h-full items-end justify-center gap-[3px]">
-                <span
-                  className="h-[max(3px,var(--bar-height))] w-[min(9px,42%)] origin-bottom rounded-[5px_5px_2px_2px] bg-[linear-gradient(180deg,#34d399,#059669)]"
-                  style={{ '--bar-height': `${(month.income / maxAmount) * 100}%` } as CSSProperties}
-                />
-                <span
-                  className="h-[max(3px,var(--bar-height))] w-[min(9px,42%)] origin-bottom rounded-[5px_5px_2px_2px] bg-[linear-gradient(180deg,#fb923c,#ea580c)]"
-                  style={{ '--bar-height': `${(month.expense / maxAmount) * 100}%` } as CSSProperties}
-                />
-              </div>
-              <span className="overflow-hidden text-center text-[10px] whitespace-nowrap text-slate-400">{Number(month.month.slice(5))}月</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      )}
+    </ChartCard>
   )
 }
 
-type ExpenseCategoryChartProps = {
-  categories: CategorySummary[]
-}
-
-const categoryColors = ['#7c3aed', '#f97316', '#0ea5e9', '#10b981', '#f43f5e', '#94a3b8']
-
-export function ExpenseCategoryChart({ categories }: ExpenseCategoryChartProps) {
-  const displayCategories = groupSmallCategories(categories)
-  const total = displayCategories.reduce((sum, category) => sum + category.amount, 0)
-  const gradient = buildConicGradient(displayCategories, total)
+export function ExpenseCategoryChart({ categories }: { categories: CategorySummary[] }) {
+  const data = groupSmallCategories(categories)
+  const total = data.reduce((sum, item) => sum + item.amount, 0)
 
   return (
-    <section className="min-w-0 rounded-[22px] border border-white/80 bg-white/90 p-[18px] shadow-[0_12px_30px_rgb(15_23_42/7%)]" aria-labelledby="category-chart-title">
-      <div className="mb-4 flex items-start justify-between gap-3 [&_h2]:m-0 [&_h2]:text-lg">
-        <div>
-          <span className="mb-1 block text-[11px] font-extrabold tracking-[.12em] text-violet-600">消费构成</span>
-          <h2 id="category-chart-title">支出分类</h2>
-        </div>
-      </div>
-
-      {total === 0 ? (
-        <div className="grid min-h-[156px] place-items-center rounded-2xl bg-slate-50 text-[13px] text-slate-400">暂无支出数据</div>
-      ) : (
-        <div className="grid grid-cols-[116px_minmax(0,1fr)] items-center gap-[18px]">
-          <div
-            className="grid aspect-square w-[116px] place-items-center rounded-full shadow-[inset_0_0_0_1px_rgb(255_255_255/60%)]"
-            role="img"
-            aria-label={`总支出 ${formatMoney(total)}`}
-            style={{ background: gradient }}
-          >
-            <div className="grid aspect-square w-[70%] place-items-center rounded-full bg-white shadow-[0_5px_16px_rgb(15_23_42/10%)] [&>span]:self-end [&>span]:text-[10px] [&>span]:text-slate-400 [&>strong]:self-start [&>strong]:text-[15px]">
-              <span>总支出</span>
-              <strong>¥{compactMoney(total)}</strong>
+    <ChartCard eyebrow="消费构成" title="支出分类">
+      {total === 0 ? <EmptyChart /> : (
+        <div className="grid grid-cols-[minmax(0,1fr)_112px] items-center gap-2">
+          <div className="relative h-48 min-w-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={data} dataKey="amount" nameKey="category" innerRadius="58%" outerRadius="82%" paddingAngle={2} stroke="none">
+                  {data.map((item, index) => <Cell key={item.category} fill={colors[index % colors.length]} />)}
+                </Pie>
+                <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-xs text-[var(--book-muted)]">总支出</span>
+              <strong className="mt-1 text-lg">¥{compactMoney(total)}</strong>
             </div>
           </div>
-          <div className="grid min-w-0 gap-[7px]">
-            {displayCategories.map((category, index) => (
-              <div className="grid grid-cols-[7px_minmax(60px,1fr)_auto] items-center gap-1.5 text-xs [&>i]:h-[7px] [&>i]:w-[7px] [&>i]:rounded-full [&>small]:col-[2/-1] [&>small]:text-[10px] [&>small]:text-slate-400" key={category.category}>
-                <i style={{ backgroundColor: categoryColors[index] }} />
-                <span className="truncate [&>span]:mr-1">
-                  {category.category !== '其他分类' && <CategoryEmoji category={category.category} />}
-                  {category.category}
-                </span>
-                <strong>{Math.round((category.amount / total) * 100)}%</strong>
-                <small>¥{formatMoney(category.amount)}</small>
+          <div className="grid gap-2">
+            {data.map((item, index) => (
+              <div key={item.category} className="grid grid-cols-[8px_minmax(0,1fr)] items-center gap-x-2 text-xs">
+                <i className="size-2 rounded-full" style={{ background: colors[index % colors.length] }} />
+                <span className="flex min-w-0 items-center gap-1 truncate"><CategoryEmoji category={item.category} size={14} />{item.category}</span>
+                <span className="col-start-2 text-[10px] text-[var(--book-muted)]">{Math.round(item.amount / total * 100)}%</span>
               </div>
             ))}
           </div>
         </div>
       )}
-    </section>
+    </ChartCard>
   )
 }
 
+function ChartCard({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
+  return <section className="min-w-0 rounded-[var(--book-radius-card)] bg-white p-[18px] shadow-[var(--book-shadow-card)]"><span className="mb-1 block text-[11px] font-bold tracking-[.12em] text-[var(--book-green)]">{eyebrow}</span><h2 className="m-0 mb-3 text-lg">{title}</h2>{children}</section>
+}
+
+function EmptyChart() { return <div className="grid min-h-48 place-items-center rounded-2xl bg-neutral-50 text-sm text-[var(--book-muted)]">暂无数据</div> }
+
 function groupSmallCategories(categories: CategorySummary[]): CategorySummary[] {
   if (categories.length <= 6) return categories
-
-  const leading = categories.slice(0, 5)
-  return [
-    ...leading,
-    {
-      category: '其他分类',
-      amount: categories.slice(5).reduce((sum, category) => sum + category.amount, 0)
-    }
-  ]
+  return [...categories.slice(0, 5), { category: '其他', amount: categories.slice(5).reduce((sum, item) => sum + item.amount, 0) }]
 }
 
-function buildConicGradient(categories: CategorySummary[], total: number): string {
-  if (total === 0) return '#e2e8f0'
-
-  let cursor = 0
-  const segments = categories.map((category, index) => {
-    const start = cursor
-    cursor += (category.amount / total) * 100
-    return `${categoryColors[index]} ${start}% ${cursor}%`
-  })
-
-  return `conic-gradient(${segments.join(', ')})`
-}
-
-function compactMoney(amount: number): string {
-  if (amount >= 10000) return `${(amount / 10000).toFixed(amount >= 100000 ? 0 : 1)}万`
-  return amount.toFixed(0)
-}
+function compactMoney(amount: number): string { return amount >= 10000 ? `${(amount / 10000).toFixed(amount >= 100000 ? 0 : 1)}万` : amount.toFixed(0) }

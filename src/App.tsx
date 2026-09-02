@@ -7,13 +7,17 @@ import { DashboardPage } from './pages/DashboardPage'
 import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
-import { StatsPage } from './pages/StatsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { emptyClass, pageClass } from './ui/classes'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
   return { default: module.SettingsPage }
+})
+
+const StatsPage = lazy(async () => {
+  const module = await import('./pages/StatsPage')
+  return { default: module.StatsPage }
 })
 
 export function App() {
@@ -71,7 +75,7 @@ export function App() {
     && (currentPage === 'dashboard' || currentPage === 'stats')
 
   return (
-    <main className={`min-h-dvh bg-[linear-gradient(180deg,#eef2ff_0%,#f9fafb_42%)] p-3 font-sans text-gray-900 ${isTransactionFormPage ? 'h-dvh min-h-0 w-full' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}>
+    <main className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'h-dvh min-h-0 w-full' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}>
       {editingTransaction ? (
         <EditTransactionPage
           transaction={editingTransaction}
@@ -95,7 +99,9 @@ export function App() {
             />
           )}
           {currentPage === 'stats' && viewingStatsMonth === null && (
-            <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
+            <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载统计...</p></section>}>
+              <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
+            </Suspense>
           )}
           {currentPage === 'stats' && viewingStatsMonth !== null && (
             <MonthTransactionsPage

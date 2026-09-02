@@ -34,9 +34,9 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     <section className={fixedListPageClass}>
       <div className={fixedListHeaderClass}>
         <div className="flex items-center justify-between gap-3">
-            <AutoCenter className='text-xl'>统计分析</AutoCenter>
+          <AutoCenter className="text-xl font-semibold">统计分析</AutoCenter>
           <label className="flex-1">
-            <select className="w-full px-4 rounded-full border border-violet-200 bg-white/90 py-[9px] font-extrabold text-violet-800" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
+            <select className="w-full rounded-full border border-neutral-200 bg-white px-4 py-[9px] font-semibold text-[var(--book-green)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
               {availableYears.map((item) => (
                 <option key={item} value={item}>
                   {item}年
@@ -47,15 +47,15 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-[22px] bg-[linear-gradient(145deg,#ecfdf5,#fff)] p-[15px] text-emerald-700 shadow-[0_10px_26px_rgb(15_23_42/7%)]">
+          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-green)] shadow-[var(--book-shadow-card)]">
             <span>总收入</span><br/>
             {formatMoney(summary.income)}
           </div>
-          <div className="rounded-[22px] bg-[linear-gradient(145deg,#fff7ed,#fff)] p-[15px] text-orange-700 shadow-[0_10px_26px_rgb(15_23_42/7%)]">
+          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-expense)] shadow-[var(--book-shadow-card)]">
             <span>总支出</span><br/>
             {formatMoney(summary.expense)}
           </div>
-          <div className="rounded-[22px] bg-[linear-gradient(145deg,#f5f3ff,#fff)] p-[15px] text-violet-700 shadow-[0_10px_26px_rgb(15_23_42/7%)]">
+          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-neutral-700 shadow-[var(--book-shadow-card)]">
             <span>结余</span><br/>
             {summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}
           </div>
@@ -72,7 +72,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
 
         <div className="mt-2 flex items-end justify-between gap-3 [&>span]:text-xs [&>span]:text-slate-400 [&_h2]:m-0">
           <div>
-            <span className="mb-1 block text-[11px] font-extrabold tracking-[.12em] text-violet-600">账目明细</span>
+            <span className="mb-1 block text-[11px] font-extrabold tracking-[.12em] text-[var(--book-green)]">账目明细</span>
             <h2>{hasSearchQuery ? '搜索结果' : '月度明细'}</h2>
           </div>
           <span>{months.length} 个月</span>
@@ -82,7 +82,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         ) : (
           <div className="grid gap-2.5">
             {months.map((month) => (
-              <button className="grid w-full grid-cols-[56px_repeat(3,1fr)] items-center gap-2.5 rounded-[18px] border-0 bg-white/90 p-3.5 text-left text-[14px] text-inherit [&>div]:grid [&>div]:gap-1 [&_span]:text-[11px] [&_span]:text-gray-500 [&_b]:text-[13px]" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
+              <button className="grid w-full grid-cols-[56px_repeat(3,1fr)] items-center gap-2.5 rounded-[18px] border-0 bg-white p-3.5 text-left text-[14px] text-inherit shadow-[var(--book-shadow-card)] [&>div]:grid [&>div]:gap-1 [&_span]:text-[11px] [&_span]:text-gray-500 [&_b]:text-[13px]" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
                 <strong>{month.label}</strong>
                 <div>
                   <span>收入</span>
