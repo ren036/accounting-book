@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
 import { clampInputDateToMax, todayInputValue } from '../lib/dates'
@@ -10,17 +10,20 @@ import { fieldClass } from '../ui/classes'
 
 type TransactionFormProps = {
   id?: string
+  viewportHeight?: number
   initialTransaction?: Transaction
   onSubmit: (fields: EditableTransactionFields) => Promise<void>
 }
 
-export function TransactionForm({ id = 'transaction-form', initialTransaction, onSubmit }: TransactionFormProps) {
+export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, initialTransaction, onSubmit }: TransactionFormProps) {
   const [type, setType] = useState<TransactionType>(initialTransaction?.type ?? 'expense')
   const [amount, setAmount] = useState(initialTransaction ? String(initialTransaction.amount) : '')
   const [category, setCategory] = useState(initialTransaction?.category ?? expenseCategories[0])
   const [note, setNote] = useState(initialTransaction?.note ?? '')
   const [occurredAt, setOccurredAt] = useState(initialTransaction?.occurredAt.slice(0, 10) ?? todayInputValue())
   const [showAmountKeyboard, setShowAmountKeyboard] = useState(true)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const focusedFieldRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
 
   const categories = type === 'income' ? incomeCategories : expenseCategories
   const maxDate = todayInputValue()
@@ -60,6 +63,36 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
     setShowAmountKeyboard(true)
   }
 
+  function handleNativeFieldFocus(event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    focusedFieldRef.current = event.currentTarget
+    setShowAmountKeyboard(false)
+  }
+
+  function handleNativeFieldBlur() {
+    focusedFieldRef.current = null
+  }
+
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    const field = focusedFieldRef.current
+    if (!container || !field || showAmountKeyboard) return
+
+    const animationFrame = requestAnimationFrame(() => {
+      const card = field.closest('label') ?? field
+      const containerRect = container.getBoundingClientRect()
+      const cardRect = card.getBoundingClientRect()
+      const edgeSpacing = 12
+
+      if (cardRect.bottom > containerRect.bottom - edgeSpacing) {
+        container.scrollTop += cardRect.bottom - containerRect.bottom + edgeSpacing
+      } else if (cardRect.top < containerRect.top + edgeSpacing) {
+        container.scrollTop -= containerRect.top - cardRect.top + edgeSpacing
+      }
+    })
+
+    return () => cancelAnimationFrame(animationFrame)
+  }, [showAmountKeyboard, viewportHeight])
+
   return (
     <form id={id} className="flex h-full min-h-0 flex-col gap-3 overflow-hidden" onSubmit={handleSubmit}>
       <div className="mx-auto grid w-44 grid-cols-2 rounded-full bg-neutral-200/70 p-1">
@@ -70,7 +103,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         ))}
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pb-4 [&>*]:shrink-0">
+      <div ref={scrollContainerRef} className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pb-4 [&>*]:shrink-0">
         <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
@@ -82,14 +115,15 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
             type="date"
             value={occurredAt}
             max={maxDate}
-            onFocus={() => setShowAmountKeyboard(false)}
+            onFocus={handleNativeFieldFocus}
+            onBlur={handleNativeFieldBlur}
             onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
           />
         </label>
 
         <label className={`${fieldClass} scroll-mb-4`}>
           <span>备注</span>
-          <textarea value={note} onFocus={() => setShowAmountKeyboard(false)} onChange={(event) => setNote(event.target.value)} />
+          <textarea value={note} onFocus={handleNativeFieldFocus} onBlur={handleNativeFieldBlur} onChange={(event) => setNote(event.target.value)} />
         </label>
       </div>
 

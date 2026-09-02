@@ -7,11 +7,12 @@ import { pageClass, pageTitleClass } from '../ui/classes'
 
 type EditTransactionPageProps = {
   transaction: Transaction
+  viewportHeight: number
   onCancel: () => void
   onSaved: () => Promise<void>
 }
 
-export function EditTransactionPage({ transaction, onCancel, onSaved }: EditTransactionPageProps) {
+export function EditTransactionPage({ transaction, viewportHeight, onCancel, onSaved }: EditTransactionPageProps) {
   async function handleSubmit(fields: EditableTransactionFields) {
     await saveTransaction(updateTransaction(transaction, fields))
     await onSaved()
@@ -40,6 +41,7 @@ export function EditTransactionPage({ transaction, onCancel, onSaved }: EditTran
       </div>
       <TransactionForm
         id="edit-transaction-form"
+        viewportHeight={viewportHeight}
         initialTransaction={transaction}
         onSubmit={handleSubmit}
       />

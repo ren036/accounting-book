@@ -5,11 +5,12 @@ import { saveTransaction } from '../lib/db'
 import { pageClass, pageTitleClass } from '../ui/classes'
 
 type EntryPageProps = {
+  viewportHeight: number
   onCancel: () => void
   onSaved: () => Promise<void>
 }
 
-export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
+export function EntryPage({ viewportHeight, onCancel, onSaved }: EntryPageProps) {
   async function handleSubmit(fields: EditableTransactionFields) {
     await saveTransaction({ id: crypto.randomUUID(), ...fields })
     await onSaved()
@@ -35,7 +36,7 @@ export function EntryPage({ onCancel, onSaved }: EntryPageProps) {
           保存
         </Button>
       </div>
-      <TransactionForm id="entry-transaction-form" onSubmit={handleSubmit} />
+      <TransactionForm id="entry-transaction-form" viewportHeight={viewportHeight} onSubmit={handleSubmit} />
     </section>
   )
 }

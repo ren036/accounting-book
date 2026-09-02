@@ -89,6 +89,7 @@ export function App() {
       {editingTransaction ? (
         <EditTransactionPage
           transaction={editingTransaction}
+          viewportHeight={viewportHeight}
           onCancel={() => setEditingTransactionId(null)}
           onSaved={handleEditSaved}
         />
@@ -104,6 +105,7 @@ export function App() {
           {currentPage === 'dashboard' && <DashboardPage transactions={transactions} onOpen={setViewingTransactionId} />}
           {currentPage === 'entry' && (
             <EntryPage
+              viewportHeight={viewportHeight}
               onCancel={() => applyNavigationState(finishCreatingTransaction())}
               onSaved={handleEntrySaved}
             />
