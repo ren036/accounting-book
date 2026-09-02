@@ -4,7 +4,7 @@ export const cardClass = 'rounded-[var(--book-radius-card)] bg-white p-[18px] sh
 
 export const pageTitleClass = 'grid grid-cols-[52px_minmax(0,1fr)_52px] items-center gap-3 [&>.adm-button]:w-full [&>.adm-button]:!px-0 [&_.adm-button-content]:whitespace-nowrap'
 
-export const fixedListPageClass = `${pageClass} grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-3.5`
+export const fixedListPageClass = `${pageClass} grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-3.5 px-3 pt-3`
 
 export const fixedListHeaderClass = 'grid gap-3.5'
 

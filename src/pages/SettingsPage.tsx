@@ -83,7 +83,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   return (
-    <section className={`${pageClass}`}>
+    <section className={`${pageClass} p-3`}>
        <AutoCenter className='text-xl mb-2 '>设置</AutoCenter>
       <div className={`${cardClass} grid gap-4`}>
         <div>

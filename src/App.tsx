@@ -79,7 +79,7 @@ export function App() {
 
   return (
     <main
-      className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'fixed inset-x-0 box-border min-h-0 w-full overflow-hidden' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
+      className={`min-h-dvh bg-[var(--book-bg)] font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'fixed inset-x-0 box-border min-h-0 w-full overflow-hidden pt-3' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
       style={isTransactionFormPage ? {
         height: viewportHeight > 0 ? `${viewportHeight}px` : '100dvh',
         minHeight: 0,

@@ -19,7 +19,7 @@ export function EntryPage({ viewportHeight, onCancel, onSaved }: EntryPageProps)
 
   return (
     <section className={`${pageClass} grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden`}>
-      <div className={pageTitleClass}>
+      <div className={`${pageTitleClass} px-3`}>
         <Button color="primary" fill="none" size="middle" aria-label="取消" onClick={onCancel}>
           取消
         </Button>

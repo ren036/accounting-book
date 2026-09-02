@@ -41,7 +41,7 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
   }
 
   return (
-    <section className="bg-white pt-1" aria-label="金额键盘">
+    <section className="bg-white p-3 pt-1" aria-label="金额键盘">
       {onDismiss && (
         <button type="button" aria-label="收起数字键盘" onClick={onDismiss} className="h-4 w-full place-items-center">
           <ChevronDown aria-hidden size={17} strokeWidth={2.2} />
