@@ -1,8 +1,8 @@
-import { Check, Delete } from 'lucide-react'
+import { Check, ChevronDown, Delete } from 'lucide-react'
 import { parseAmountExpression } from '../lib/money'
 
 type AmountInputProps = { value: string; onChange: (value: string) => void; autoFocus?: boolean; showKeyboard?: boolean; onActivateKeyboard?: () => void }
-type AmountKeyboardProps = Pick<AmountInputProps, 'value' | 'onChange'> & { onSubmit?: () => void }
+type AmountKeyboardProps = Pick<AmountInputProps, 'value' | 'onChange'> & { onSubmit?: () => void; onDismiss?: () => void }
 
 const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'backspace']
 
@@ -29,7 +29,7 @@ export function AmountInput({ value, onChange, showKeyboard = true, onActivateKe
   )
 }
 
-export function AmountKeyboard({ value, onChange, onSubmit }: AmountKeyboardProps) {
+export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountKeyboardProps) {
   function press(key: string) {
     if (key === 'backspace') return onChange(value.slice(0, -1))
     onChange(nextAmountExpression(value, key))
@@ -46,9 +46,16 @@ export function AmountKeyboard({ value, onChange, onSubmit }: AmountKeyboardProp
           ))}
         </div>
         {onSubmit && (
-          <button type="button" onClick={onSubmit} className="flex min-h-0 flex-col items-center justify-center gap-2 rounded-2xl border-0 bg-[var(--book-green)] font-semibold text-white transition active:scale-[.98] active:bg-[var(--book-green-dark)]">
-            <Check aria-hidden size={25} />完成
-          </button>
+          <div className={`grid min-h-0 gap-2 ${onDismiss ? 'grid-rows-[28px_1fr]' : 'grid-rows-1'}`}>
+            {onDismiss && (
+              <button type="button" aria-label="收起数字键盘" onClick={onDismiss} className="grid h-7 w-full place-items-center rounded-xl border-0 bg-neutral-100 text-neutral-500 active:bg-neutral-200">
+                <ChevronDown aria-hidden size={18} strokeWidth={2.2} />
+              </button>
+            )}
+            <button type="button" onClick={onSubmit} className="flex min-h-0 flex-col items-center justify-center gap-2 rounded-2xl border-0 bg-[var(--book-green)] font-semibold text-white transition active:scale-[.98] active:bg-[var(--book-green-dark)]">
+              <Check aria-hidden size={25} />完成
+            </button>
+          </div>
         )}
       </div>
     </section>

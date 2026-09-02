@@ -129,7 +129,12 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
 
       {showAmountKeyboard && (
         <div className="shrink-0 bg-white pb-[max(0px,env(safe-area-inset-bottom))]">
-          <AmountKeyboard value={amount} onChange={setAmount} onSubmit={() => document.getElementById(id)?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))} />
+          <AmountKeyboard
+            value={amount}
+            onChange={setAmount}
+            onDismiss={() => setShowAmountKeyboard(false)}
+            onSubmit={() => document.getElementById(id)?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))}
+          />
         </div>
       )}
     </form>
