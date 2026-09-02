@@ -22,7 +22,7 @@ const StatsPage = lazy(async () => {
 })
 
 export function App() {
-  useDynamicViewport()
+  const { isKeyboardOpen } = useDynamicViewport()
 
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -124,7 +124,7 @@ export function App() {
           )}
         </>
       )}
-      {!isTransactionFormPage && (
+      {!isTransactionFormPage && !isKeyboardOpen && (
         <BottomNav
           currentPage={currentPage}
           onChange={(page) => applyNavigationState(switchMainTab(page))}

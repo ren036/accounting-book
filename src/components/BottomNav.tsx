@@ -20,7 +20,6 @@ export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
     <TabBar
       className="fixed inset-x-0 bottom-0 border-t border-neutral-100 bg-white p-2 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-6px_24px_rgb(31_35_32/5%)]"
-      style={{ bottom: 'var(--keyboard-height, 0px)', transition: 'bottom 120ms ease-out' }}
       activeKey={currentPage}
       aria-label="底部导航"
       onChange={(key) => onChange(key as PageKey)}
