@@ -70,7 +70,7 @@ export function TransactionForm({ id = 'transaction-form', initialTransaction, o
         ))}
       </div>
 
-      <div className="grid content-start gap-3 overflow-y-auto overscroll-y-contain pb-2">
+      <div className="grid min-w-0 content-start gap-3 overflow-y-auto overflow-x-hidden overscroll-y-contain pb-2">
         <AmountInput value={amount} onChange={setAmount} autoFocus={!initialTransaction} showKeyboard={false} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
