@@ -63,6 +63,25 @@ export function App() {
     void reloadTransactions()
   }, [])
 
+  useEffect(() => {
+    const viewport = window.visualViewport
+
+    function syncVisualViewportHeight() {
+      const height = viewport?.height ?? window.innerHeight
+      document.documentElement.style.setProperty('--visual-viewport-height', `${height}px`)
+    }
+
+    syncVisualViewportHeight()
+    viewport?.addEventListener('resize', syncVisualViewportHeight)
+    window.addEventListener('resize', syncVisualViewportHeight)
+
+    return () => {
+      viewport?.removeEventListener('resize', syncVisualViewportHeight)
+      window.removeEventListener('resize', syncVisualViewportHeight)
+      document.documentElement.style.removeProperty('--visual-viewport-height')
+    }
+  }, [])
+
   const editingTransaction = editingTransactionId
     ? transactions.find((transaction) => transaction.id === editingTransactionId)
     : null
@@ -75,7 +94,10 @@ export function App() {
     && (currentPage === 'dashboard' || currentPage === 'stats')
 
   return (
-    <main className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'h-dvh min-h-0 w-full' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}>
+    <main
+      className={`min-h-dvh bg-[var(--book-bg)] p-3 font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'fixed inset-x-0 top-0 box-border min-h-0 w-full overflow-hidden' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
+      style={isTransactionFormPage ? { height: 'var(--visual-viewport-height, 100dvh)', minHeight: 0 } : undefined}
+    >
       {editingTransaction ? (
         <EditTransactionPage
           transaction={editingTransaction}
