@@ -25,6 +25,17 @@ export function currentYear(date = new Date()): string {
   return String(date.getFullYear())
 }
 
+export function shiftMonth(month: string, offset: number): string {
+  const match = /^(\d{4})-(\d{2})$/.exec(month)
+  const monthNumber = Number(match?.[2])
+  if (!match || monthNumber < 1 || monthNumber > 12) return month
+
+  const absoluteMonth = Number(match[1]) * 12 + monthNumber - 1 + offset
+  const year = Math.floor(absoluteMonth / 12)
+  const shiftedMonth = absoluteMonth - year * 12 + 1
+  return `${String(year).padStart(4, '0')}-${String(shiftedMonth).padStart(2, '0')}`
+}
+
 function formatLocalDate(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')

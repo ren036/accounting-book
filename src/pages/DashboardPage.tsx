@@ -78,8 +78,8 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   }
 
   return (
-    <section className={fixedListPageClass}>
-      <div className={fixedListHeaderClass}>
+    <section className={`${fixedListPageClass} !gap-2.5`}>
+      <div className={`${fixedListHeaderClass} !gap-2.5`}>
         <div
           className="relative flex min-h-[150px] flex-col overflow-hidden rounded-[28px] bg-[radial-gradient(circle_at_20%_0%,#4f46e5_0,transparent_34%)] bg-cover bg-center bg-gray-900 p-7 pb-4 text-white shadow-[0_18px_48px_rgb(17_24_39/24%)] [&>span]:text-gray-300 [&>strong]:block [&>strong]:text-[42px]"
           style={balanceCardBackground ? { backgroundImage: `linear-gradient(rgb(10 15 20 / 45%), rgb(10 15 20 / 62%)), url(${JSON.stringify(balanceCardBackground)})` } : undefined}
@@ -95,54 +95,44 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             <span className="!text-white">月支出：{formatMoney(summary.expense)}</span>
           </div>
         </div>
-        <div className="grid gap-3">
-          <article className={`${cardClass} flex w-full items-center gap-2 border-0`}>
-            <button type="button" className="flex min-w-0 flex-1 items-center justify-between gap-3 border-0 bg-transparent p-0 text-left text-inherit" onClick={onOpenSavings}>
-              <div className="flex min-w-0 items-center gap-2.5">
-                <span className="rounded-full bg-[var(--book-green-soft)] p-2 text-[var(--book-green)]"><Landmark size={20} /></span>
-                <div><strong className="block">我的储蓄</strong><span className="text-xs text-[var(--book-muted)]">通用储蓄与专项资金</span></div>
-              </div>
-              <strong className="whitespace-nowrap text-[var(--book-green)]">{privateMoney(totalSavings, savingsAmountsHidden)}</strong>
+        <div className="grid grid-cols-2 gap-2.5">
+          <article className={`${cardClass} relative min-w-0 !p-3 border-0`}>
+            <button type="button" className="grid w-full min-w-0 gap-2 border-0 bg-transparent p-0 text-left text-inherit" onClick={onOpenSavings}>
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="rounded-full bg-[var(--book-green-soft)] p-1.5 text-[var(--book-green)]"><Landmark size={17} /></span>
+                <strong className="min-w-0 flex-1 truncate text-sm">我的储蓄</strong>
+                <ArrowRight className="shrink-0 text-[var(--book-green)]" size={15} />
+              </span>
+              <strong className="truncate pr-8 text-lg text-[var(--book-green)]">{privateMoney(totalSavings, savingsAmountsHidden)}</strong>
+              <span className="truncate pr-8 text-[11px] text-[var(--book-muted)]">通用与专项资金</span>
             </button>
-            <button type="button" className="shrink-0 rounded-full border-0 bg-[var(--book-green-soft)] p-2 text-[var(--book-green)]" aria-label={savingsAmountsHidden ? '显示储蓄金额' : '隐藏储蓄金额'} onClick={() => void onSavingsAmountsHiddenChange(!savingsAmountsHidden)}>
-              {savingsAmountsHidden ? <Eye size={18} /> : <EyeOff size={18} />}
+            <button type="button" className="absolute bottom-2.5 right-2.5 grid size-7 place-items-center rounded-full border-0 bg-[var(--book-green-soft)] p-0 text-[var(--book-green)]" aria-label={savingsAmountsHidden ? '显示储蓄金额' : '隐藏储蓄金额'} onClick={() => void onSavingsAmountsHiddenChange(!savingsAmountsHidden)}>
+              {savingsAmountsHidden ? <Eye size={15} /> : <EyeOff size={15} />}
             </button>
-            <ArrowRight className="shrink-0 text-[var(--book-green)]" size={16} />
           </article>
-          <button type="button" className={`${cardClass} grid w-full gap-3 border-0 text-left`} onClick={onOpenBudget}>
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <span className="rounded-full bg-[var(--book-green-soft)] p-2 text-[var(--book-green)]"><PiggyBank size={20} /></span>
-                <div>
-                  <strong className="block">本月预算</strong>
-                  <span className="text-xs text-[var(--book-muted)]">{budget ? `日常消费 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</span>
-                </div>
-              </div>
-              <span className="flex items-center gap-1 text-sm text-[var(--book-green)]">{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}<ArrowRight size={16} /></span>
-            </div>
+          <button type="button" className={`${cardClass} grid min-w-0 w-full gap-2 !p-3 border-0 text-left`} onClick={onOpenBudget}>
+            <span className="flex min-w-0 items-center gap-2">
+              <span className="rounded-full bg-[var(--book-green-soft)] p-1.5 text-[var(--book-green)]"><PiggyBank size={17} /></span>
+              <strong className="min-w-0 flex-1 truncate text-sm">本月预算</strong>
+              <ArrowRight className="shrink-0 text-[var(--book-green)]" size={15} />
+            </span>
+            <strong className="truncate text-lg text-[var(--book-expense)]">{formatMoney(budgetProgress?.spent ?? dailyExpense)}</strong>
             {budgetProgress ? (
               <>
-                <div className="h-2.5 overflow-hidden rounded-full bg-gray-100">
+                <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
                   <div className={`h-full rounded-full transition-[width] ${budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${budgetBarPercentage}%` }} />
                 </div>
-                <div className="flex justify-between text-xs text-[var(--book-muted)]">
-                  <span>{budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
-                  <span>{month.replace('-', '年')}月</span>
-                </div>
+                <span className="truncate text-[11px] text-[var(--book-muted)]">已用 {budgetProgress.percentage.toFixed(0)}% · {budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
               </>
             ) : (
-              <div className="flex justify-between text-xs text-[var(--book-muted)]">
-                <span>本月日常消费</span>
-                <strong className="text-sm text-[var(--book-expense)]">{formatMoney(dailyExpense)}</strong>
-                <span>{month.replace('-', '年')}月</span>
-              </div>
+              <span className="truncate text-[11px] text-[var(--book-muted)]">日常消费 · 点击设置预算</span>
             )}
           </button>
         </div>
         <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
-      <section className={`${fixedListContentClass} grid content-start gap-3 [&>h2]:my-[8px_14px] [&>h2]:text-xl`}>
+      <section className={`${fixedListContentClass} grid content-start gap-3 [&>h2]:my-[4px_10px] [&>h2]:text-xl`}>
         <h2>当月账单详情</h2>
         {groups.length === 0 ? (
           <p className={emptyClass}>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</p>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { combineDateWithTime, formatOccurredAtForExport } from './dates'
+import { combineDateWithTime, formatOccurredAtForExport, shiftMonth } from './dates'
 
 describe('combineDateWithTime', () => {
   it('新建账单时使用当前时间', () => {
@@ -24,5 +24,17 @@ describe('formatOccurredAtForExport', () => {
 
   it('保留新数据的实际时间', () => {
     expect(formatOccurredAtForExport('2026-09-03 12:34:56')).toBe('2026-09-03 12:34:56')
+  })
+})
+
+describe('shiftMonth', () => {
+  it('可以切换到相邻月份', () => {
+    expect(shiftMonth('2026-09', -1)).toBe('2026-08')
+    expect(shiftMonth('2026-09', 1)).toBe('2026-10')
+  })
+
+  it('跨年切换时同步调整年份', () => {
+    expect(shiftMonth('2026-01', -1)).toBe('2025-12')
+    expect(shiftMonth('2026-12', 1)).toBe('2027-01')
   })
 })

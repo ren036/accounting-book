@@ -220,6 +220,7 @@ export function App() {
               transactions={transactions}
               budget={budgets.find((budget) => budget.month === viewingStatsMonth)}
               onBack={() => setViewingStatsMonth(null)}
+              onChangeMonth={setViewingStatsMonth}
               onOpen={setViewingTransactionId}
             />
           )}
