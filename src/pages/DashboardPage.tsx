@@ -132,8 +132,8 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
         <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
-      <section className={`${fixedListContentClass} grid content-start gap-3 [&>h2]:my-[4px_10px] [&>h2]:text-xl`}>
-        <h2>当月账单详情</h2>
+      <section className={`${fixedListContentClass} grid content-start gap-3`}>
+        <h3>当月账单详情</h3>
         {groups.length === 0 ? (
           <p className={emptyClass}>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</p>
         ) : (
