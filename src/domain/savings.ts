@@ -105,6 +105,15 @@ export function summarizeDisposable(
   }
 }
 
+export function calibrateOpeningDisposableBalance(
+  transactions: Transaction[],
+  movements: SavingsMovement[],
+  desiredBalance: number
+): number {
+  const activityBalance = summarizeDisposable(transactions, movements, 0).balance
+  return roundMoney(desiredBalance - activityBalance)
+}
+
 export function getGoalProgress(bucket: SavingsBucket, balance: number): number {
   if (!bucket.targetAmount || bucket.targetAmount <= 0) return 0
   return Math.max(0, balance / bucket.targetAmount * 100)

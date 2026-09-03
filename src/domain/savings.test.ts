@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Transaction } from './transaction'
 import type { SavingsMovement } from './savings'
-import { getBucketBalance, getSuggestedMonthlyDeposit, getTotalSavings, normalizeSavingsBucketStatus, summarizeDisposable, summarizeSavingsMonths } from './savings'
+import { calibrateOpeningDisposableBalance, getBucketBalance, getSuggestedMonthlyDeposit, getTotalSavings, normalizeSavingsBucketStatus, summarizeDisposable, summarizeSavingsMonths } from './savings'
 
 const transactions: Transaction[] = [
   { id: 'income', type: 'income', amount: 8000, category: '工资', note: '', occurredAt: '2026-08-01 09:00:00', includeInBudget: false },
@@ -40,6 +40,11 @@ describe('savings', () => {
   it('可支配余额会自然累积到下个月', () => {
     expect(summarizeDisposable(transactions, movements, 1000, '2026-09').balance).toBe(3500)
     expect(summarizeDisposable(transactions, movements, 1000).balance).toBe(4700)
+  })
+
+  it('可以按当前实际金额校准并抵消历史账单影响', () => {
+    const calibratedOpening = calibrateOpeningDisposableBalance(transactions, movements, 593)
+    expect(summarizeDisposable(transactions, movements, calibratedOpening).balance).toBe(593)
   })
 
   it('汇总月度储蓄趋势', () => {

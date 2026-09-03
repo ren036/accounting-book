@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Button, Dialog, Popup, Segmented, Toast } from 'antd-mobile'
 import { CheckCircle2, Landmark, Pencil, Plus, Target, Trash2 } from 'lucide-react'
 import {
+  calibrateOpeningDisposableBalance,
   getBucketBalance,
   getGoalProgress,
   getSuggestedMonthlyDeposit,
@@ -146,10 +147,11 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
   async function handleSaveOpening(event: React.FormEvent) {
     event.preventDefault()
     const value = Number(openingAmount)
-    if (!Number.isFinite(value)) return Toast.show({ content: '请输入正确的初始金额' })
-    await onOpeningBalanceChange(Math.round(value * 100) / 100)
+    if (!Number.isFinite(value)) return Toast.show({ content: '请输入正确的当前金额' })
+    const calibratedOpeningBalance = calibrateOpeningDisposableBalance(transactions, movements, Math.round(value * 100) / 100)
+    await onOpeningBalanceChange(calibratedOpeningBalance)
     setOpeningEditorOpen(false)
-    Toast.show({ content: '初始可支配余额已更新' })
+    Toast.show({ content: '当前可支配金额已校准' })
   }
 
   async function handleSaveMovement(event: React.FormEvent) {
@@ -195,12 +197,12 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
     <div className="grid gap-3 pb-3">
       <section className="grid grid-cols-2 gap-3">
         <button type="button" className={`${cardClass} text-left text-inherit`} onClick={() => {
-          setOpeningAmount(String(openingDisposableBalance))
+          setOpeningAmount(String(disposable.balance))
           setOpeningEditorOpen(true)
         }}>
           <span className="text-sm text-[var(--book-muted)]">当前可支配</span>
           <strong className={`mt-2 block text-2xl ${disposable.balance < 0 ? 'text-[var(--book-expense)]' : 'text-[var(--book-green)]'}`}>{privateMoney(disposable.balance, amountsHidden)}</strong>
-          <small className="mt-2 block text-[var(--book-muted)]">包含历月结转 · 点击设置初始余额</small>
+          <small className="mt-2 block text-[var(--book-muted)]">包含历月结转 · 点击校准金额</small>
         </button>
         <div className={cardClass}>
           <span className="text-sm text-[var(--book-muted)]">储蓄总额</span>
@@ -283,10 +285,10 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
 
       <Popup visible={openingEditorOpen} onMaskClick={() => setOpeningEditorOpen(false)} bodyStyle={{ borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
         <form className="grid gap-3 p-4 pb-[max(20px,env(safe-area-inset-bottom))]" onSubmit={handleSaveOpening}>
-          <strong className="text-lg">设置初始可支配余额</strong>
-          <p className="m-0 text-sm text-[var(--book-muted)]">填写开始使用记账本之前可以自由支配的钱，只需设置一次。</p>
-          <label className={fieldClass}><span>初始金额</span><input type="number" inputMode="decimal" step="0.01" value={openingAmount} onChange={(event) => setOpeningAmount(event.target.value)} /></label>
-          <Button color="primary" shape="rounded" type="submit">保存</Button>
+          <strong className="text-lg">校准当前可支配金额</strong>
+          <p className="m-0 text-sm text-[var(--book-muted)]">直接填写你现在实际可以自由支配的钱。系统会自动抵消历史账单的影响，之后继续随收支和储蓄变化。</p>
+          <label className={fieldClass}><span>当前实际金额</span><input type="number" inputMode="decimal" step="0.01" value={openingAmount} onChange={(event) => setOpeningAmount(event.target.value)} /></label>
+          <Button color="primary" shape="rounded" type="submit">确认校准</Button>
         </form>
       </Popup>
 
