@@ -22,6 +22,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Accidental Windows cache path copied into the repository
+/%SystemDrive%/
+
 # Test and tool caches
 coverage/
 .vite/
