@@ -9,13 +9,14 @@ import { formatMoney } from '../lib/money'
 import { cardClass, fieldClass, pageClass } from '../ui/classes'
 
 type BudgetPageProps = {
+  embedded?: boolean
   transactions: Transaction[]
   budgets: MonthlyBudget[]
   onChanged: () => Promise<void>
   onOpenMonth: (month: string) => void
 }
 
-export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: BudgetPageProps) {
+export function BudgetPage({ embedded = false, transactions, budgets, onChanged, onOpenMonth }: BudgetPageProps) {
   const [month, setMonth] = useState(currentMonth())
   const activeBudget = useMemo(() => budgets.find((budget) => budget.month === month), [budgets, month])
   const [amount, setAmount] = useState('')
@@ -54,8 +55,8 @@ export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: Bu
   }
 
   return (
-    <section className={`${pageClass} h-full overflow-y-auto p-3`}>
-      <AutoCenter className="mb-3 text-xl">月度预算</AutoCenter>
+    <section className={embedded ? '' : `${pageClass} h-full overflow-y-auto p-3`}>
+      {!embedded && <AutoCenter className="mb-3 text-xl">月度预算</AutoCenter>}
 
       <div className="grid gap-3">
         <label className={fieldClass}>
@@ -73,14 +74,11 @@ export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: Bu
           </div>
 
           <div className="h-3 overflow-hidden rounded-full bg-gray-100" aria-label="预算使用进度">
-            <div
-              className={`h-full rounded-full transition-[width] ${progress && progress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`}
-              style={{ width: `${barPercentage}%` }}
-            />
+            <div className={`h-full rounded-full transition-[width] ${progress && progress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${barPercentage}%` }} />
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div><span className="block text-[var(--book-muted)]">已计入支出</span><strong className="mt-1 block text-lg">{formatMoney(progress?.spent ?? 0)}</strong></div>
+            <div><span className="block text-[var(--book-muted)]">日常消费</span><strong className="mt-1 block text-lg">{formatMoney(progress?.spent ?? 0)}</strong></div>
             <div><span className="block text-[var(--book-muted)]">{progress && progress.remaining < 0 ? '已超出' : '剩余'}</span><strong className={`mt-1 block text-lg ${progress && progress.remaining < 0 ? 'text-[var(--book-expense)]' : ''}`}>{formatMoney(Math.abs(progress?.remaining ?? 0))}</strong></div>
           </div>
           <span className="text-right text-xs font-semibold text-[var(--book-green)]">查看本月详细账单 →</span>

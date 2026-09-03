@@ -16,6 +16,10 @@ describe('Excel backup', () => {
 
     expect(parseExcelBackup(serializeExcelBackup(transactions))).toEqual({
       transactions,
+      savingsBuckets: [],
+      savingsMovements: [],
+      openingDisposableBalance: 0,
+      includesSavingsData: true,
       skipped: 0
     })
   })
@@ -33,6 +37,10 @@ describe('Excel backup', () => {
 
     expect(parseExcelBackup(serializeExcelBackup(transactions))).toEqual({
       transactions: [{ ...transactions[0], occurredAt: '2026-09-01' }],
+      savingsBuckets: [],
+      savingsMovements: [],
+      openingDisposableBalance: 0,
+      includesSavingsData: true,
       skipped: 0
     })
   })
@@ -50,7 +58,19 @@ describe('Excel backup', () => {
 
     expect(parseExcelBackup(serializeExcelBackup(transactions))).toEqual({
       transactions: [{ ...transactions[0], occurredAt: '2026-08-25' }],
+      savingsBuckets: [],
+      savingsMovements: [],
+      openingDisposableBalance: 0,
+      includesSavingsData: true,
       skipped: 0
     })
   })
+
+  it('完整导出并恢复储蓄数据', () => {
+    const buckets = [{ id: 'goal', kind: 'goal' as const, name: '旅行', targetAmount: 5000, targetDate: '2026-12-31', createdAt: '2026-09-01', status: 'active' as const }]
+    const movements = [{ id: 'move', bucketId: 'goal', type: 'deposit' as const, amount: 300, occurredAt: '2026-09-02 10:00:00', note: '首笔' }]
+    const parsed = parseExcelBackup(serializeExcelBackup([], buckets, movements, 1200))
+    expect(parsed).toMatchObject({ savingsBuckets: buckets, savingsMovements: movements, openingDisposableBalance: 1200, includesSavingsData: true })
+  })
+
 })

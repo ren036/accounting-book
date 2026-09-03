@@ -3,8 +3,17 @@ import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
 import type { MonthlyBudget } from './domain/budget'
-import { deleteTransaction, getPreference, listBudgets, listTransactions, setPreference } from './lib/db'
-import { BudgetPage } from './pages/BudgetPage'
+import { getTotalSavings, summarizeDisposable, type SavingsBucket, type SavingsMovement } from './domain/savings'
+import {
+  deleteTransaction,
+  ensureGeneralSavingsBucket,
+  getPreference,
+  listBudgets,
+  listSavingsBuckets,
+  listSavingsMovements,
+  listTransactions,
+  setPreference
+} from './lib/db'
 import { DashboardPage } from './pages/DashboardPage'
 import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
@@ -12,6 +21,7 @@ import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { emptyClass, pageClass } from './ui/classes'
 import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
+import { FundsPage } from './pages/FundsPage'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
@@ -29,6 +39,11 @@ export function App() {
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [budgets, setBudgets] = useState<MonthlyBudget[]>([])
+  const [savingsBuckets, setSavingsBuckets] = useState<SavingsBucket[]>([])
+  const [savingsMovements, setSavingsMovements] = useState<SavingsMovement[]>([])
+  const [openingDisposableBalance, setOpeningDisposableBalance] = useState(0)
+  const [savingsAmountsHidden, setSavingsAmountsHidden] = useState(false)
+  const [fundsInitialTab, setFundsInitialTab] = useState<'budget' | 'savings'>('savings')
   const [balanceCardBackground, setBalanceCardBackground] = useState<string | null>(null)
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
   const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
@@ -36,6 +51,20 @@ export function App() {
 
   async function reloadTransactions() {
     setTransactions(await listTransactions())
+  }
+
+  async function reloadSavings() {
+    await ensureGeneralSavingsBucket()
+    const [buckets, movements, openingBalanceText, amountsHiddenText] = await Promise.all([
+      listSavingsBuckets(),
+      listSavingsMovements(),
+      getPreference('opening-disposable-balance'),
+      getPreference('savings-amounts-hidden')
+    ])
+    setSavingsBuckets(buckets)
+    setSavingsMovements(movements)
+    setOpeningDisposableBalance(Number(openingBalanceText ?? 0))
+    setSavingsAmountsHidden(amountsHiddenText === 'true')
   }
 
   async function reloadBudgets() {
@@ -46,8 +75,24 @@ export function App() {
     await Promise.all([
       reloadTransactions(),
       reloadBudgets(),
+      reloadSavings(),
       getPreference('balance-card-background').then(setBalanceCardBackground)
     ])
+  }
+
+  async function handleOpeningBalanceChange(value: number) {
+    await setPreference('opening-disposable-balance', String(value))
+    setOpeningDisposableBalance(value)
+  }
+
+  async function handleSavingsAmountsHiddenChange(value: boolean) {
+    await setPreference('savings-amounts-hidden', String(value))
+    setSavingsAmountsHidden(value)
+  }
+
+  function openFunds(tab: 'budget' | 'savings') {
+    setFundsInitialTab(tab)
+    applyNavigationState(switchMainTab('budget'))
   }
 
   async function handleBalanceCardBackgroundChange(value: string | null) {
@@ -97,6 +142,8 @@ export function App() {
   const isFixedListPage = !editingTransaction
     && !viewingTransaction
     && (currentPage === 'dashboard' || currentPage === 'budget' || currentPage === 'stats')
+  const disposableBalance = summarizeDisposable(transactions, savingsMovements, openingDisposableBalance).balance
+  const totalSavings = getTotalSavings(savingsMovements, savingsBuckets)
 
   return (
     <main
@@ -128,8 +175,13 @@ export function App() {
               transactions={transactions}
               budgets={budgets}
               balanceCardBackground={balanceCardBackground}
+              disposableBalance={disposableBalance}
+              totalSavings={totalSavings}
+              savingsAmountsHidden={savingsAmountsHidden}
               onOpen={setViewingTransactionId}
-              onOpenBudget={() => applyNavigationState(switchMainTab('budget'))}
+              onOpenBudget={() => openFunds('budget')}
+              onOpenSavings={() => openFunds('savings')}
+              onSavingsAmountsHiddenChange={handleSavingsAmountsHiddenChange}
               onBalanceCardBackgroundChange={handleBalanceCardBackgroundChange}
             />
           )}
@@ -140,10 +192,23 @@ export function App() {
               onSaved={handleEntrySaved}
             />
           )}
-          {currentPage === 'budget' && <BudgetPage transactions={transactions} budgets={budgets} onChanged={reloadBudgets} onOpenMonth={(month) => {
-            setCurrentPage('stats')
-            setViewingStatsMonth(month)
-          }} />}
+          {currentPage === 'budget' && <FundsPage
+            key={fundsInitialTab}
+            initialTab={fundsInitialTab}
+            transactions={transactions}
+            budgets={budgets}
+            savingsBuckets={savingsBuckets}
+            savingsMovements={savingsMovements}
+            openingDisposableBalance={openingDisposableBalance}
+            amountsHidden={savingsAmountsHidden}
+            onBudgetsChanged={reloadBudgets}
+            onSavingsChanged={reloadSavings}
+            onOpeningBalanceChange={handleOpeningBalanceChange}
+            onOpenMonth={(month) => {
+              setCurrentPage('stats')
+              setViewingStatsMonth(month)
+            }}
+          />}
           {currentPage === 'stats' && viewingStatsMonth === null && (
             <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载统计...</p></section>}>
               <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
@@ -168,7 +233,10 @@ export function App() {
       {!isTransactionFormPage && !isKeyboardOpen && (
         <BottomNav
           currentPage={currentPage}
-          onChange={(page) => applyNavigationState(switchMainTab(page))}
+          onChange={(page) => {
+            if (page === 'budget') setFundsInitialTab('savings')
+            applyNavigationState(switchMainTab(page))
+          }}
         />
       )}
     </main>

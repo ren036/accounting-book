@@ -5,7 +5,7 @@ import { CategoryEmoji } from './CategoryEmoji'
 
 const colors = ['#16a574', '#5b8def', '#f0a94a', '#8b74d6', '#e36f87', '#50a6b2']
 
-export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) {
+export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months: MonthDetailSummary[]; expenseLabel?: string }) {
   const data = [...months].reverse().map((month) => ({ name: `${Number(month.month.slice(5))}月`, income: month.income, expense: month.expense }))
 
   return (
@@ -18,7 +18,7 @@ export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) 
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#747782', fontSize: 10 }} width={48} />
               <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
               <Line type="monotone" dataKey="income" name="收入" stroke="#16a574" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-              <Line type="monotone" dataKey="expense" name="支出" stroke="#df626d" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+              <Line type="monotone" dataKey="expense" name={expenseLabel} stroke="#df626d" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -27,8 +27,8 @@ export function MonthlyTrendChart({ months }: { months: MonthDetailSummary[] }) 
   )
 }
 
-export function ExpenseCategoryChart({ categories }: { categories: CategorySummary[] }) {
-  return <CategoryChart categories={categories} eyebrow="消费构成" title="支出分类" totalLabel="总支出" />
+export function ExpenseCategoryChart({ categories, daily = false }: { categories: CategorySummary[]; daily?: boolean }) {
+  return <CategoryChart categories={categories} eyebrow="消费构成" title={daily ? '日常消费分类' : '支出分类'} totalLabel={daily ? '日常消费' : '总支出'} />
 }
 
 export function CategoryChart({

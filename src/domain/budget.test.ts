@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { summarizeBudget } from './budget'
+import { summarizeBudget, summarizeDailyExpense } from './budget'
 import type { Transaction } from './transaction'
 
 function expense(id: string, amount: number, includeInBudget: boolean, occurredAt = '2026-09-01T00:00:00.000Z'): Transaction {
@@ -28,5 +28,12 @@ describe('summarizeBudget', () => {
       remaining: -200,
       percentage: 120
     })
+  })
+
+  it('日常消费不包含非日常支出', () => {
+    expect(summarizeDailyExpense([
+      expense('daily', 30, true),
+      expense('special', 500, false)
+    ], '2026-09')).toBe(30)
   })
 })

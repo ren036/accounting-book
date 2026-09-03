@@ -33,7 +33,7 @@ export function searchTransactions(transactions: Transaction[], query: string): 
   if (terms.length === 0) return transactions
 
   return transactions.filter((transaction) => {
-    const typeLabel = transaction.type === 'income' ? '收入 income' : '支出 expense'
+    const typeLabel = transaction.type === 'income' ? '收入 income' : transaction.includeInBudget === false ? '支出 expense 非日常支出' : '支出 expense 日常消费'
     const searchableText = [
       transaction.category,
       transaction.note,

@@ -128,10 +128,10 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
         {type === 'expense' && (
           <label className={`${fieldClass} scroll-mb-4 grid-cols-[minmax(0,1fr)_auto] items-center`}>
             <span>
-              <strong className="block">计入月度预算</strong>
-              <small className="mt-1 block text-[var(--book-muted)]">关闭后，这笔支出不会占用预算</small>
+              <strong className="block">计入日常消费</strong>
+              <small className="mt-1 block text-[var(--book-muted)]">关闭后仍会记账并减少可支配金额，但不进入日常消费和预算</small>
             </span>
-            <Switch checked={includeInBudget} onChange={setIncludeInBudget} aria-label="计入月度预算" />
+            <Switch checked={includeInBudget} onChange={setIncludeInBudget} aria-label="计入日常消费" />
           </label>
         )}
 

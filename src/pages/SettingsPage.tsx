@@ -2,7 +2,17 @@ import { useRef, useState } from 'react'
 import { AutoCenter, Button, Dialog } from 'antd-mobile'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
-import { clearAllData, listTransactions, saveTransactions } from '../lib/db'
+import {
+  clearAllData,
+  getPreference,
+  listSavingsBuckets,
+  listSavingsMovements,
+  listTransactions,
+  saveSavingsBuckets,
+  saveSavingsMovements,
+  saveTransactions,
+  setPreference
+} from '../lib/db'
 import { downloadBlob } from '../lib/download'
 import { getStorageMode } from '../lib/storageMode'
 import { cardClass, fieldClass, pageClass } from '../ui/classes'
@@ -28,8 +38,15 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   const importInputRef = useRef<HTMLInputElement | null>(null)
 
   async function handleJsonExport() {
-    const transactions = await listTransactions()
-    const blob = new Blob([serializeBackup(transactions)], {
+    const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
+      listTransactions(), listSavingsBuckets(), listSavingsMovements(), getPreference('opening-disposable-balance')
+    ])
+    const blob = new Blob([serializeBackup({
+      transactions,
+      savingsBuckets,
+      savingsMovements,
+      openingDisposableBalance: Number(openingBalanceText ?? 0)
+    })], {
       type: 'application/json'
     })
 
@@ -38,8 +55,10 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
   async function handleExcelExport() {
     const { serializeExcelBackup } = await import('../lib/excelBackup')
-    const transactions = await listTransactions()
-    const blob = new Blob([serializeExcelBackup(transactions)], {
+    const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
+      listTransactions(), listSavingsBuckets(), listSavingsMovements(), getPreference('opening-disposable-balance')
+    ])
+    const blob = new Blob([serializeExcelBackup(transactions, savingsBuckets, savingsMovements, Number(openingBalanceText ?? 0))], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     })
 
@@ -62,7 +81,14 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
       setIsImporting(true)
       const importResult = await parseImportFile(selectedImportFile)
 
-      await saveTransactions(importResult.transactions)
+      await saveTransactions(importResult.data.transactions)
+      if (importResult.kind === 'full-backup') {
+        await Promise.all([
+          saveSavingsBuckets(importResult.data.savingsBuckets),
+          saveSavingsMovements(importResult.data.savingsMovements),
+          setPreference('opening-disposable-balance', String(importResult.data.openingDisposableBalance))
+        ])
+      }
 
       await onChanged()
       setMessage(importResult.message)
@@ -79,7 +105,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
   async function handleClearAll() {
     const confirmed = await Dialog.confirm({
-      content: '确定清空全部账单吗？此操作不可恢复。',
+      content: '确定清空全部账单、预算和储蓄数据吗？此操作不可恢复。',
       confirmText: '清空',
       cancelText: '取消'
     })
@@ -136,7 +162,8 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 }
 
 type ImportResult = {
-  transactions: Awaited<ReturnType<typeof parseBackup>>
+  data: Awaited<ReturnType<typeof parseBackup>>
+  kind: 'full-backup' | 'transactions'
   message: string
 }
 
@@ -145,7 +172,8 @@ async function parseImportFile(file: File): Promise<ImportResult> {
 
   if (fileName.endsWith('.json')) {
     return {
-      transactions: parseBackup(await file.text()),
+      data: parseBackup(await file.text()),
+      kind: 'full-backup',
       message: '导入完成。'
     }
   }
@@ -159,7 +187,8 @@ async function parseImportFile(file: File): Promise<ImportResult> {
     const backupResult = parseExcelBackup(buffer)
     if (backupResult) {
       return {
-        transactions: backupResult.transactions,
+        data: backupResult,
+        kind: backupResult.includesSavingsData ? 'full-backup' : 'transactions',
         message: `导入完成：成功 ${backupResult.transactions.length} 条，跳过 ${backupResult.skipped} 条。`
       }
     }
@@ -167,14 +196,16 @@ async function parseImportFile(file: File): Promise<ImportResult> {
     const readableResult = parseReadableTransactionsSheet(buffer)
     if (readableResult) {
       return {
-        transactions: readableResult.transactions,
+        data: { transactions: readableResult.transactions, savingsBuckets: [], savingsMovements: [], openingDisposableBalance: 0 },
+        kind: 'transactions',
         message: `导入完成：成功 ${readableResult.transactions.length} 条，跳过 ${readableResult.skipped} 条。`
       }
     }
 
     const result = parseExcelFile(buffer)
     return {
-      transactions: result.transactions,
+      data: { transactions: result.transactions, savingsBuckets: [], savingsMovements: [], openingDisposableBalance: 0 },
+      kind: 'transactions',
       message: `导入完成：成功 ${result.transactions.length} 条，跳过 ${result.skipped} 条。`
     }
   }

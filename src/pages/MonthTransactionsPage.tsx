@@ -75,7 +75,7 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onO
                 <div className={`h-full rounded-full ${budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${budgetBarPercentage}%` }} />
               </div>
               <div className="flex justify-between text-xs text-[var(--book-muted)]">
-                <span>已计入支出 {formatMoney(budgetProgress.spent)}</span>
+                <span>日常消费 {formatMoney(budgetProgress.spent)}</span>
                 <span>{budgetProgress.remaining < 0 ? '超出' : '剩余'} {formatMoney(Math.abs(budgetProgress.remaining))}</span>
               </div>
             </>

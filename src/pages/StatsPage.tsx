@@ -7,7 +7,7 @@ import { searchTransactions } from '../domain/transaction'
 import { currentMonth, currentYear } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 import { emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
-import { AutoCenter } from 'antd-mobile'
+import { AutoCenter, Segmented } from 'antd-mobile'
 
 type StatsPageProps = {
   transactions: Transaction[]
@@ -17,17 +17,21 @@ type StatsPageProps = {
 export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
   const [year, setYear] = useState(currentYear())
   const [searchQuery, setSearchQuery] = useState('')
+  const [expenseScope, setExpenseScope] = useState<'all' | 'daily'>('all')
   const hasSearchQuery = searchQuery.trim().length > 0
   const availableYears = getAvailableStatYears(transactions, currentMonth())
   const filteredTransactions = searchTransactions(transactions, searchQuery)
-  const summary = summarizeYear(filteredTransactions, year)
-  const expenseCategories = summarizeCategoriesByPrefix(filteredTransactions, year, 'expense')
+  const scopedTransactions = expenseScope === 'daily'
+    ? filteredTransactions.filter((transaction) => transaction.type !== 'expense' || transaction.includeInBudget !== false)
+    : filteredTransactions
+  const summary = summarizeYear(scopedTransactions, year)
+  const expenseCategories = summarizeCategoriesByPrefix(scopedTransactions, year, 'expense')
   const matchingMonths = new Set(
-    filteredTransactions
+    scopedTransactions
       .filter((transaction) => transaction.occurredAt.startsWith(year))
       .map((transaction) => transaction.occurredAt.slice(0, 7))
   )
-  const months = summarizeYearMonths(filteredTransactions, year, currentMonth())
+  const months = summarizeYearMonths(scopedTransactions, year, currentMonth())
     .filter((month) => !hasSearchQuery || matchingMonths.has(month.month))
 
   return (
@@ -46,13 +50,20 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
           </label>
         </div>
 
+        <Segmented
+          block
+          options={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
+          value={expenseScope}
+          onChange={(value) => setExpenseScope(value as 'all' | 'daily')}
+        />
+
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-income)] shadow-[var(--book-shadow-card)]">
             <span>总收入</span><br/>
             {formatMoney(summary.income)}
           </div>
           <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-expense)] shadow-[var(--book-shadow-card)]">
-            <span>总支出</span><br/>
+            <span>{expenseScope === 'daily' ? '日常消费' : '总支出'}</span><br/>
             {formatMoney(summary.expense)}
           </div>
           <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-neutral-700 shadow-[var(--book-shadow-card)]">
@@ -66,8 +77,8 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
 
       <section className={`${fixedListContentClass} grid content-start gap-2.5`}>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-3">
-          <MonthlyTrendChart months={months} />
-          <ExpenseCategoryChart categories={expenseCategories} />
+          <MonthlyTrendChart months={months} expenseLabel={expenseScope === 'daily' ? '日常消费' : '支出'} />
+          <ExpenseCategoryChart categories={expenseCategories} daily={expenseScope === 'daily'} />
         </div>
 
         <div className="mt-2 flex items-end justify-between gap-3 [&>span]:text-xs [&>span]:text-slate-400 [&_h2]:m-0">
@@ -89,7 +100,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
                   <b className={incomeClass}>{formatMoney(month.income)}</b>
                 </div>
                 <div>
-                  <span>支出</span>
+                  <span>{expenseScope === 'daily' ? '日常消费' : '支出'}</span>
                   <b className={expenseClass}>{formatMoney(month.expense)}</b>
                 </div>
                 <div>

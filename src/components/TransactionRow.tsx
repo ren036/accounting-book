@@ -21,7 +21,7 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             <strong>{transaction.category}</strong>
-            {isExcludedFromBudget && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">未计预算</span>}
+            {isExcludedFromBudget && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">非日常支出</span>}
           </div>
           {note && <p>{note}</p>}
         </div>
