@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
-import { clampInputDateToMax, todayInputValue } from '../lib/dates'
+import { clampInputDateToMax, combineDateWithTime, todayInputValue } from '../lib/dates'
 import { parseAmountExpression } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
@@ -38,12 +38,13 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
       return
     }
 
+    const selectedDate = clampInputDateToMax(occurredAt, maxDate)
     const fields = {
       type,
       amount: Math.round(numericAmount * 100) / 100,
       category,
       note: note.trim(),
-      occurredAt: `${clampInputDateToMax(occurredAt, maxDate)}T00:00:00.000Z`,
+      occurredAt: combineDateWithTime(selectedDate, initialTransaction?.occurredAt),
       includeInBudget: type === 'expense' && includeInBudget
     }
 

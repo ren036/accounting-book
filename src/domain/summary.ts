@@ -102,9 +102,13 @@ export function groupMonthTransactionsByDay(transactions: Transaction[], month: 
       return {
         date,
         label: `${monthNumber}月${dayNumber}日`,
-        transactions: [...dayTransactions].sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
+        transactions: [...dayTransactions].sort((a, b) => getTimePart(b.occurredAt).localeCompare(getTimePart(a.occurredAt)))
       }
     })
+}
+
+function getTimePart(occurredAt: string): string {
+  return occurredAt.match(/ (\d{2}:\d{2}:\d{2})$/)?.[1] ?? ''
 }
 
 function summarizeByDatePrefix(transactions: Transaction[], prefix: string): MonthSummary {

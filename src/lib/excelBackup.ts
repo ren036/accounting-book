@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx'
 import type { Transaction, TransactionType } from '../domain/transaction'
+import { formatOccurredAtForExport } from './dates'
 
 export type ExcelImportResult = {
   transactions: Transaction[]
@@ -19,7 +20,7 @@ export function serializeExcelBackup(transactions: Transaction[]): ArrayBuffer {
       transaction.amount,
       transaction.category,
       transaction.note,
-      transaction.occurredAt,
+      formatOccurredAtForExport(transaction.occurredAt),
       transaction.includeInBudget
     ])
   ])
@@ -83,9 +84,9 @@ function parseExportedRow(row: unknown[]): Transaction | null {
   const amount = parseAmount(row[2])
   const category = String(row[3] ?? '').trim()
   const note = String(row[4] ?? '').trim()
-  const occurredAt = String(row[5] ?? '').trim()
+  const occurredAt = formatOccurredAtForExport(String(row[5] ?? '').trim())
 
-  if (!id || !type || amount === null || !category || !isIsoDateTime(occurredAt)) return null
+  if (!id || !type || amount === null || !category || !isSupportedOccurredAt(occurredAt)) return null
 
   return { id, type, amount, category, note, occurredAt, includeInBudget: row[6] !== false && String(row[6]).toLowerCase() !== 'false' }
 }
@@ -144,6 +145,7 @@ function parseDate(value: unknown): string | null {
   return null
 }
 
-function isIsoDateTime(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)
+function isSupportedOccurredAt(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value)
+    || /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
 }

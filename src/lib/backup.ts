@@ -1,4 +1,5 @@
 import type { Transaction } from '../domain/transaction'
+import { formatOccurredAtForExport } from './dates'
 
 type BackupFile = {
   version: 1
@@ -18,7 +19,10 @@ export function serializeBackup(transactions: Transaction[]): string {
     {
       version: 1,
       exportedAt: new Date().toISOString(),
-      transactions
+      transactions: transactions.map((transaction) => ({
+        ...transaction,
+        occurredAt: formatOccurredAtForExport(transaction.occurredAt)
+      }))
     } satisfies BackupFile,
     null,
     2
