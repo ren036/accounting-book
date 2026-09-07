@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { ExpenseCategoryChart, MonthlyTrendChart } from '../components/StatisticsCharts'
-import { TransactionSearch } from '../components/TransactionSearch'
+import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
 import { getAvailableStatYears, summarizeCategoriesByPrefix, summarizeYear, summarizeYearMonths } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth, currentYear } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
+import { compactSummaryClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
 import { AutoCenter, Segmented } from 'antd-mobile'
 
 type StatsPageProps = {
@@ -38,7 +38,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     <section className={fixedListPageClass}>
       <div className={fixedListHeaderClass}>
         <div className="flex items-center justify-between gap-3">
-          <AutoCenter className="text-xl font-semibold">统计分析</AutoCenter>
+          <AutoCenter className="text-lg font-semibold">统计分析</AutoCenter>
           <label>
             <select className="w-[150px] rounded-full border border-neutral-200 bg-white px-4 py-[9px] font-semibold text-[var(--book-green)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
               {availableYears.map((item) => (
@@ -50,29 +50,31 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
           </label>
         </div>
 
-        <Segmented
-          block
-          options={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
-          value={expenseScope}
-          onChange={(value) => setExpenseScope(value as 'all' | 'daily')}
-        />
+        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
+          <Segmented
+            className="book-filter"
+            block
+            options={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
+            value={expenseScope}
+            onChange={(value) => setExpenseScope(value as 'all' | 'daily')}
+          />
+        </CollapsibleTransactionSearch>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-income)] shadow-[var(--book-shadow-card)]">
-            <span>总收入</span><br/>
-            {formatMoney(summary.income)}
+        <div className={compactSummaryClass}>
+          <div>
+            <span>总收入</span>
+            <strong className={incomeClass}>{formatMoney(summary.income)}</strong>
           </div>
-          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-[var(--book-expense)] shadow-[var(--book-shadow-card)]">
-            <span>{expenseScope === 'daily' ? '日常消费' : '总支出'}</span><br/>
-            {formatMoney(summary.expense)}
+          <div>
+            <span>{expenseScope === 'daily' ? '日常消费' : '总支出'}</span>
+            <strong className={expenseClass}>{formatMoney(summary.expense)}</strong>
           </div>
-          <div className="rounded-[var(--book-radius-card)] bg-white p-[15px] text-neutral-700 shadow-[var(--book-shadow-card)]">
-            <span>结余</span><br/>
-            {summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}
+          <div>
+            <span>结余</span>
+            <strong>{summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}</strong>
           </div>
         </div>
 
-        <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
       </div>
 
       <section className={`${fixedListContentClass} grid content-start gap-2.5`}>

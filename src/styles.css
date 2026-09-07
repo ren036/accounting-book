@@ -29,6 +29,52 @@ html, body, #root { min-height: 100%; background: var(--book-bg); }
 body { margin: 0; color: var(--book-text); -webkit-tap-highlight-color: transparent; }
 button { font: inherit; touch-action: manipulation; }
 
+.book-filter.adm-segmented {
+  --segmented-background: #edf1ee;
+  --segmented-item-color: var(--book-muted);
+  --segmented-item-selected-background: var(--book-green-dark);
+  --segmented-item-selected-color: #fff;
+  width: 100%;
+  padding: 3px;
+  border: 1px solid var(--book-border);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 2px rgb(32 51 44 / 3%);
+}
+
+.book-filter .adm-segmented-item,
+.book-filter .adm-segmented-thumb {
+  border-radius: 999px;
+}
+
+.book-filter .adm-segmented-item-label {
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.book-filter .adm-segmented-item-selected,
+.book-filter .adm-segmented-thumb {
+  box-shadow: 0 2px 5px rgb(16 135 95 / 18%);
+}
+
+.book-filter .adm-segmented-thumb {
+  padding: 0;
+}
+
+.book-filter .adm-segmented-item:has(input:focus-visible) {
+  outline: 2px solid var(--book-green-dark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-filter.adm-segmented,
+  .book-filter .adm-segmented-item,
+  .book-filter .adm-segmented-thumb {
+    transition: none;
+  }
+}
+
 .native-date-input {
   display: block;
   width: 100%;

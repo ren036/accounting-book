@@ -56,7 +56,7 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
 
   return (
     <section className={embedded ? '' : `${pageClass} h-full overflow-y-auto p-3`}>
-      {!embedded && <AutoCenter className="mb-3 text-xl">月度预算</AutoCenter>}
+      {!embedded && <AutoCenter className="mb-3 text-lg">月度预算</AutoCenter>}
 
       <div className="grid gap-3">
         <label className={fieldClass}>

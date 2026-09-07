@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
-import { TransactionSearch } from '../components/TransactionSearch'
+import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { CategoryChart } from '../components/StatisticsCharts'
 import type { MonthlyBudget } from '../domain/budget'
@@ -12,7 +12,7 @@ import { formatMoney } from '../lib/money'
 import { AutoCenter, Button, Dropdown, Segmented } from 'antd-mobile'
 import type { DropdownRef } from 'antd-mobile'
 import { CheckOutline, LeftOutline } from 'antd-mobile-icons'
-import { cardClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass, pageTitleClass } from '../ui/classes'
+import { cardClass, compactSummaryClass, emptyClass, expenseClass, fixedListContentClass, fixedListPageClass, incomeClass, pageTitleClass } from '../ui/classes'
 
 type MonthTransactionsPageProps = {
   month: string
@@ -60,8 +60,8 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
   }
 
   return (
-    <section className={fixedListPageClass}>
-      <div className={fixedListHeaderClass}>
+    <section className={`${fixedListPageClass} !gap-2 !pt-1`}>
+      <div className="grid gap-2">
         <div className={pageTitleClass}>
           <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
             <LeftOutline fontSize={22} />
@@ -96,31 +96,31 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
           <span aria-hidden="true" />
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className={cardClass}>
+        <div className={compactSummaryClass}>
+          <div>
             <span>收入</span>
             <strong className={incomeClass}>{formatMoney(summary.income)}</strong>
           </div>
-          <div className={cardClass}>
+          <div>
             <span>支出</span>
             <strong className={expenseClass}>{formatMoney(summary.expense)}</strong>
           </div>
-          <div className={cardClass}>
+          <div>
             <span>结余</span>
             <strong>{formatMoney(summary.balance)}</strong>
           </div>
         </div>
-        <div className={`${cardClass} grid gap-3`}>
+        <div className={`${cardClass} grid gap-1.5 !px-3 !py-2.5`}>
           <div className="flex items-end justify-between gap-3">
-            <div>
+            <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
               <span className="text-sm text-[var(--book-muted)]">本月预算</span>
-              <strong className="mt-1 block text-xl">{budget ? formatMoney(budget.amount) : '未设置'}</strong>
+              <strong className="break-all text-base">{budget ? formatMoney(budget.amount) : '未设置'}</strong>
             </div>
             {budgetProgress && <span className={budgetProgress.remaining < 0 ? expenseClass : incomeClass}>{budgetProgress.percentage.toFixed(0)}%</span>}
           </div>
           {budgetProgress && (
             <>
-              <div className="h-2.5 overflow-hidden rounded-full bg-gray-100" aria-label="预算使用进度">
+              <div className="h-1.5 overflow-hidden rounded-full bg-gray-100" aria-label="预算使用进度">
                 <div className={`h-full rounded-full ${budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${budgetBarPercentage}%` }} />
               </div>
               <div className="flex justify-between text-xs text-[var(--book-muted)]">
@@ -130,14 +130,15 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
             </>
           )}
         </div>
-        <Segmented block className="w-full" options={[
-          { label: '支出', value: 'expense' },
-          { label: '收入', value: 'income' },
-        ]}
-          value={activeType}
-          onChange={(value) => setActiveType(value as TransactionType)}
-        />
-        <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
+        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
+          <Segmented block className="book-filter" options={[
+            { label: '支出', value: 'expense' },
+            { label: '收入', value: 'income' },
+          ]}
+            value={activeType}
+            onChange={(value) => setActiveType(value as TransactionType)}
+          />
+        </CollapsibleTransactionSearch>
       </div>
 
       <section className={`${fixedListContentClass} grid content-start gap-2.5`}>

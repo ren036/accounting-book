@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Button, Dialog, Toast } from 'antd-mobile'
-import { TransactionSearch } from '../components/TransactionSearch'
+import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
@@ -9,8 +9,8 @@ import { summarizeBudget, summarizeDailyExpense } from '../domain/budget'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { ArrowRight, Eye, EyeOff, Landmark, PiggyBank } from 'lucide-react'
-import { cardClass, emptyClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass } from '../ui/classes'
+import { ChevronRight, Eye, EyeOff } from 'lucide-react'
+import { emptyClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass } from '../ui/classes'
 type DashboardPageProps = {
   transactions: Transaction[]
   budgets: MonthlyBudget[]
@@ -33,7 +33,6 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   const budget = budgets.find((item) => item.month === month)
   const budgetProgress = budget ? summarizeBudget(transactions, budget) : null
   const dailyExpense = summarizeDailyExpense(transactions, month)
-  const budgetBarPercentage = budgetProgress ? Math.min(Math.max(budgetProgress.percentage, 0), 100) : 0
   const groups = groupMonthTransactionsByDay(searchTransactions(transactions, searchQuery), month)
   const hasSearchQuery = searchQuery.trim().length > 0
 
@@ -95,45 +94,38 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             <span className="!text-white">月支出：{formatMoney(summary.expense)}</span>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2.5">
-          <article className={`${cardClass} relative min-w-0 !p-3 border-0`}>
-            <button type="button" className="grid w-full min-w-0 gap-2 border-0 bg-transparent p-0 text-left text-inherit" onClick={onOpenSavings}>
-              <span className="flex min-w-0 items-center gap-2">
-                <span className="rounded-full bg-[var(--book-green-soft)] p-1.5 text-[var(--book-green)]"><Landmark size={17} /></span>
-                <strong className="min-w-0 flex-1 truncate text-sm">我的储蓄</strong>
-                <ArrowRight className="shrink-0 text-[var(--book-green)]" size={15} />
+        <div className="grid grid-cols-2 rounded-2xl bg-white/60 py-2">
+          <article className="relative flex min-w-0 items-center border-r border-[var(--book-border)] px-3">
+            <button type="button" className="grid min-h-11 w-full min-w-0 gap-1 border-0 bg-transparent p-0 text-left text-inherit" onClick={onOpenSavings}>
+              <span className="flex min-w-0 items-center justify-between gap-1 text-xs text-[var(--book-green-dark)]">
+                <span>我的储蓄</span>
+                <ChevronRight className="shrink-0" size={13} />
               </span>
-              <strong className="truncate pr-8 text-lg text-[var(--book-green)]">{privateMoney(totalSavings, savingsAmountsHidden)}</strong>
-              <span className="truncate pr-8 text-[11px] text-[var(--book-muted)]">通用与专项资金</span>
+              <strong className="truncate pr-8 text-sm font-medium text-[var(--book-green-dark)]">{privateMoney(totalSavings, savingsAmountsHidden)}</strong>
             </button>
-            <button type="button" className="absolute bottom-2.5 right-2.5 grid size-7 place-items-center rounded-full border-0 bg-[var(--book-green-soft)] p-0 text-[var(--book-green)]" aria-label={savingsAmountsHidden ? '显示储蓄金额' : '隐藏储蓄金额'} onClick={() => void onSavingsAmountsHiddenChange(!savingsAmountsHidden)}>
+            <button type="button" className="absolute bottom-0 right-2 grid size-8 place-items-center rounded-full border-0 bg-transparent p-0 text-[var(--book-muted)]" aria-label={savingsAmountsHidden ? '显示储蓄金额' : '隐藏储蓄金额'} onClick={() => void onSavingsAmountsHiddenChange(!savingsAmountsHidden)}>
               {savingsAmountsHidden ? <Eye size={15} /> : <EyeOff size={15} />}
             </button>
           </article>
-          <button type="button" className={`${cardClass} grid min-w-0 w-full gap-2 !p-3 border-0 text-left`} onClick={onOpenBudget}>
-            <span className="flex min-w-0 items-center gap-2">
-              <span className="rounded-full bg-[var(--book-green-soft)] p-1.5 text-[var(--book-green)]"><PiggyBank size={17} /></span>
-              <strong className="min-w-0 flex-1 truncate text-sm">本月预算</strong>
-              <ArrowRight className="shrink-0 text-[var(--book-green)]" size={15} />
+          <button type="button" className="grid min-h-11 min-w-0 w-full gap-1 border-0 bg-transparent px-3 py-0 text-left text-inherit" onClick={onOpenBudget}>
+            <span className="flex min-w-0 items-center justify-between gap-1 text-xs text-[var(--book-green-dark)]">
+              <span>本月预算</span>
+              <ChevronRight className="shrink-0" size={13} />
             </span>
-            <strong className="truncate text-lg text-[var(--book-expense)]">{formatMoney(budgetProgress?.spent ?? dailyExpense)}</strong>
+            <span className="truncate text-sm"><span className="mr-1 text-xs text-[var(--book-muted)]">已用</span><strong className="font-medium text-[var(--book-green-dark)]">{formatMoney(budgetProgress?.spent ?? dailyExpense)}</strong></span>
             {budgetProgress ? (
-              <>
-                <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
-                  <div className={`h-full rounded-full transition-[width] ${budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${budgetBarPercentage}%` }} />
-                </div>
-                <span className="truncate text-[11px] text-[var(--book-muted)]">已用 {budgetProgress.percentage.toFixed(0)}% · {budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
-              </>
+              <span className={`truncate text-[11px] ${budgetProgress.remaining < 0 ? 'text-[var(--book-expense)]' : 'text-[var(--book-muted)]'}`}>{budgetProgress.percentage.toFixed(0)}% · {budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
             ) : (
               <span className="truncate text-[11px] text-[var(--book-muted)]">日常消费 · 点击设置预算</span>
             )}
           </button>
         </div>
-        <TransactionSearch value={searchQuery} onChange={setSearchQuery} />
+        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
+          <h3 className="!m-0">当月账单详情</h3>
+        </CollapsibleTransactionSearch>
       </div>
 
       <section className={`${fixedListContentClass} grid content-start gap-3`}>
-        <h3>当月账单详情</h3>
         {groups.length === 0 ? (
           <p className={emptyClass}>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</p>
         ) : (
