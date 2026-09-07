@@ -1,9 +1,7 @@
 import { Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { CategorySummary, MonthDetailSummary } from '../domain/summary'
 import { formatMoney } from '../lib/money'
-import { CategoryEmoji } from './CategoryEmoji'
-
-const colors = ['#16a574', '#5b8def', '#f0a94a', '#8b74d6', '#e36f87', '#50a6b2']
+import { CategoryEmoji, getCategoryVisual } from './CategoryEmoji'
 
 export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months: MonthDetailSummary[]; expenseLabel?: string }) {
   const data = [...months].reverse().map((month) => ({ name: `${Number(month.month.slice(5))}月`, income: month.income, expense: month.expense }))
@@ -53,7 +51,7 @@ export function CategoryChart({
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={data} dataKey="amount" nameKey="category" innerRadius="58%" outerRadius="82%" paddingAngle={2} stroke="none">
-                  {data.map((item, index) => <Cell key={item.category} fill={colors[index % colors.length]} />)}
+                  {data.map((item) => <Cell key={item.category} fill={getCategoryVisual(item.category).color} />)}
                 </Pie>
                 <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
               </PieChart>
@@ -64,9 +62,9 @@ export function CategoryChart({
             </div>
           </div>
           <div className="grid gap-2">
-            {data.map((item, index) => (
+            {data.map((item) => (
               <div key={item.category} className="grid grid-cols-[8px_minmax(0,1fr)] items-center gap-x-2 text-xs">
-                <i className="size-2 rounded-full" style={{ background: colors[index % colors.length] }} />
+                <i className="size-2 rounded-full" style={{ background: getCategoryVisual(item.category).color }} />
                 <span className="flex min-w-0 items-center gap-1 truncate"><CategoryEmoji category={item.category} size={14} />{item.category}</span>
                 <span className="col-start-2 text-[10px] text-[var(--book-muted)]">
                   {Math.round(item.amount / total * 100)}% · ¥{formatMoney(item.amount)}

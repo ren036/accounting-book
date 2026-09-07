@@ -36,6 +36,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   const groups = groupMonthTransactionsByDay(searchTransactions(transactions, searchQuery), month)
   const hasSearchQuery = searchQuery.trim().length > 0
   const budgetBarPercentage = budgetProgress ? Math.min(Math.max(budgetProgress.percentage, 0), 100) : 0
+  const budgetExceeded = Boolean(budgetProgress && budgetProgress.percentage > 100)
 
   async function handleBackgroundFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -95,27 +96,41 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             <span className="!text-white">月支出：{formatMoney(summary.expense)}</span>
           </div>
         </div>
-        <button type="button" className={`${cardClass} !p-3 grid w-full gap-2 border-0 text-left`} onClick={onOpenBudget}>
+        <button type="button" className={`${cardClass} !p-2.5 grid w-full gap-1.5 border-0 text-left transition-[transform,box-shadow] active:scale-[.99]`} onClick={onOpenBudget}>
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5">
-              <span className="rounded-full bg-[var(--book-green-soft)] p-2 text-[var(--book-green)]"><PiggyBank size={20} /></span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--book-green-soft)] text-[var(--book-green)]"><PiggyBank size={15} /></span>
               <div>
-                <strong className="block">本月预算</strong>
-                <span className="text-xs text-[var(--book-muted)]">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</span>
+                <strong className="block text-[13px] leading-4">本月预算</strong>
+                <span className="block text-[10px] leading-3 text-[var(--book-muted)]">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</span>
               </div>
             </div>
-            <span className="flex items-center gap-1 text-sm text-[var(--book-green)]">{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}<ArrowRight size={16} /></span>
-          </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
-            <div
-              className={`h-full rounded-full transition-[width] ${budgetProgress && budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`}
-              style={{ width: `${budgetBarPercentage}%` }}
-            />
+            <span className={`flex shrink-0 items-center gap-1 text-sm font-semibold ${budgetExceeded ? 'text-[var(--book-expense)]' : 'text-[var(--book-green)]'}`}>{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}<ArrowRight size={16} /></span>
           </div>
           {budgetProgress && (
-            <div className="flex justify-between text-xs text-[var(--book-muted)]">
-              <span>{budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
-              <span>{month.replace('-', '年')}月</span>
+            <>
+              <div className="grid gap-1">
+                <div className="h-1 overflow-hidden rounded-full bg-[var(--book-green-soft)]">
+                  <div
+                    className={`h-full rounded-full transition-[width] ${budgetExceeded ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`}
+                    style={{ width: `${budgetBarPercentage}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-[9px] leading-3 text-[var(--book-muted)]"><span>已使用</span><span>{budgetExceeded ? '已超出预算' : '预算进度'}</span></div>
+              </div>
+              <div className="flex items-center justify-between gap-3 text-[11px] leading-3">
+                <div>
+                  <span className="text-[10px] text-[var(--book-muted)]">{budgetProgress.remaining >= 0 ? '剩余' : '超出'} </span>
+                  <strong className={`text-xs ${budgetExceeded ? 'text-[var(--book-expense)]' : 'text-[var(--book-ink)]'}`}>{formatMoney(Math.abs(budgetProgress.remaining))}</strong>
+                </div>
+                <span className="text-[10px] text-[var(--book-muted)]">{month.replace('-', '年')}月</span>
+              </div>
+            </>
+          )}
+          {!budgetProgress && (
+            <div className="flex items-center justify-between rounded-xl bg-[var(--book-green-soft)] px-3 py-1.5 text-xs text-[var(--book-green-dark)]">
+              <span>还没有设置本月预算</span>
+              <span className="font-semibold">立即设置</span>
             </div>
           )}
         </button>

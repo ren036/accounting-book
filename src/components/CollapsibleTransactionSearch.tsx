@@ -19,7 +19,7 @@ export function CollapsibleTransactionSearch({ value, onChange, children }: Coll
         <div className="min-w-0 flex-1">{children}</div>
         <button
           type="button"
-          className="flex min-h-9 shrink-0 items-center gap-1 rounded-full border-0 bg-transparent px-2 text-xs text-[var(--book-green-dark)]"
+          className="flex min-h-9 shrink-0 items-center gap-1 rounded-full border-0 bg-transparent px-2 text-xs text-gray-500"
           aria-expanded={expanded}
           aria-controls={searchId}
           onClick={() => {
