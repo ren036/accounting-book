@@ -60,7 +60,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
           />
         </CollapsibleTransactionSearch>
 
-        <div className={compactSummaryClass}>
+        <div className={`${compactSummaryClass} [&>div>span]:w-full [&>div>strong]:w-full [&>div]:text-center`}>
           <div>
             <span>总收入</span>
             <strong className={incomeClass}>{formatMoney(summary.income)}</strong>

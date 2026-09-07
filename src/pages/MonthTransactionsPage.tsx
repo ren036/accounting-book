@@ -96,7 +96,7 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
           <span aria-hidden="true" />
         </div>
 
-        <div className={compactSummaryClass}>
+        <div className={`${compactSummaryClass} [&>div>span]:w-full [&>div>strong]:w-full [&>div]:text-center`}>
           <div>
             <span>收入</span>
             <strong className={incomeClass}>{formatMoney(summary.income)}</strong>
