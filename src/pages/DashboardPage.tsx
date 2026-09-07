@@ -9,8 +9,8 @@ import { summarizeBudget, summarizeDailyExpense } from '../domain/budget'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { ChevronRight, Eye, EyeOff } from 'lucide-react'
-import { emptyClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass } from '../ui/classes'
+import { ArrowRight, PiggyBank } from 'lucide-react'
+import { cardClass, emptyClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass } from '../ui/classes'
 type DashboardPageProps = {
   transactions: Transaction[]
   budgets: MonthlyBudget[]
@@ -35,6 +35,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   const dailyExpense = summarizeDailyExpense(transactions, month)
   const groups = groupMonthTransactionsByDay(searchTransactions(transactions, searchQuery), month)
   const hasSearchQuery = searchQuery.trim().length > 0
+  const budgetBarPercentage = budgetProgress ? Math.min(Math.max(budgetProgress.percentage, 0), 100) : 0
 
   async function handleBackgroundFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -94,32 +95,30 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             <span className="!text-white">月支出：{formatMoney(summary.expense)}</span>
           </div>
         </div>
-        <div className="grid grid-cols-2 rounded-2xl bg-white/60 py-2">
-          <article className="relative flex min-w-0 items-center border-r border-[var(--book-border)] px-3">
-            <button type="button" className="grid min-h-11 w-full min-w-0 gap-1 border-0 bg-transparent p-0 text-left text-inherit" onClick={onOpenSavings}>
-              <span className="flex min-w-0 items-center justify-between gap-1 text-xs text-[var(--book-green-dark)]">
-                <span>我的储蓄</span>
-                <ChevronRight className="shrink-0" size={13} />
-              </span>
-              <strong className="truncate pr-8 text-sm font-medium text-[var(--book-green-dark)]">{privateMoney(totalSavings, savingsAmountsHidden)}</strong>
-            </button>
-            <button type="button" className="absolute bottom-0 right-2 grid size-8 place-items-center rounded-full border-0 bg-transparent p-0 text-[var(--book-muted)]" aria-label={savingsAmountsHidden ? '显示储蓄金额' : '隐藏储蓄金额'} onClick={() => void onSavingsAmountsHiddenChange(!savingsAmountsHidden)}>
-              {savingsAmountsHidden ? <Eye size={15} /> : <EyeOff size={15} />}
-            </button>
-          </article>
-          <button type="button" className="grid min-h-11 min-w-0 w-full gap-1 border-0 bg-transparent px-3 py-0 text-left text-inherit" onClick={onOpenBudget}>
-            <span className="flex min-w-0 items-center justify-between gap-1 text-xs text-[var(--book-green-dark)]">
-              <span>本月预算</span>
-              <ChevronRight className="shrink-0" size={13} />
-            </span>
-            <span className="truncate text-sm"><span className="mr-1 text-xs text-[var(--book-muted)]">已用</span><strong className="font-medium text-[var(--book-green-dark)]">{formatMoney(budgetProgress?.spent ?? dailyExpense)}</strong></span>
-            {budgetProgress ? (
-              <span className={`truncate text-[11px] ${budgetProgress.remaining < 0 ? 'text-[var(--book-expense)]' : 'text-[var(--book-muted)]'}`}>{budgetProgress.percentage.toFixed(0)}% · {budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
-            ) : (
-              <span className="truncate text-[11px] text-[var(--book-muted)]">日常消费 · 点击设置预算</span>
-            )}
-          </button>
-        </div>
+        <button type="button" className={`${cardClass} !p-3 grid w-full gap-2 border-0 text-left`} onClick={onOpenBudget}>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <span className="rounded-full bg-[var(--book-green-soft)] p-2 text-[var(--book-green)]"><PiggyBank size={20} /></span>
+              <div>
+                <strong className="block">本月预算</strong>
+                <span className="text-xs text-[var(--book-muted)]">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</span>
+              </div>
+            </div>
+            <span className="flex items-center gap-1 text-sm text-[var(--book-green)]">{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}<ArrowRight size={16} /></span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+            <div
+              className={`h-full rounded-full transition-[width] ${budgetProgress && budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`}
+              style={{ width: `${budgetBarPercentage}%` }}
+            />
+          </div>
+          {budgetProgress && (
+            <div className="flex justify-between text-xs text-[var(--book-muted)]">
+              <span>{budgetProgress.remaining >= 0 ? `剩余 ${formatMoney(budgetProgress.remaining)}` : `超出 ${formatMoney(Math.abs(budgetProgress.remaining))}`}</span>
+              <span>{month.replace('-', '年')}月</span>
+            </div>
+          )}
+        </button>
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
           <h3 className="!m-0">当月账单详情</h3>
         </CollapsibleTransactionSearch>
