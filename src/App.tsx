@@ -149,85 +149,88 @@ export function App() {
       mih={0}
       bg="var(--book-bg)"
       c="var(--book-text)"
-      style={{ overflow: 'hidden' }}
+      display="flex"
+      style={{ flexDirection: 'column', overflow: 'hidden' }}
     >
-      {editingTransaction ? (
-        <EditTransactionPage
-          transaction={editingTransaction}
-          viewportHeight={viewportHeight}
-          onCancel={() => setEditingTransactionId(null)}
-          onSaved={handleEditSaved}
-        />
-      ) : viewingTransaction ? (
-        <TransactionDetailPage
-          transaction={viewingTransaction}
-          onBack={() => setViewingTransactionId(null)}
-          onDeleted={handleDelete}
-          onEdit={() => setEditingTransactionId(viewingTransaction.id)}
-        />
-      ) : (
-        <>
-          {currentPage === 'dashboard' && (
-            <DashboardPage
+      <Box mih={0} flex={1} style={{ overflowY: 'auto', overflowX: 'hidden' }}>
+        {editingTransaction ? (
+          <EditTransactionPage
+            transaction={editingTransaction}
+            viewportHeight={viewportHeight}
+            onCancel={() => setEditingTransactionId(null)}
+            onSaved={handleEditSaved}
+          />
+        ) : viewingTransaction ? (
+          <TransactionDetailPage
+            transaction={viewingTransaction}
+            onBack={() => setViewingTransactionId(null)}
+            onDeleted={handleDelete}
+            onEdit={() => setEditingTransactionId(viewingTransaction.id)}
+          />
+        ) : (
+          <>
+            {currentPage === 'dashboard' && (
+              <DashboardPage
+                transactions={transactions}
+                budgets={budgets}
+                balanceCardBackground={balanceCardBackground}
+                disposableBalance={disposableBalance}
+                totalSavings={totalSavings}
+                savingsAmountsHidden={savingsAmountsHidden}
+                onOpen={setViewingTransactionId}
+                onOpenBudget={() => openFunds('budget')}
+                onOpenSavings={() => openFunds('savings')}
+                onSavingsAmountsHiddenChange={handleSavingsAmountsHiddenChange}
+                onBalanceCardBackgroundChange={handleBalanceCardBackgroundChange}
+              />
+            )}
+            {currentPage === 'entry' && (
+              <EntryPage
+                viewportHeight={viewportHeight}
+                onCancel={() => applyNavigationState(finishCreatingTransaction())}
+                onSaved={handleEntrySaved}
+              />
+            )}
+            {currentPage === 'budget' && <FundsPage
+              key={fundsInitialTab}
+              initialTab={fundsInitialTab}
               transactions={transactions}
               budgets={budgets}
-              balanceCardBackground={balanceCardBackground}
-              disposableBalance={disposableBalance}
-              totalSavings={totalSavings}
-              savingsAmountsHidden={savingsAmountsHidden}
-              onOpen={setViewingTransactionId}
-              onOpenBudget={() => openFunds('budget')}
-              onOpenSavings={() => openFunds('savings')}
-              onSavingsAmountsHiddenChange={handleSavingsAmountsHiddenChange}
-              onBalanceCardBackgroundChange={handleBalanceCardBackgroundChange}
-            />
-          )}
-          {currentPage === 'entry' && (
-            <EntryPage
-              viewportHeight={viewportHeight}
-              onCancel={() => applyNavigationState(finishCreatingTransaction())}
-              onSaved={handleEntrySaved}
-            />
-          )}
-          {currentPage === 'budget' && <FundsPage
-            key={fundsInitialTab}
-            initialTab={fundsInitialTab}
-            transactions={transactions}
-            budgets={budgets}
-            savingsBuckets={savingsBuckets}
-            savingsMovements={savingsMovements}
-            openingDisposableBalance={openingDisposableBalance}
-            amountsHidden={savingsAmountsHidden}
-            onBudgetsChanged={reloadBudgets}
-            onSavingsChanged={reloadSavings}
-            onOpeningBalanceChange={handleOpeningBalanceChange}
-            onOpenMonth={(month) => {
-              setCurrentPage('stats')
-              setViewingStatsMonth(month)
-            }}
-          />}
-          {currentPage === 'stats' && viewingStatsMonth === null && (
-            <Suspense fallback={<LoadingPage label="正在加载统计..." />}>
-              <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
-            </Suspense>
-          )}
-          {currentPage === 'stats' && viewingStatsMonth !== null && (
-            <MonthTransactionsPage
-              month={viewingStatsMonth}
-              transactions={transactions}
-              budget={budgets.find((budget) => budget.month === viewingStatsMonth)}
-              onBack={() => setViewingStatsMonth(null)}
-              onChangeMonth={setViewingStatsMonth}
-              onOpen={setViewingTransactionId}
-            />
-          )}
-          {currentPage === 'settings' && (
-            <Suspense fallback={<LoadingPage label="正在加载设置..." />}>
-              <SettingsPage onChanged={reloadAllData} />
-            </Suspense>
-          )}
-        </>
-      )}
+              savingsBuckets={savingsBuckets}
+              savingsMovements={savingsMovements}
+              openingDisposableBalance={openingDisposableBalance}
+              amountsHidden={savingsAmountsHidden}
+              onBudgetsChanged={reloadBudgets}
+              onSavingsChanged={reloadSavings}
+              onOpeningBalanceChange={handleOpeningBalanceChange}
+              onOpenMonth={(month) => {
+                setCurrentPage('stats')
+                setViewingStatsMonth(month)
+              }}
+            />}
+            {currentPage === 'stats' && viewingStatsMonth === null && (
+              <Suspense fallback={<LoadingPage label="正在加载统计..." />}>
+                <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
+              </Suspense>
+            )}
+            {currentPage === 'stats' && viewingStatsMonth !== null && (
+              <MonthTransactionsPage
+                month={viewingStatsMonth}
+                transactions={transactions}
+                budget={budgets.find((budget) => budget.month === viewingStatsMonth)}
+                onBack={() => setViewingStatsMonth(null)}
+                onChangeMonth={setViewingStatsMonth}
+                onOpen={setViewingTransactionId}
+              />
+            )}
+            {currentPage === 'settings' && (
+              <Suspense fallback={<LoadingPage label="正在加载设置..." />}>
+                <SettingsPage onChanged={reloadAllData} />
+              </Suspense>
+            )}
+          </>
+        )}
+      </Box>
       {!isTransactionFormPage && !isKeyboardOpen && (
         <BottomNav
           currentPage={currentPage}

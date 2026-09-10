@@ -21,15 +21,11 @@ export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
     <Box
       component="nav"
-      pos="fixed"
-      left={0}
-      right={0}
-      bottom={0}
       bg="rgba(255, 255, 255, 0.95)"
       px="xs"
       pt="xs"
       pb="calc(12px + env(safe-area-inset-bottom))"
-      style={{ borderTop: '1px solid var(--book-border)', boxShadow: '0 -8px 28px rgb(32 47 43 / 7%)', backdropFilter: 'blur(16px)', zIndex: 100 }}
+      style={{ flexShrink: 0, borderTop: '1px solid var(--book-border)', boxShadow: '0 -8px 28px rgb(32 47 43 / 7%)', backdropFilter: 'blur(16px)', zIndex: 100 }}
       aria-label="底部导航"
     >
       <Box display="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>

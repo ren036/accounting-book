@@ -60,14 +60,15 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   }
 
   return (
-    <Stack component="section" h="100%" mih={0} gap="sm" p="md">
+    <Stack component="section" h="100%" mih={0} gap="sm">
       <Stack gap="sm" style={{ flexShrink: 0 }}>
         <Paper
           pos="relative"
-          mih={142}
+          mih="calc(142px + env(safe-area-inset-top))"
           px="lg"
-          py="md"
-          radius="xl"
+          pt="calc(var(--mantine-spacing-md) + env(safe-area-inset-top))"
+          pb="md"
+          radius={0}
           c="white"
           shadow="md"
           style={{
@@ -76,8 +77,9 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             overflow: 'hidden',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            // borderRadius: '0 0 24px 24px',
             backgroundImage: balanceCardBackground
-              ? `linear-gradient(135deg, rgb(7 75 62 / 70%), rgb(10 42 36 / 68%)), url(${JSON.stringify(balanceCardBackground)})`
+              ? `linear-gradient(135deg, rgb(7 75 62 / 20%), rgb(10 42 36 / 18%)), url(${JSON.stringify(balanceCardBackground)})`
               : 'radial-gradient(circle at 20% 0%, #4f46e5 0, transparent 34%), linear-gradient(#111827, #111827)',
           }}
         >
@@ -101,6 +103,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             <Text size="xs" c="rgba(255,255,255,.84)">月支出 <Text component="span" c="white" fw={650}>{formatMoney(summary.expense)}</Text></Text>
           </Group>
         </Paper>
+        <Stack gap="sm" px="md">
         <Paper component="button" type="button" p="md" radius="xl" shadow="xs" w="100%" ta="left" c="inherit" onClick={onOpenBudget}>
           <Stack gap="xs">
           <Group justify="space-between" gap="xs" wrap="nowrap">
@@ -130,9 +133,10 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
           <Title order={3} size="h5">当月账单详情</Title>
         </CollapsibleTransactionSearch>
+        </Stack>
       </Stack>
 
-      <Box component="section" mih={0} flex={1} style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      <Box component="section" mih={0} flex={1} px="md" pb="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         {groups.length === 0 ? (
           <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</Text></Paper>
         ) : (
