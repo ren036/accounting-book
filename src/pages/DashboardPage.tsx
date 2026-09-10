@@ -163,6 +163,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
         )}
     </PageLayout>
   )
+  
 }
 
 function privateMoney(amount: number, hidden: boolean): string {
