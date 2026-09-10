@@ -150,7 +150,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
           hasSearchQuery ? (
             <EmptyState>没有找到匹配的账单</EmptyState>
           ) : (
-            <Group py="lg" justify="space-between" gap="md" wrap="nowrap">
+            <Group py="lg" px='xs' justify="space-between" gap="md" wrap="nowrap">
               <Box>
                 <Text size="sm" fw={650}>本月暂无流水</Text>
                 <Text mt={2} size="xs" c="dimmed">记下的收支会出现在这里</Text>

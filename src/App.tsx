@@ -22,6 +22,7 @@ import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
 import { FundsPage } from './pages/FundsPage'
+import { PwaUpdatePrompt } from './components/PwaUpdatePrompt'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
@@ -152,6 +153,7 @@ export function App() {
       c="var(--book-text)"
       style={{ overflow: 'hidden' }}
     >
+      <PwaUpdatePrompt />
       <Box flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
         {editingTransaction ? (
           <EditTransactionPage
