@@ -49,6 +49,7 @@ export function App() {
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
   const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
   const [viewingStatsMonth, setViewingStatsMonth] = useState<string | null>(null)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   async function reloadTransactions() {
     setTransactions(await listTransactions())
@@ -130,7 +131,16 @@ export function App() {
   }
 
   useEffect(() => {
-    void reloadAllData()
+    let active = true
+    const minimumOpeningTime = new Promise((resolve) => window.setTimeout(resolve, 500))
+
+    void Promise.allSettled([reloadAllData(), minimumOpeningTime]).then(() => {
+      if (active) setInitialLoading(false)
+    })
+
+    return () => {
+      active = false
+    }
   }, [])
 
   const editingTransaction = editingTransactionId
@@ -154,7 +164,11 @@ export function App() {
       style={{ overflow: 'hidden' }}
     >
       <PwaUpdatePrompt />
-      <Box flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
+      {initialLoading ? (
+        <OpeningPage />
+      ) : (
+        <>
+          <Box className="book-app-enter" flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
         {editingTransaction ? (
           <EditTransactionPage
             transaction={editingTransaction}
@@ -233,17 +247,28 @@ export function App() {
             )}
           </>
         )}
-      </Box>
-      {!isTransactionFormPage && !isKeyboardOpen && (
-        <BottomNav
-          currentPage={currentPage}
-          onChange={(page) => {
-            if (page === 'budget') setFundsInitialTab('savings')
-            applyNavigationState(switchMainTab(page))
-          }}
-        />
+          </Box>
+          {!isTransactionFormPage && !isKeyboardOpen && (
+            <BottomNav
+              currentPage={currentPage}
+              onChange={(page) => {
+                if (page === 'budget') setFundsInitialTab('savings')
+                applyNavigationState(switchMainTab(page))
+              }}
+            />
+          )}
+        </>
       )}
     </Flex>
+  )
+}
+
+function OpeningPage() {
+  return (
+    <div className="app-boot" role="status" aria-label="记账本正在启动">
+      <div className="app-boot__mark" aria-hidden="true">账</div>
+      <div className="app-boot__title">记账本</div>
+    </div>
   )
 }
 

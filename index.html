@@ -5,9 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="theme-color" content="#111827" />
     <title>记账本</title>
+    <style>
+      html,
+      body,
+      #root {
+        min-height: 100%;
+        margin: 0;
+      }
+
+      html,
+      body {
+        background: #f4f6f3;
+      }
+
+      .app-boot {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 14px;
+        color: #202622;
+        font-family: "Noto Sans SC", "Microsoft YaHei", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      }
+
+      .app-boot__mark {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        place-items: center;
+        border-radius: 18px;
+        background: #111827;
+        color: white;
+        font-size: 27px;
+        font-weight: 800;
+        box-shadow: 0 10px 28px rgb(17 24 39 / 18%);
+      }
+
+      .app-boot__title {
+        font-size: 17px;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-boot" role="status" aria-label="记账本正在启动">
+        <div class="app-boot__mark" aria-hidden="true">账</div>
+        <div class="app-boot__title">记账本</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

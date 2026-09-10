@@ -69,3 +69,24 @@ button {
 .bottom-nav-item[data-active='true'] {
   background: var(--book-surface-muted);
 }
+
+.book-app-enter {
+  animation: book-app-enter 260ms ease-out both;
+}
+
+@keyframes book-app-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-app-enter {
+    animation: none;
+  }
+}
