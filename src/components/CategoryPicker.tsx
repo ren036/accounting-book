@@ -12,11 +12,29 @@ export function CategoryPicker({ categories, value, onChange }: CategoryPickerPr
           const active = category === value
           const visual = getCategoryVisual(category)
           return (
-            <UnstyledButton type="button" role="radio" aria-checked={active} key={category} onClick={() => onChange(category)}>
-              <Center mx="auto" w={40} h={40} style={{ borderRadius: 14, background: visual.background, outline: active ? '2px solid var(--book-green)' : undefined, outlineOffset: active ? 2 : undefined }}>
-                <CategoryEmoji category={category} />
+            <UnstyledButton
+              type="button"
+              role="radio"
+              aria-checked={active}
+              key={category}
+              px={2}
+              py={6}
+              onClick={() => onChange(category)}
+            >
+              <Center
+                mx="auto"
+                w={40}
+                h={40}
+                style={{
+                  borderRadius: 14,
+                  background: active ? visual.color : visual.background,
+                  transition: 'background-color 120ms ease, transform 120ms ease',
+                  transform: active ? 'scale(1.06)' : undefined,
+                }}
+              >
+                <CategoryEmoji category={category} color={active ? 'white' : undefined} />
               </Center>
-              <Text mt={4} size="xs" ta="center" truncate fw={active ? 600 : 400} c={active ? 'teal.7' : 'dimmed'}>{category}</Text>
+              <Text mt={4} size="xs" ta="center" truncate fw={active ? 700 : 400} c={active ? 'teal.8' : 'dimmed'}>{category}</Text>
             </UnstyledButton>
           )
         })}

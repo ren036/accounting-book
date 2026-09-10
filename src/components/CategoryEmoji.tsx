@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 
 type CategoryVisual = { icon: LucideIcon; color: string; background: string }
-type CategoryEmojiProps = { category: string; size?: number }
+type CategoryEmojiProps = { category: string; size?: number; color?: string }
 
 const fallback: CategoryVisual = { icon: CircleEllipsis, color: '#6f727c', background: '#f0f1f4' }
 
@@ -35,8 +35,8 @@ export function getCategoryVisual(category: string): CategoryVisual {
   return visuals[category] ?? fallback
 }
 
-export function CategoryEmoji({ category, size = 21 }: CategoryEmojiProps) {
+export function CategoryEmoji({ category, size = 21, color }: CategoryEmojiProps) {
   const visual = getCategoryVisual(category)
   const Icon = visual.icon
-  return <Icon aria-hidden="true" color={visual.color} size={size} strokeWidth={2} />
+  return <Icon aria-hidden="true" color={color ?? visual.color} size={size} strokeWidth={2} />
 }

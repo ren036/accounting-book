@@ -25,8 +25,8 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
     >
       <Group justify="space-between" gap="sm" wrap="nowrap">
         <Group gap="sm" wrap="nowrap" miw={0}>
-          <Center w={36} h={36} style={{ flexShrink: 0, borderRadius: '50%', background: categoryVisual.background }}>
-            <CategoryEmoji category={transaction.category} size={19} />
+          <Center w={36} h={36} style={{ flexShrink: 0, borderRadius: '50%', background: categoryVisual.color }}>
+            <CategoryEmoji category={transaction.category} size={19} color="white" />
           </Center>
           <Stack gap={1} miw={0}>
             <Group gap={6} wrap="nowrap">
