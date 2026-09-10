@@ -56,7 +56,7 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
   }
 
   return (
-    <Stack component="section" h="100%" mih={0} gap="xs" p="md" pt="xs">
+    <Stack component="section" h="100%" mih={0} gap="xs" p="md" pt="xs" pb={0}>
       <Stack gap="xs" style={{ flexShrink: 0 }}>
         <Group justify="space-between" wrap="nowrap">
           <ActionIcon color="dark" variant="subtle" size="lg" aria-label="返回" onClick={onBack}><ArrowLeft size={22} /></ActionIcon>
@@ -102,7 +102,7 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
         </CollapsibleTransactionSearch>
       </Stack>
 
-      <Stack component="section" mih={0} flex={1} gap="sm" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      <Stack component="section" mih={0} flex={1} gap="sm" pb="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         <CategoryChart
           categories={categories}
           eyebrow="月度构成"

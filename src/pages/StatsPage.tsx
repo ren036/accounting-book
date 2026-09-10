@@ -34,7 +34,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     .filter((month) => !hasSearchQuery || matchingMonths.has(month.month))
 
   return (
-    <Stack component="section" h="100%" mih={0} p="md" gap="md">
+    <Stack component="section" h="100%" mih={0} p="md" pb={0} gap="md">
       <Stack gap="md" style={{ flexShrink: 0 }}>
         <Group justify="space-between" gap="md" wrap="nowrap">
           <Title order={2} size="h4">统计分析</Title>
@@ -67,7 +67,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
 
       </Stack>
 
-      <Stack component="section" mih={0} flex={1} gap="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      <Stack component="section" mih={0} flex={1} gap="md" pb="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
           <MonthlyTrendChart months={months} expenseLabel={expenseScope === 'daily' ? '日常消费' : '支出'} />
           <ExpenseCategoryChart categories={expenseCategories} daily={expenseScope === 'daily'} />

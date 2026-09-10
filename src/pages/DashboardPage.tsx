@@ -60,7 +60,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   }
 
   return (
-    <Stack component="section" h="100%" mih={0} gap="sm" p="md">
+    <Stack component="section" h="100%" mih={0} gap="sm" p="md" pb={0}>
       <Stack gap="sm" style={{ flexShrink: 0 }}>
         <Paper
           pos="relative"
@@ -132,7 +132,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
         </CollapsibleTransactionSearch>
       </Stack>
 
-      <Box component="section" mih={0} flex={1} style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      <Box component="section" mih={0} flex={1} pb="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         {groups.length === 0 ? (
           <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</Text></Paper>
         ) : (

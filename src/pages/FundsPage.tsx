@@ -26,7 +26,7 @@ export function FundsPage(props: FundsPageProps) {
   );
 
   return (
-    <Stack component="section" h="100%" mih={0} gap="md" p="md">
+    <Stack component="section" h="100%" mih={0} gap="md" p="md" pb={0}>
       <Title order={2} size="h4" ta="center">资金</Title>
       <SegmentedControl
         fullWidth
