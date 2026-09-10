@@ -17,7 +17,7 @@ import {
 
 export const bookTheme = createTheme({
   primaryColor: 'teal',
-  primaryShade: 7,
+  primaryShade: { light: 7, dark: 5 },
   defaultRadius: 'sm',
   fontFamily: '"Noto Sans SC", "Microsoft YaHei", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   headings: {

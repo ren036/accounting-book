@@ -281,7 +281,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
           <TextInput label="目标金额" type="number" inputMode="decimal" min="0.01" step="0.01" value={goalAmount} placeholder="请输入目标金额" onChange={(event) => setGoalAmount(event.target.value)} />
           <TextInput label="目标日期（选填）" type="date" value={goalDate} onChange={(event) => setGoalDate(event.target.value)} />
           {editingGoal?.status === 'active' && <SegmentedControl fullWidth value={goalStatus} data={[{ value: 'active', label: '存钱中' }, { value: 'used', label: '已使用' }, { value: 'cancelled', label: '已取消' }]} onChange={(value) => setGoalStatus(value as SavingsBucketStatus)} />}
-          {editingGoal && editingGoal.status !== 'active' && <Box p="sm" bg="gray.0" style={{ borderRadius: 14 }}><Text size="sm" fw={700}>状态：{editingGoal.status === 'used' ? '已使用' : '已取消'}</Text><Text size="xs" c="dimmed">已结束的专项不能再次存取或修改状态</Text></Box>}
+          {editingGoal && editingGoal.status !== 'active' && <Box p="sm" bg="var(--book-surface-muted)" style={{ borderRadius: 14 }}><Text size="sm" fw={700}>状态：{editingGoal.status === 'used' ? '已使用' : '已取消'}</Text><Text size="xs" c="dimmed">已结束的专项不能再次存取或修改状态</Text></Box>}
           <Button type="submit">{editingGoal ? '保存修改' : '创建'}</Button>
         </Stack>
       </Drawer>
@@ -333,7 +333,7 @@ function BucketCard({ bucket, balance, onDeposit, onWithdraw, onEdit, amountsHid
         {bucket.targetAmount && !targetReached && bucket.status === 'active' && <Text size="xs" c="dimmed">还需 {privateMoney(Math.max(bucket.targetAmount - balance, 0), amountsHidden)} · 已完成 {progress.toFixed(0)}%</Text>}
         {bucket.status === 'used' && <Text size="xs" c="dimmed">该金额已使用，并已从储蓄总额移除</Text>}
         {bucket.status === 'cancelled' && <Text size="xs" c="dimmed">专项已取消，剩余金额已退回可支配</Text>}
-        {getSuggestedMonthlyDeposit(bucket, balance) !== null && !targetReached && <Box p="sm" bg="teal.0" c="teal.8" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {privateMoney(getSuggestedMonthlyDeposit(bucket, balance) ?? 0, amountsHidden)}</Text></Box>}
+        {getSuggestedMonthlyDeposit(bucket, balance) !== null && !targetReached && <Box p="sm" bg="var(--mantine-color-teal-light)" c="var(--mantine-color-teal-light-color)" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {privateMoney(getSuggestedMonthlyDeposit(bucket, balance) ?? 0, amountsHidden)}</Text></Box>}
         <SimpleGrid cols={2} spacing="xs"><Button disabled={depositDisabled} onClick={onDeposit}>{depositLabel}</Button><Button variant="light" color="gray" disabled={isClosed || balance <= 0} onClick={onWithdraw}>取出</Button></SimpleGrid>
       </Stack>
     </Paper>

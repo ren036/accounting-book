@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Alert, Box, Button, Divider, FileInput, Paper, Stack, Text, Title } from '@mantine/core'
+import { Alert, Box, Button, Divider, FileInput, Group, Paper, SegmentedControl, Stack, Text, Title, useMantineColorScheme } from '@mantine/core'
+import { Moon, Sun } from 'lucide-react'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
 import {
@@ -31,10 +32,18 @@ type SettingsPageProps = {
 }
 
 export function SettingsPage({ onChanged }: SettingsPageProps) {
+  const { colorScheme, setColorScheme } = useMantineColorScheme()
   const [message, setMessage] = useState('')
   const [selectedImportFile, setSelectedImportFile] = useState<File | null>(null)
   const [isImporting, setIsImporting] = useState(false)
   const storageMode = getStorageMode()
+
+  function handleColorSchemeChange(value: string) {
+    const nextColorScheme = value === 'dark' ? 'dark' : 'light'
+    setColorScheme(nextColorScheme)
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute('content', nextColorScheme === 'dark' ? '#171b18' : '#f4f6f3')
+  }
 
   async function handleJsonExport() {
     const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
@@ -113,6 +122,23 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
       <Title order={2} size="h4" ta="center" mb="sm">设置</Title>
       <Paper p="lg">
         <Stack gap="md">
+        <Box>
+          <Text fw={700}>外观</Text>
+          <Text mt={4} mb="sm" size="sm" c="dimmed">选择记账本的显示主题</Text>
+          <SegmentedControl
+            fullWidth
+            value={colorScheme === 'dark' ? 'dark' : 'light'}
+            onChange={handleColorSchemeChange}
+            aria-label="显示主题"
+            data={[
+              { value: 'light', label: <Group gap={6} justify="center"><Sun size={16} aria-hidden />明亮</Group> },
+              { value: 'dark', label: <Group gap={6} justify="center"><Moon size={16} aria-hidden />暗色</Group> },
+            ]}
+          />
+        </Box>
+
+        <Divider />
+
         <Box>
           <Text fw={700}>{storageMode.label}</Text>
           <Text mt="xs" c="dimmed">{storageMode.description}</Text>

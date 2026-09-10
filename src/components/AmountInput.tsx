@@ -41,7 +41,7 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
   }
 
   return (
-    <Box bg="white" p="sm" pt={4} aria-label="金额键盘">
+    <Box bg="var(--book-surface)" p="sm" pt={4} aria-label="金额键盘">
       {onDismiss && (
         <ActionIcon type="button" aria-label="收起数字键盘" onClick={onDismiss} variant="transparent" color="gray" w="100%" h={20}>
           <ChevronDown aria-hidden size={17} strokeWidth={2.2} />
@@ -50,7 +50,7 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
       <Group gap={6} align="stretch" wrap="nowrap">
         <SimpleGrid cols={3} spacing={6} flex={3}>
           {keys.map((key) => (
-            <Button key={key} type="button" aria-label={key === 'backspace' ? '删除一位' : `输入 ${key}`} onClick={() => press(key)} variant="light" color="gray" radius="lg" mih={44} fz="lg" c="dark">
+            <Button key={key} type="button" aria-label={key === 'backspace' ? '删除一位' : `输入 ${key}`} onClick={() => press(key)} variant="light" color="gray" radius="lg" mih={44} fz="lg">
               {key === 'backspace' ? <Delete aria-hidden size={22} /> : key}
             </Button>
           ))}

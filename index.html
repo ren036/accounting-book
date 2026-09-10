@@ -3,8 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-    <meta name="theme-color" content="#111827" />
+    <meta name="theme-color" content="#f4f6f3" />
     <title>记账本</title>
+    <script>
+      try {
+        const scheme = localStorage.getItem('accounting-book-color-scheme') === 'dark' ? 'dark' : 'light'
+        document.documentElement.dataset.mantineColorScheme = scheme
+        document.querySelector('meta[name="theme-color"]').content = scheme === 'dark' ? '#171b18' : '#f4f6f3'
+      } catch (error) {
+        document.documentElement.dataset.mantineColorScheme = 'light'
+      }
+    </script>
     <style>
       html,
       body,
@@ -16,6 +25,11 @@
       html,
       body {
         background: #f4f6f3;
+      }
+
+      html[data-mantine-color-scheme='dark'],
+      html[data-mantine-color-scheme='dark'] body {
+        background: #111512;
       }
 
       .app-boot {
@@ -46,6 +60,15 @@
         font-size: 17px;
         font-weight: 750;
         letter-spacing: 0.08em;
+      }
+
+      html[data-mantine-color-scheme='dark'] .app-boot {
+        color: #e8ede9;
+      }
+
+      html[data-mantine-color-scheme='dark'] .app-boot__mark {
+        background: #34745e;
+        box-shadow: 0 10px 28px rgb(0 0 0 / 32%);
       }
     </style>
   </head>

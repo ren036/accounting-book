@@ -6,6 +6,28 @@
   --book-text: #202622;
   --book-muted: #707871;
   --book-border: #e1e6e2;
+  --book-ledger-start: #f0f7f3;
+  --book-ledger-middle: #ffffff;
+  --book-ledger-end: #f8f5ed;
+  --book-panel: rgb(255 255 255 / 72%);
+  --book-shadow: rgb(36 70 56 / 6%);
+  color-scheme: light;
+}
+
+:root[data-mantine-color-scheme='dark'] {
+  --book-green: #6caf95;
+  --book-bg: #111512;
+  --book-surface: #1b201c;
+  --book-surface-muted: #252c27;
+  --book-text: #e8ede9;
+  --book-muted: #a1aaa3;
+  --book-border: #303832;
+  --book-ledger-start: #17221c;
+  --book-ledger-middle: #1b201c;
+  --book-ledger-end: #211f1a;
+  --book-panel: rgb(27 32 28 / 82%);
+  --book-shadow: rgb(0 0 0 / 24%);
+  color-scheme: dark;
 }
 
 html,
@@ -28,13 +50,13 @@ button {
 }
 
 .ledger-surface {
-  background: linear-gradient(135deg, #f0f7f3 0%, #ffffff 58%, #f8f5ed 100%);
+  background: linear-gradient(135deg, var(--book-ledger-start) 0%, var(--book-ledger-middle) 58%, var(--book-ledger-end) 100%);
   border: 1px solid var(--book-border);
-  box-shadow: 0 8px 24px rgb(36 70 56 / 6%);
+  box-shadow: 0 8px 24px var(--book-shadow);
 }
 
 .ledger-panel {
-  background: rgb(255 255 255 / 72%);
+  background: var(--book-panel);
   border: 1px solid var(--book-border);
   border-radius: 12px;
 }
@@ -74,6 +96,13 @@ button {
   animation: book-app-enter 260ms ease-out both;
 }
 
+body,
+.ledger-surface,
+.ledger-panel,
+.bottom-nav-item {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
 @keyframes book-app-enter {
   from {
     opacity: 0;
@@ -88,5 +117,12 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .book-app-enter {
     animation: none;
+  }
+
+  body,
+  .ledger-surface,
+  .ledger-panel,
+  .bottom-nav-item {
+    transition: none;
   }
 }

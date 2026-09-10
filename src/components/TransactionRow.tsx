@@ -20,7 +20,7 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
       component="button"
       type="button"
       className="transaction-row"
-      bg={isExcludedFromBudget ? 'yellow.0' : undefined}
+      bg={isExcludedFromBudget ? 'var(--mantine-color-yellow-light)' : undefined}
       onClick={() => onOpen(transaction.id)}
     >
       <Group justify="space-between" gap="sm" wrap="nowrap">

@@ -145,7 +145,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
       </Stack>
 
       {showAmountKeyboard && (
-        <Box bg="white" pb="env(safe-area-inset-bottom)" style={{ flexShrink: 0 }}>
+        <Box bg="var(--book-surface)" pb="env(safe-area-inset-bottom)" style={{ flexShrink: 0 }}>
           <AmountKeyboard
             value={amount}
             onChange={setAmount}
