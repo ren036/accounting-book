@@ -16,10 +16,11 @@ export function TransactionGroups({
   onOpen: (id: string) => void
 }) {
   return (
-    <Stack gap="md">
+    <>
+    <Stack gap="xs">
       {groups.map((group) => (
         <section key={group.date}>
-          <Text mb={6} size="sm" c="dimmed" fw={600}>{group.label}</Text>
+          <Text size="sm" c="dimmed" fw={600}>{group.label}</Text>
           <Box className="transaction-list">
             {group.transactions.map((transaction) => (
               <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
@@ -28,5 +29,6 @@ export function TransactionGroups({
         </section>
       ))}
     </Stack>
+    </>
   )
 }
