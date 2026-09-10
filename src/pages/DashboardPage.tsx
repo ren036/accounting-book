@@ -35,12 +35,10 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   const summary = summarizeMonth(transactions, month)
   const budget = budgets.find((item) => item.month === month)
   const budgetProgress = budget ? summarizeBudget(transactions, budget) : null
-  const dailyExpense = summarizeDailyExpense(transactions, month)
   const groups = groupMonthTransactionsByDay(searchTransactions(transactions, searchQuery), month)
   const hasSearchQuery = searchQuery.trim().length > 0
   const budgetBarPercentage = budgetProgress ? Math.min(Math.max(budgetProgress.percentage, 0), 100) : 0
   const budgetExceeded = Boolean(budgetProgress && budgetProgress.percentage > 100)
-  const monthLabel = `${Number(month.slice(5))}月账本`
   const transactionCount = transactions.filter((transaction) => transaction.occurredAt.startsWith(month)).length
 
   async function handleBackgroundFile(event: React.ChangeEvent<HTMLInputElement>) {
@@ -71,13 +69,6 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
 
   return (
     <PageLayout gap="sm" headerGap="sm" contentGap="md" header={<>
-        <Group justify="space-between" align="flex-end">
-          <Box>
-            <Text size="xs" c="dimmed">{month.slice(0, 4)}年</Text>
-            <Title order={1} fz={24} fw={700}>{monthLabel}</Title>
-          </Box>
-          <Text size="xs" c="dimmed">{transactionCount} 笔记录</Text>
-        </Group>
         <Paper
           className="ledger-surface"
           pos="relative"
@@ -151,7 +142,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
       </>}>
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
           <Group gap="xs" align="baseline">
-            <Title order={3} size="h5">本月流水</Title>
+            <Title order={3} size="h5">{`${Number(month.slice(5))}月流水`}</Title>
             <Text size="xs" c="dimmed">{hasSearchQuery ? `${groups.reduce((count, group) => count + group.transactions.length, 0)} 条结果` : `${transactionCount} 笔`}</Text>
           </Group>
         </CollapsibleTransactionSearch>
