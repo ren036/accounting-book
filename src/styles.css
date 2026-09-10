@@ -61,6 +61,25 @@ button {
   border-radius: 12px;
 }
 
+.local-storage-card {
+  padding: 14px;
+  background: var(--book-panel);
+  border: 1px solid var(--book-border);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px var(--book-shadow);
+}
+
+.local-storage-card__icon {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--book-green);
+  background: var(--book-surface-muted);
+  border-radius: 50%;
+  place-items: center;
+}
+
 .transaction-list {
   background: transparent;
 }
@@ -99,6 +118,8 @@ button {
 body,
 .ledger-surface,
 .ledger-panel,
+.local-storage-card,
+.local-storage-card__icon,
 .bottom-nav-item {
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
 }
@@ -122,6 +143,8 @@ body,
   body,
   .ledger-surface,
   .ledger-panel,
+  .local-storage-card,
+  .local-storage-card__icon,
   .bottom-nav-item {
     transition: none;
   }

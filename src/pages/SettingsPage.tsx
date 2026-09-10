@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Alert, Box, Button, Divider, FileInput, Group, Paper, SegmentedControl, Stack, Text, Title, useMantineColorScheme } from '@mantine/core'
-import { Moon, Sun } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { Alert, Box, Button, Divider, FileInput, Group, Paper, Progress, SegmentedControl, Stack, Text, Title, useMantineColorScheme } from '@mantine/core'
+import { HardDrive, Moon, Sun } from 'lucide-react'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
 import {
@@ -16,6 +16,7 @@ import {
 } from '../lib/db'
 import { downloadBlob } from '../lib/download'
 import { getStorageMode } from '../lib/storageMode'
+import { formatStorageSize, getLocalStorageInfo, type LocalStorageInfo } from '../lib/localStorageInfo'
 import { confirmAction } from '../ui/feedback'
 
 const versionUpdatedAt = new Intl.DateTimeFormat('zh-CN', {
@@ -36,7 +37,20 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   const [message, setMessage] = useState('')
   const [selectedImportFile, setSelectedImportFile] = useState<File | null>(null)
   const [isImporting, setIsImporting] = useState(false)
+  const [localStorageInfo, setLocalStorageInfo] = useState<LocalStorageInfo | null | undefined>(undefined)
   const storageMode = getStorageMode()
+
+  const refreshLocalStorageInfo = useCallback(async () => {
+    try {
+      setLocalStorageInfo(await getLocalStorageInfo())
+    } catch {
+      setLocalStorageInfo(null)
+    }
+  }, [])
+
+  useEffect(() => {
+    void refreshLocalStorageInfo()
+  }, [refreshLocalStorageInfo])
 
   function handleColorSchemeChange(value: string) {
     const nextColorScheme = value === 'dark' ? 'dark' : 'light'
@@ -93,6 +107,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
       }
 
       await onChanged()
+      await refreshLocalStorageInfo()
       setMessage(importResult.message)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '导入失败。')
@@ -114,6 +129,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
     await clearAllData()
     await onChanged()
+    await refreshLocalStorageInfo()
     setMessage('已清空全部数据。')
   }
 
@@ -140,8 +156,9 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
         <Divider />
 
         <Box>
-          <Text fw={700}>{storageMode.label}</Text>
-          <Text mt="xs" c="dimmed">{storageMode.description}</Text>
+          <Text fw={700}>数据与存储</Text>
+          <Text mt={4} mb="sm" size="sm" c="dimmed">{storageMode.description}</Text>
+          <LocalStorageCard info={localStorageInfo} />
         </Box>
 
         <Divider />
@@ -177,6 +194,34 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
         </Text>
         </Stack>
       </Paper>
+    </Box>
+  )
+}
+
+function LocalStorageCard({ info }: { info: LocalStorageInfo | null | undefined }) {
+  const description = info === undefined
+    ? '正在读取存储空间...'
+    : info === null
+      ? '数据保存在本机，当前浏览器未提供空间用量信息'
+      : `已用 ${formatStorageSize(info.usage)} / 可用额度 ${formatStorageSize(info.quota)}`
+
+  return (
+    <Box className="local-storage-card" role="status" aria-label={`本机存储，${description}`}>
+      <Group gap="sm" wrap="nowrap">
+        <Box className="local-storage-card__icon" aria-hidden="true">
+          <HardDrive size={17} strokeWidth={1.8} />
+        </Box>
+        <Box miw={0} flex={1}>
+          <Text size="sm" fw={700} lh={1.25}>本机存储</Text>
+          <Text mt={2} size="xs" c="dimmed" truncate>{description}</Text>
+        </Box>
+      </Group>
+      <Progress
+        mt="sm"
+        value={info?.percentage ?? 0}
+        size={6}
+        aria-label="本机存储使用比例"
+      />
     </Box>
   )
 }
