@@ -12,7 +12,7 @@ export function AmountInput({ value, onActivateKeyboard }: AmountInputProps) {
   const hasExpression = /[+-]/.test(value)
 
   return (
-    <Paper component="section" p="md" radius="xl" shadow="xs"
+    <Paper component="section" p="md"
       aria-label="金额输入区，点击显示数字键盘"
       onClick={onActivateKeyboard}
     >
@@ -41,7 +41,7 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
   }
 
   return (
-    <Box component="section" bg="white" p="sm" pt={4} aria-label="金额键盘">
+    <Box bg="white" p="sm" pt={4} aria-label="金额键盘">
       {onDismiss && (
         <ActionIcon type="button" aria-label="收起数字键盘" onClick={onDismiss} variant="transparent" color="gray" w="100%" h={20}>
           <ChevronDown aria-hidden size={17} strokeWidth={2.2} />

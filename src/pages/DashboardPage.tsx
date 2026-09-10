@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
-import { Box, Button, Group, Paper, Progress, Stack, Text, ThemeIcon, Title } from '@mantine/core'
+import { Box, Button, Group, Menu, Paper, Progress, Stack, Text, ThemeIcon, Title } from '@mantine/core'
 import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
-import { TransactionRow } from '../components/TransactionRow'
+import { TransactionGroups } from '../components/TransactionGroups'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
 import type { MonthlyBudget } from '../domain/budget'
@@ -9,8 +9,10 @@ import { summarizeBudget, summarizeDailyExpense } from '../domain/budget'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { ArrowRight, ImagePlus, PiggyBank } from 'lucide-react'
+import { ArrowRight, ChevronDown, ImagePlus, PiggyBank, RotateCcw } from 'lucide-react'
 import { showMessage } from '../ui/feedback'
+import { EmptyState } from '../ui/display'
+import { PageLayout } from '../ui/layout'
 type DashboardPageProps = {
   transactions: Transaction[]
   budgets: MonthlyBudget[]
@@ -59,23 +61,26 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
     backgroundInputRef.current?.click()
   }
 
+  async function handleResetBackground() {
+    await onBalanceCardBackgroundChange(null)
+    showMessage('已恢复默认背景')
+  }
+
   return (
-    <Stack component="section" h="100%" mih={0} gap="sm" p="md" pb={0}>
-      <Stack gap="sm" style={{ flexShrink: 0 }}>
+    <PageLayout gap="sm" headerGap="sm" contentGap="md" header={<>
         <Paper
           pos="relative"
           mih={142}
           px="lg"
           py="md"
-          radius="xl"
           c="white"
           shadow="md"
           style={{
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            backgroundSize: 'cover',
             backgroundPosition: 'center',
+            backgroundSize: 'cover',
             backgroundImage: balanceCardBackground
               ? `linear-gradient(135deg, rgb(7 75 62 / 20%), rgb(10 42 36 / 18%)), url(${JSON.stringify(balanceCardBackground)})`
               : 'radial-gradient(circle at 20% 0%, #4f46e5 0, transparent 34%), linear-gradient(#111827, #111827)',
@@ -83,16 +88,21 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
         >
           <Group justify="space-between" align="center" wrap="nowrap">
             <Text size="sm" c="rgba(255,255,255,.82)" fw={500}>当前可支配</Text>
-            <Button
-              size="compact-xs"
-              radius="xl"
-              color="gray"
-              variant="white"
-              leftSection={<ImagePlus size={13} />}
-              onClick={handleBackgroundButton}
-            >
-              更换背景
-            </Button>
+            <Menu position="bottom-end" shadow="md">
+              <Menu.Target>
+                <Button size="compact-xs" color="gray" variant="white" rightSection={<ChevronDown size={12} />}>
+                  背景
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item leftSection={<ImagePlus size={15} />} onClick={handleBackgroundButton}>
+                  更换背景
+                </Menu.Item>
+                <Menu.Item leftSection={<RotateCcw size={15} />} disabled={!balanceCardBackground} onClick={() => void handleResetBackground()}>
+                  恢复默认
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Group>
           <Text mt={4} fz="clamp(30px, 10vw, 38px)" fw={750} lh={1.15} style={{ letterSpacing: '-0.035em' }}>{privateMoney(disposableBalance, savingsAmountsHidden)}</Text>
           <Box component="input" ref={backgroundInputRef} display="none" type="file" accept="image/*" onChange={handleBackgroundFile} />
@@ -101,7 +111,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             <Text size="xs" c="rgba(255,255,255,.84)">月支出 <Text component="span" c="white" fw={650}>{formatMoney(summary.expense)}</Text></Text>
           </Group>
         </Paper>
-        <Paper component="button" type="button" p="md" radius="xl" shadow="xs" w="100%" ta="left" c="inherit" onClick={onOpenBudget}>
+        <Paper component="button" type="button" p="md" w="100%" ta="left" c="inherit" onClick={onOpenBudget}>
           <Stack gap="xs">
           <Group justify="space-between" gap="xs" wrap="nowrap">
             <Group gap="xs" wrap="nowrap" miw={0}>
@@ -115,7 +125,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
           </Group>
           {budgetProgress && (
             <>
-              <Progress value={budgetBarPercentage} color={budgetExceeded ? 'red' : 'teal'} size={4} radius="xl" />
+              <Progress value={budgetBarPercentage} color={budgetExceeded ? 'red' : 'teal'} size={4} />
               <Group justify="space-between">
                 <Text size="xs" c="dimmed">{budgetProgress.remaining >= 0 ? '剩余' : '超出'} <Text component="span" fw={700} c={budgetExceeded ? 'red.6' : 'dark'}>{formatMoney(Math.abs(budgetProgress.remaining))}</Text></Text>
                 <Text size="xs" c="dimmed">{month.replace('-', '年')}月</Text>
@@ -123,34 +133,20 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             </>
           )}
           {!budgetProgress && (
-            <Group justify="space-between" bg="teal.0" px="sm" py={7} style={{ borderRadius: 12 }}><Text size="xs" c="teal.8">控制支出，从设定目标开始</Text><Text size="xs" fw={700} c="teal.8">立即设置</Text></Group>
+            <Group justify="space-between" bg="teal.0" c="teal.8" px="sm" py={7} style={{ borderRadius: 12 }}><Text size="xs">控制支出，从设定目标开始</Text><Text size="xs" fw={700}>立即设置</Text></Group>
           )}
           </Stack>
         </Paper>
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
           <Title order={3} size="h5">当月账单详情</Title>
         </CollapsibleTransactionSearch>
-      </Stack>
-
-      <Box component="section" mih={0} flex={1} pb="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      </>}>
         {groups.length === 0 ? (
-          <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</Text></Paper>
+          <EmptyState>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</EmptyState>
         ) : (
-          <Stack gap="md">
-            {groups.map((group) => (
-              <Stack component="section" gap="xs" key={group.date}>
-                <Text size="sm" c="dimmed" fw={600}>{group.label}</Text>
-                <Stack gap="xs">
-                  {group.transactions.map((transaction) => (
-                    <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
-                  ))}
-                </Stack>
-              </Stack>
-            ))}
-          </Stack>
+          <TransactionGroups groups={groups} onOpen={onOpen} />
         )}
-      </Box>
-    </Stack>
+    </PageLayout>
   )
 }
 

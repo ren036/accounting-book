@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Box, Button, Group, NumberInput, Paper, Progress, Stack, Text, TextInput, Title } from '@mantine/core'
+import { Box, Button, Group, NumberInput, Paper, Progress, Stack, Text, TextInput } from '@mantine/core'
 import type { MonthlyBudget } from '../domain/budget'
 import { summarizeBudget } from '../domain/budget'
 import type { Transaction } from '../domain/transaction'
@@ -9,14 +9,13 @@ import { formatMoney } from '../lib/money'
 import { confirmAction, showMessage } from '../ui/feedback'
 
 type BudgetPageProps = {
-  embedded?: boolean
   transactions: Transaction[]
   budgets: MonthlyBudget[]
   onChanged: () => Promise<void>
   onOpenMonth: (month: string) => void
 }
 
-export function BudgetPage({ embedded = false, transactions, budgets, onChanged, onOpenMonth }: BudgetPageProps) {
+export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: BudgetPageProps) {
   const [month, setMonth] = useState(currentMonth())
   const activeBudget = useMemo(() => budgets.find((budget) => budget.month === month), [budgets, month])
   const [amount, setAmount] = useState('')
@@ -56,9 +55,7 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
   }
 
   return (
-    <Box component="section" h={embedded ? undefined : '100%'} p={embedded ? 0 : 'md'} style={embedded ? undefined : { overflowY: 'auto' }}>
-      <Stack gap="md">
-        {!embedded && <Title order={2} size="h4" ta="center">月度预算</Title>}
+    <Stack gap="md">
 
         <TextInput
           label="选择月份"
@@ -67,7 +64,7 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
           onChange={(event) => setMonth(event.target.value || currentMonth())}
         />
 
-        <Paper component="button" type="button" p="lg" radius="xl" shadow="xs" w="100%" ta="left" onClick={() => onOpenMonth(month)} aria-label={`查看${month}月详细账单`}>
+        <Paper component="button" type="button" p="lg" w="100%" ta="left" c="inherit" onClick={() => onOpenMonth(month)} aria-label={`查看${month}月详细账单`}>
           <Stack gap="md">
             <Group justify="space-between" align="flex-end">
               <Box>
@@ -77,7 +74,7 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
               {progress && <Text fw={600} c={progress.remaining < 0 ? 'red.6' : 'teal.7'}>{progress.percentage.toFixed(0)}%</Text>}
             </Group>
 
-            <Progress value={barPercentage} color={progress && progress.percentage > 100 ? 'red' : 'teal'} size="md" radius="xl" aria-label="预算使用进度" />
+            <Progress value={barPercentage} color={progress && progress.percentage > 100 ? 'red' : 'teal'} size="md" aria-label="预算使用进度" />
 
             <Group grow align="flex-start">
               <Box><Text size="sm" c="dimmed">日常消费</Text><Text mt={4} fz="lg" fw={700}>{formatMoney(progress?.spent ?? 0)}</Text></Box>
@@ -87,7 +84,7 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
           </Stack>
         </Paper>
 
-        <Paper component="form" p="lg" radius="xl" shadow="xs" onSubmit={handleSave}>
+        <Paper component="form" p="lg" onSubmit={handleSave}>
           <Stack gap="md">
             <NumberInput
               label="预算金额"
@@ -97,11 +94,10 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
               value={amount}
               onChange={(value) => setAmount(String(value))}
             />
-            <Button color="teal" radius="xl" type="submit">{activeBudget ? '更新预算' : '设置预算'}</Button>
+            <Button type="submit">{activeBudget ? '更新预算' : '设置预算'}</Button>
             {activeBudget && <Button color="red" variant="subtle" type="button" onClick={handleDelete}>清除本月预算</Button>}
           </Stack>
         </Paper>
-      </Stack>
-    </Box>
+    </Stack>
   )
 }

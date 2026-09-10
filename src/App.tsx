@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Box, Center, Loader, Text } from '@mantine/core'
+import { Box, Center, Flex, Loader, Text } from '@mantine/core'
 import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
@@ -143,16 +143,16 @@ export function App() {
   const totalSavings = getTotalSavings(savingsMovements, savingsBuckets)
 
   return (
-    <Box
+    <Flex
       component="main"
+      direction="column"
       h={viewportHeight > 0 ? viewportHeight : '100dvh'}
       mih={0}
       bg="var(--book-bg)"
       c="var(--book-text)"
-      display="flex"
-      style={{ flexDirection: 'column', overflow: 'hidden' }}
+      style={{ overflow: 'hidden' }}
     >
-      <Box mih={0} flex={1} style={{ overflowY: 'auto', overflowX: 'hidden' }}>
+      <Box flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
         {editingTransaction ? (
           <EditTransactionPage
             transaction={editingTransaction}
@@ -240,7 +240,7 @@ export function App() {
           }}
         />
       )}
-    </Box>
+    </Flex>
   )
 }
 

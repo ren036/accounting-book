@@ -12,7 +12,12 @@ body,
   background: var(--book-bg);
 }
 
-body { margin: 0; color: var(--book-text); -webkit-tap-highlight-color: transparent; }
+body {
+  margin: 0;
+  color: var(--book-text);
+  -webkit-tap-highlight-color: transparent;
+}
+
 button {
   border: 0;
   font: inherit;

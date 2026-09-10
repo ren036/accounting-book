@@ -4,6 +4,8 @@ import { formatMoney } from '../lib/money'
 import { CategoryEmoji, getCategoryVisual } from './CategoryEmoji'
 import { Box, Center, Group, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core'
 
+const chartTooltipStyle = { border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }
+
 export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months: MonthDetailSummary[]; expenseLabel?: string }) {
   const data = [...months].reverse().map((month) => ({ name: `${Number(month.month.slice(5))}月`, income: month.income, expense: month.expense }))
 
@@ -15,7 +17,7 @@ export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months:
             <LineChart data={data} margin={{ top: 10, right: 8, bottom: 0, left: -20 }}>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#747782', fontSize: 11 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#747782', fontSize: 10 }} width={48} />
-              <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
+              <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={chartTooltipStyle} />
               <Line type="monotone" dataKey="income" name="收入" stroke="#16a574" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
               <Line type="monotone" dataKey="expense" name={expenseLabel} stroke="#df626d" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             </LineChart>
@@ -54,7 +56,7 @@ export function CategoryChart({
                 <Pie data={data} dataKey="amount" nameKey="category" innerRadius="58%" outerRadius="82%" paddingAngle={2} stroke="none">
                   {data.map((item) => <Cell key={item.category} fill={getCategoryVisual(item.category).color} />)}
                 </Pie>
-                <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
+                <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={chartTooltipStyle} />
               </PieChart>
             </ResponsiveContainer>
             <Center pos="absolute" inset={0} style={{ pointerEvents: 'none' }}><Stack gap={2} align="center"><Text size="xs" c="dimmed">{totalLabel}</Text><Text fz="lg" fw={700}>¥{compactMoney(total)}</Text></Stack></Center>
@@ -76,7 +78,7 @@ export function CategoryChart({
 }
 
 function ChartCard({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <Paper component="section" miw={0} p={18} radius="xl" shadow="xs"><Text size="xs" fw={700} tt="uppercase" c="teal.7">{eyebrow}</Text><Title order={2} size="h4" mb="md">{title}</Title>{children}</Paper>
+  return <Paper component="section" miw={0} p={18}><Text size="xs" fw={700} tt="uppercase" c="teal.7">{eyebrow}</Text><Title order={2} size="h4" mb="md">{title}</Title>{children}</Paper>
 }
 
 function EmptyChart() { return <Center mih={192} bg="gray.0" style={{ borderRadius: 16 }}><Text size="sm" c="dimmed">暂无数据</Text></Center> }

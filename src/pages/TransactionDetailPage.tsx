@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, Center, Divider, Group, Paper, Stack, Text, Title } from '@mantine/core'
+import { ActionIcon, Box, Button, Divider, Group, Paper, Stack, Text, Title } from '@mantine/core'
 import { CategoryEmoji } from '../components/CategoryEmoji'
 import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
@@ -40,9 +40,8 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
         </ActionIcon>
       </Group>
 
-      <Paper component="article" p="lg" radius="xl" shadow="xs">
+      <Paper component="article" p="lg">
         <Stack gap="xl">
-        <Center>
           <Stack align="center" gap={6} py="sm">
           <Group gap="xs">
             <CategoryEmoji category={transaction.category} />
@@ -53,15 +52,14 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
           </Text>
           <Text size="sm" c="dimmed">{isIncome ? '收入' : '支出'}</Text>
           </Stack>
-        </Center>
 
-        <Stack gap={0}>
+        <Stack component="dl" gap={0} m={0}>
           <DetailRow label="日期" value={transaction.occurredAt.slice(0, 10)} />
           <DetailRow label="备注" value={note ?? '无备注'} />
           {!isIncome && <DetailRow label="日常消费" value={transaction.includeInBudget !== false ? '计入' : '不计入（非日常支出）'} />}
         </Stack>
 
-        <Button color="teal" variant="outline" radius="xl" type="button" onClick={onEdit}>编辑</Button>
+        <Button variant="outline" type="button" onClick={onEdit}>编辑</Button>
         </Stack>
       </Paper>
     </Box>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
-import { TransactionRow } from '../components/TransactionRow'
+import { TransactionGroups } from '../components/TransactionGroups'
 import { CategoryChart } from '../components/StatisticsCharts'
 import type { MonthlyBudget } from '../domain/budget'
 import { summarizeBudget } from '../domain/budget'
@@ -11,6 +11,8 @@ import { currentMonth, shiftMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 import { ActionIcon, Box, Group, Paper, Progress, SegmentedControl, Select, SimpleGrid, Stack, Text } from '@mantine/core'
 import { ArrowLeft } from 'lucide-react'
+import { EmptyState, SummaryMetric } from '../ui/display'
+import { PageLayout } from '../ui/layout'
 
 type MonthTransactionsPageProps = {
   month: string
@@ -56,13 +58,11 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
   }
 
   return (
-    <Stack component="section" h="100%" mih={0} gap="xs" p="md" pt="xs" pb={0}>
-      <Stack gap="xs" style={{ flexShrink: 0 }}>
+    <PageLayout gap="xs" headerGap="xs" contentGap="sm" paddingTop="xs" header={<>
         <Group justify="space-between" wrap="nowrap">
           <ActionIcon color="dark" variant="subtle" size="lg" aria-label="返回" onClick={onBack}><ArrowLeft size={22} /></ActionIcon>
           <Select
             w={210}
-            radius="xl"
             aria-label="选择账单月份"
             value={month}
             data={selectableMonths.map((value) => ({ value, label: `${value.replace('-', '年')}月账单` }))}
@@ -72,12 +72,12 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
           <Box w={36} aria-hidden="true" />
         </Group>
 
-        <Paper p="sm" radius="xl" shadow="xs"><SimpleGrid cols={3}>
-          <SummaryItem label="收入" value={formatMoney(summary.income)} color="teal.7" />
-          <SummaryItem label="支出" value={formatMoney(summary.expense)} color="red.6" />
-          <SummaryItem label="结余" value={formatMoney(summary.balance)} />
+        <Paper p="sm"><SimpleGrid cols={3}>
+          <SummaryMetric label="收入" value={formatMoney(summary.income)} color="teal.7" />
+          <SummaryMetric label="支出" value={formatMoney(summary.expense)} color="red.6" />
+          <SummaryMetric label="结余" value={formatMoney(summary.balance)} />
         </SimpleGrid></Paper>
-        <Paper p="sm" radius="xl" shadow="xs">
+        <Paper p="sm">
           <Stack gap={6}>
           <Group justify="space-between" align="flex-end">
             <Group gap="xs"><Text size="sm" c="dimmed">本月预算</Text><Text fw={700}>{budget ? formatMoney(budget.amount) : '未设置'}</Text></Group>
@@ -85,7 +85,7 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
           </Group>
           {budgetProgress && (
             <>
-              <Progress value={budgetBarPercentage} color={budgetProgress.percentage > 100 ? 'red' : 'teal'} size={6} radius="xl" aria-label="预算使用进度" />
+              <Progress value={budgetBarPercentage} color={budgetProgress.percentage > 100 ? 'red' : 'teal'} size={6} aria-label="预算使用进度" />
               <Group justify="space-between"><Text size="xs" c="dimmed">日常消费 {formatMoney(budgetProgress.spent)}</Text><Text size="xs" c="dimmed">{budgetProgress.remaining < 0 ? '超出' : '剩余'} {formatMoney(Math.abs(budgetProgress.remaining))}</Text></Group>
             </>
           )}
@@ -100,9 +100,7 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
             onChange={(value) => setActiveType(value as TransactionType)}
           />
         </CollapsibleTransactionSearch>
-      </Stack>
-
-      <Stack component="section" mih={0} flex={1} gap="sm" pb="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+      </>}>
         <CategoryChart
           categories={categories}
           eyebrow="月度构成"
@@ -110,26 +108,10 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
           totalLabel={`总${activeType === 'expense' ? '支出' : '收入'}`}
         />
         {groups.length === 0 ? (
-          <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">{emptyText}</Text></Paper>
+          <EmptyState>{emptyText}</EmptyState>
         ) : (
-          <Stack gap="md">
-            {groups.map((group) => (
-              <Stack component="section" gap="xs" key={group.date}>
-                <Text size="sm" c="dimmed" fw={600}>{group.label}</Text>
-                <Stack gap="xs">
-                  {group.transactions.map((transaction) => (
-                    <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
-                  ))}
-                </Stack>
-              </Stack>
-            ))}
-          </Stack>
+          <TransactionGroups groups={groups} onOpen={onOpen} />
         )}
-      </Stack>
-    </Stack>
+    </PageLayout>
   )
-}
-
-function SummaryItem({ label, value, color }: { label: string; value: string; color?: string }) {
-  return <Stack gap={2} ta="center"><Text size="xs" c="dimmed">{label}</Text><Text size="sm" fw={700} c={color}>{value}</Text></Stack>
 }

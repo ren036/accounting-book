@@ -23,7 +23,6 @@ export function CollapsibleTransactionSearch({ value, onChange, children }: Coll
           variant="subtle"
           color="gray"
           size="xs"
-          radius="xl"
           leftSection={expanded ? <X size={16} aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
           aria-expanded={expanded}
           aria-controls={searchId}

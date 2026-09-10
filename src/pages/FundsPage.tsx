@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Box, SegmentedControl, Stack, Title } from "@mantine/core";
+import { SegmentedControl, Title } from "@mantine/core";
 import type { MonthlyBudget } from "../domain/budget";
 import type { SavingsBucket, SavingsMovement } from "../domain/savings";
 import type { Transaction } from "../domain/transaction";
 import { BudgetPage } from "./BudgetPage";
 import { SavingsPage } from "./SavingsPage";
+import { PageLayout } from "../ui/layout";
 
 type FundsPageProps = {
   transactions: Transaction[];
@@ -26,21 +27,22 @@ export function FundsPage(props: FundsPageProps) {
   );
 
   return (
-    <Stack component="section" h="100%" mih={0} gap="md" p="md" pb={0}>
-      <Title order={2} size="h4" ta="center">资金</Title>
-      <SegmentedControl
-        fullWidth
-        data={[
-          { label: "储蓄", value: "savings" },
-          { label: "预算", value: "budget" },
-        ]}
-        value={tab}
-        onChange={(value) => setTab(value as "budget" | "savings")}
-      />
-      <Box mih={0} flex={1} style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+    <PageLayout header={
+      <>
+        <Title order={2} size="h4" ta="center">资金</Title>
+        <SegmentedControl
+          fullWidth
+          data={[
+            { label: "储蓄", value: "savings" },
+            { label: "预算", value: "budget" },
+          ]}
+          value={tab}
+          onChange={(value) => setTab(value as "budget" | "savings")}
+        />
+      </>
+    }>
         {tab === "budget" ? (
           <BudgetPage
-            embedded
             transactions={props.transactions}
             budgets={props.budgets}
             onChanged={props.onBudgetsChanged}
@@ -57,7 +59,6 @@ export function FundsPage(props: FundsPageProps) {
             onOpeningBalanceChange={props.onOpeningBalanceChange}
           />
         )}
-      </Box>
-    </Stack>
+    </PageLayout>
   );
 }

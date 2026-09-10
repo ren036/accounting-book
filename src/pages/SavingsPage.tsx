@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ActionIcon, Badge, Box, Button, Drawer, Group, Paper, Progress, SegmentedControl, SimpleGrid, Stack, Text, TextInput, Title } from '@mantine/core'
+import { ActionIcon, Badge, Box, Button, Drawer, Group, Paper, Progress, SegmentedControl, SimpleGrid, Stack, Text, TextInput, ThemeIcon, Title } from '@mantine/core'
 import { CheckCircle2, Landmark, Pencil, Plus, Target, Trash2 } from 'lucide-react'
 import {
   calibrateOpeningDisposableBalance,
@@ -19,6 +19,7 @@ import { combineDateWithTime, currentMonth, currentYear, todayInputValue } from 
 import { deleteSavingsMovement, saveSavingsBucket, saveSavingsMovement } from '../lib/db'
 import { formatMoney } from '../lib/money'
 import { confirmAction, showMessage } from '../ui/feedback'
+import { EmptyState } from '../ui/display'
 
 type SavingsPageProps = {
   transactions: Transaction[]
@@ -197,7 +198,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
   return (
     <Stack gap="md" pb="md">
       <SimpleGrid cols={2} spacing="md">
-        <Paper component="button" type="button" p="lg" radius="xl" shadow="xs" ta="left" c="inherit" onClick={() => {
+        <Paper component="button" type="button" p="lg" w="100%" ta="left" c="inherit" onClick={() => {
             setOpeningAmount(String(disposable.balance))
             setOpeningEditorOpen(true)
           }}>
@@ -205,7 +206,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
           <Text mt="xs" fz="xl" fw={700} c={disposable.balance < 0 ? 'red.6' : 'teal.7'}>{privateMoney(disposable.balance, amountsHidden)}</Text>
           <Text mt="xs" size="xs" c="dimmed">包含历月结转 · 点击校准金额</Text>
         </Paper>
-        <Paper p="lg" radius="xl" shadow="xs">
+        <Paper p="lg">
           <Text size="sm" c="dimmed">储蓄总额</Text>
           <Text mt="xs" fz="xl" fw={700}>{privateMoney(totalSavings, amountsHidden)}</Text>
           <Text mt="xs" size="xs" c="dimmed">通用储蓄与未结束专项</Text>
@@ -228,7 +229,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
       </Group>
 
       {goals.length === 0 ? (
-        <Paper component="button" type="button" p="lg" radius="xl" withBorder c="dimmed" ta="center" style={{ borderStyle: 'dashed' }} onClick={openCreateGoal}>
+        <Paper component="button" type="button" p="lg" w="100%" ta="center" c="dimmed" withBorder style={{ borderStyle: 'dashed' }} onClick={openCreateGoal}>
           创建一个目标，分多次慢慢存够
         </Paper>
       ) : goals.map((goal) => (
@@ -247,7 +248,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
 
       <Text mt={4} px={4} fw={700}>储蓄记录</Text>
       {sortedMovements.length === 0 ? (
-        <Paper p="lg" radius="xl"><Text ta="center" c="dimmed">还没有存入或取出记录</Text></Paper>
+        <EmptyState>还没有存入或取出记录</EmptyState>
       ) : (
         <Stack gap="xs">
           {sortedMovements.map((movement) => {
@@ -274,26 +275,26 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
         </Stack>
       )}
 
-      <Drawer opened={goalEditorOpen} onClose={() => setGoalEditorOpen(false)} position="bottom" radius="xl" title={editingGoal ? '编辑专项资金' : '创建专项资金'}>
+      <Drawer opened={goalEditorOpen} onClose={() => setGoalEditorOpen(false)} title={editingGoal ? '编辑专项资金' : '创建专项资金'}>
         <Stack component="form" gap="md" pb="env(safe-area-inset-bottom)" onSubmit={handleSaveGoal}>
           <TextInput label="想为什么事情存钱" value={goalName} maxLength={30} placeholder="例如：买电脑" onChange={(event) => setGoalName(event.target.value)} />
           <TextInput label="目标金额" type="number" inputMode="decimal" min="0.01" step="0.01" value={goalAmount} placeholder="请输入目标金额" onChange={(event) => setGoalAmount(event.target.value)} />
           <TextInput label="目标日期（选填）" type="date" value={goalDate} onChange={(event) => setGoalDate(event.target.value)} />
           {editingGoal?.status === 'active' && <SegmentedControl fullWidth value={goalStatus} data={[{ value: 'active', label: '存钱中' }, { value: 'used', label: '已使用' }, { value: 'cancelled', label: '已取消' }]} onChange={(value) => setGoalStatus(value as SavingsBucketStatus)} />}
-          {editingGoal && editingGoal.status !== 'active' && <Paper p="md" radius="lg" bg="gray.0"><Text size="sm" fw={700}>状态：{editingGoal.status === 'used' ? '已使用' : '已取消'}</Text><Text size="xs" c="dimmed">已结束的专项不能再次存取或修改状态</Text></Paper>}
-          <Button color="teal" radius="xl" type="submit">{editingGoal ? '保存修改' : '创建'}</Button>
+          {editingGoal && editingGoal.status !== 'active' && <Box p="sm" bg="gray.0" style={{ borderRadius: 14 }}><Text size="sm" fw={700}>状态：{editingGoal.status === 'used' ? '已使用' : '已取消'}</Text><Text size="xs" c="dimmed">已结束的专项不能再次存取或修改状态</Text></Box>}
+          <Button type="submit">{editingGoal ? '保存修改' : '创建'}</Button>
         </Stack>
       </Drawer>
 
-      <Drawer opened={openingEditorOpen} onClose={() => setOpeningEditorOpen(false)} position="bottom" radius="xl" title="校准当前可支配金额">
+      <Drawer opened={openingEditorOpen} onClose={() => setOpeningEditorOpen(false)} title="校准当前可支配金额">
         <Stack component="form" gap="md" pb="env(safe-area-inset-bottom)" onSubmit={handleSaveOpening}>
           <Text size="sm" c="dimmed">直接填写你现在实际可以自由支配的钱。系统会自动抵消历史账单的影响，之后继续随收支和储蓄变化。</Text>
           <TextInput label="当前实际金额" type="number" inputMode="decimal" step="0.01" value={openingAmount} onChange={(event) => setOpeningAmount(event.target.value)} />
-          <Button color="teal" radius="xl" type="submit">确认校准</Button>
+          <Button type="submit">确认校准</Button>
         </Stack>
       </Drawer>
 
-      <Drawer opened={movementEditor !== null} onClose={() => setMovementEditor(null)} position="bottom" radius="xl" title={movementEditor?.movement ? '编辑记录' : movementEditor?.type === 'deposit' ? `存入「${movementEditor?.bucket.name}」` : `从「${movementEditor?.bucket.name}」取出`}>
+      <Drawer opened={movementEditor !== null} onClose={() => setMovementEditor(null)} title={movementEditor?.movement ? '编辑记录' : movementEditor?.type === 'deposit' ? `存入「${movementEditor?.bucket.name}」` : `从「${movementEditor?.bucket.name}」取出`}>
         {movementEditor && (
           <Stack component="form" gap="md" pb="env(safe-area-inset-bottom)" onSubmit={handleSaveMovement}>
             <SegmentedControl fullWidth data={[{ label: '存入', value: 'deposit' }, { label: '取出', value: 'withdrawal' }]}
@@ -303,7 +304,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
             <TextInput label="金额" autoFocus type="number" inputMode="decimal" min="0.01" step="0.01" value={movementAmount} onChange={(event) => setMovementAmount(event.target.value)} />
             <TextInput label="日期" type="date" max={todayInputValue()} value={movementDate} onChange={(event) => setMovementDate(event.target.value)} />
             <TextInput label="备注（选填）" value={movementNote} maxLength={100} onChange={(event) => setMovementNote(event.target.value)} />
-            <Button color="teal" radius="xl" type="submit">保存</Button>
+            <Button type="submit">保存</Button>
           </Stack>
         )}
       </Drawer>
@@ -321,19 +322,19 @@ function BucketCard({ bucket, balance, onDeposit, onWithdraw, onEdit, amountsHid
   const statusLabel = bucket.status === 'used' ? '已使用' : bucket.status === 'cancelled' ? '已取消' : targetReached ? '已存够' : '存钱中'
   const statusColor = bucket.status === 'used' ? 'yellow' : bucket.status === 'cancelled' ? 'gray' : targetReached ? 'teal' : 'blue'
   return (
-    <Paper component="article" p="lg" radius="xl" shadow="xs">
+    <Paper component="article" p="lg">
       <Stack gap="md">
         <Group justify="space-between" align="flex-start" gap="md" wrap="nowrap">
-          <Group gap="xs" wrap="nowrap"><ActionIcon component="span" color="teal" variant="light" radius="xl" size="lg">{bucket.kind === 'general' ? <Landmark size={20} /> : <Target size={20} />}</ActionIcon><Box><Text fw={700}>{bucket.name}</Text>{bucket.targetDate && <Text size="xs" c="dimmed">目标日期 {bucket.targetDate}</Text>}</Box></Group>
-          {bucket.kind === 'goal' && <Group gap={4} wrap="nowrap"><Badge color={statusColor} variant="light" leftSection={<CheckCircle2 size={12} />}>{statusLabel}</Badge>{onEdit && <ActionIcon variant="light" color="gray" radius="xl" aria-label={`编辑${bucket.name}`} onClick={onEdit}><Pencil size={15} /></ActionIcon>}</Group>}
+          <Group gap="xs" wrap="nowrap"><ThemeIcon color="teal" variant="light" radius="xl" size="lg">{bucket.kind === 'general' ? <Landmark size={20} /> : <Target size={20} />}</ThemeIcon><Box><Text fw={700}>{bucket.name}</Text>{bucket.targetDate && <Text size="xs" c="dimmed">目标日期 {bucket.targetDate}</Text>}</Box></Group>
+          {bucket.kind === 'goal' && <Group gap={4} wrap="nowrap"><Badge color={statusColor} variant="light" leftSection={<CheckCircle2 size={12} />}>{statusLabel}</Badge>{onEdit && <ActionIcon variant="light" color="gray" aria-label={`编辑${bucket.name}`} onClick={onEdit}><Pencil size={15} /></ActionIcon>}</Group>}
         </Group>
         <Text fz="xl" fw={700}>{privateMoney(balance, amountsHidden)}{bucket.targetAmount && <Text component="span" size="sm" c="dimmed"> / {privateMoney(bucket.targetAmount, amountsHidden)}</Text>}</Text>
-        {bucket.targetAmount && <Progress value={Math.min(progress, 100)} color="teal" size="sm" radius="xl" />}
+        {bucket.targetAmount && <Progress value={Math.min(progress, 100)} size="sm" />}
         {bucket.targetAmount && !targetReached && bucket.status === 'active' && <Text size="xs" c="dimmed">还需 {privateMoney(Math.max(bucket.targetAmount - balance, 0), amountsHidden)} · 已完成 {progress.toFixed(0)}%</Text>}
         {bucket.status === 'used' && <Text size="xs" c="dimmed">该金额已使用，并已从储蓄总额移除</Text>}
         {bucket.status === 'cancelled' && <Text size="xs" c="dimmed">专项已取消，剩余金额已退回可支配</Text>}
-        {getSuggestedMonthlyDeposit(bucket, balance) !== null && !targetReached && <Paper p="sm" radius="md" bg="teal.0"><Text size="xs" c="teal.8">按目标日期，建议每月存 {privateMoney(getSuggestedMonthlyDeposit(bucket, balance) ?? 0, amountsHidden)}</Text></Paper>}
-        <SimpleGrid cols={2} spacing="xs"><Button color="teal" radius="xl" disabled={depositDisabled} onClick={onDeposit}>{depositLabel}</Button><Button variant="light" color="gray" radius="xl" disabled={isClosed || balance <= 0} onClick={onWithdraw}>取出</Button></SimpleGrid>
+        {getSuggestedMonthlyDeposit(bucket, balance) !== null && !targetReached && <Box p="sm" bg="teal.0" c="teal.8" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {privateMoney(getSuggestedMonthlyDeposit(bucket, balance) ?? 0, amountsHidden)}</Text></Box>}
+        <SimpleGrid cols={2} spacing="xs"><Button disabled={depositDisabled} onClick={onDeposit}>{depositLabel}</Button><Button variant="light" color="gray" disabled={isClosed || balance <= 0} onClick={onWithdraw}>取出</Button></SimpleGrid>
       </Stack>
     </Paper>
   )
@@ -343,7 +344,7 @@ function SavingsTrend({ movements, amountsHidden }: { movements: ReturnType<type
   const visible = movements.slice(-6)
   const maximum = Math.max(...visible.map((item) => Math.max(item.deposits, item.withdrawals)), 1)
   return (
-    <Paper component="section" p="lg" radius="xl" shadow="xs">
+    <Paper component="section" p="lg">
       <Stack gap="md">
       <Box><Text size="xs" fw={700} tt="uppercase" c="teal.7">储蓄趋势</Text><Title order={3} size="h5" mt={4}>近 6 个月存取</Title></Box>
       <SimpleGrid cols={6} spacing="xs" h={144} style={{ alignItems: 'end' }}>

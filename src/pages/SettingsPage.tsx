@@ -111,7 +111,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   return (
     <Box component="section" p="md">
       <Title order={2} size="h4" ta="center" mb="sm">设置</Title>
-      <Paper p="lg" radius="xl" shadow="xs">
+      <Paper p="lg">
         <Stack gap="md">
         <Box>
           <Text fw={700}>{storageMode.label}</Text>
@@ -120,10 +120,10 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
         <Divider />
 
-        <Button color="teal" radius="xl" type="button" onClick={handleJsonExport}>
+        <Button type="button" onClick={handleJsonExport}>
           导出 JSON
         </Button>
-        <Button color="blue" radius="xl" type="button" onClick={handleExcelExport}>
+        <Button color="blue" type="button" onClick={handleExcelExport}>
           导出 Excel
         </Button>
         <FileInput
@@ -136,15 +136,15 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
           }}
           clearable
         />
-        <Button color="teal" radius="xl" type="button" onClick={handleImport} disabled={!selectedImportFile} loading={isImporting}>
+        <Button type="button" onClick={handleImport} disabled={!selectedImportFile} loading={isImporting}>
           {isImporting ? '导入中...' : '导入'}
         </Button>
 
-        <Button color="red" variant="light" radius="xl" type="button" onClick={handleClearAll}>
+        <Button color="red" variant="light" type="button" onClick={handleClearAll}>
           清空全部数据
         </Button>
 
-        {message && <Alert color="blue" variant="light">{message}</Alert>}
+        {message && <Alert color="blue">{message}</Alert>}
 
         <Text ta="center" size="xs" c="dimmed">
           版本 v{__APP_VERSION__} · 更新于 {versionUpdatedAt}

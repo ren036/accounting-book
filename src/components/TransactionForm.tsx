@@ -5,7 +5,7 @@ import { clampInputDateToMax, combineDateWithTime, todayInputValue } from '../li
 import { parseAmountExpression } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
-import { Box, Divider, Paper, SegmentedControl, Stack, Switch, Textarea, TextInput } from '@mantine/core'
+import { Box, Divider, Flex, Paper, SegmentedControl, Stack, Switch, Textarea, TextInput } from '@mantine/core'
 import { showMessage } from '../ui/feedback'
 
 type TransactionFormProps = {
@@ -98,23 +98,22 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
   }, [showAmountKeyboard, viewportHeight])
 
   return (
-    <Box component="form" id={id} h="100%" mih={0} display="flex" style={{ flexDirection: 'column', overflow: 'hidden' }} onSubmit={handleSubmit}>
+    <Flex component="form" id={id} direction="column" h="100%" mih={0} style={{ overflow: 'hidden' }} onSubmit={handleSubmit}>
       <SegmentedControl
         w={176}
         mx="auto"
         my="xs"
-        radius="xl"
         value={type}
         data={[{ label: '支出', value: 'expense' }, { label: '收入', value: 'income' }]}
         onChange={(value) => handleTypeChange(value as TransactionType)}
       />
 
-      <Stack ref={scrollContainerRef} mih={0} flex={1} gap="xs" px="md" pb="md" style={{ overflowY: 'auto', overflowX: 'hidden', overscrollBehaviorY: 'contain' }}>
+      <Stack ref={scrollContainerRef} flex={1} mih={0} gap="xs" px="md" pb="md" style={{ overflowX: 'hidden', overflowY: 'auto', overscrollBehavior: 'contain' }}>
         <AmountInput value={amount} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
-        <Paper p="md" radius="xl" shadow="xs" style={{ scrollMarginBottom: 16 }}>
+        <Paper p="md" style={{ scrollMarginBottom: 16 }}>
           <Stack gap="md">
             <TextInput
               label="日期"
@@ -129,7 +128,6 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
               <>
                 <Divider />
             <Switch
-              color="teal"
               checked={includeInBudget}
               onChange={(event) => setIncludeInBudget(event.currentTarget.checked)}
               aria-label="计入日常消费"
@@ -137,7 +135,6 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
               description="关闭后仍会记账并减少可支配金额，但不进入日常消费和预算"
               labelPosition="left"
               w="100%"
-              styles={{ body: { justifyContent: 'space-between' }, labelWrapper: { flex: 1 } }}
             />
               </>
             )}
@@ -157,6 +154,6 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
           />
         </Box>
       )}
-    </Box>
+    </Flex>
   )
 }
