@@ -141,7 +141,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
         </Box>
       </>}>
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
-          <Group gap="xs" align="baseline">
+          <Group gap="xs" align="baseline" px='xs'>
             <Title order={3} size="h5">{`${Number(month.slice(5))}月流水`}</Title>
             <Text size="xs" c="dimmed">{hasSearchQuery ? `${groups.reduce((count, group) => count + group.transactions.length, 0)} 条结果` : `${transactionCount} 笔`}</Text>
           </Group>

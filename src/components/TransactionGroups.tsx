@@ -20,7 +20,7 @@ export function TransactionGroups({
     <Stack gap="xs">
       {groups.map((group) => (
         <section key={group.date}>
-          <Text size="sm" c="dimmed" fw={600}>{group.label}</Text>
+          <Text size="sm" c="dimmed" fw={600} px='xs'>{group.label}</Text>
           <Box className="transaction-list">
             {group.transactions.map((transaction) => (
               <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />

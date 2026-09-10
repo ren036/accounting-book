@@ -24,9 +24,9 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
       onClick={() => onOpen(transaction.id)}
     >
       <Group justify="space-between" gap="sm" wrap="nowrap">
-        <Group gap="sm" wrap="nowrap" miw={0}>
-          <Center w={36} h={36} style={{ flexShrink: 0, borderRadius: '50%', background: categoryVisual.color }}>
-            <CategoryEmoji category={transaction.category} size={19} color="white" />
+        <Group gap="sm" wrap="nowrap" miw={0} pl='xs'>
+          <Center w={34} h={34} style={{ flexShrink: 0, borderRadius: '50%', background: categoryVisual.color }}>
+            <CategoryEmoji category={transaction.category} size={18} color="white" />
           </Center>
           <Stack gap={1} miw={0}>
             <Group gap={6} wrap="nowrap">
@@ -36,7 +36,7 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
             {note && <Text size="xs" c="dimmed" truncate>{note}</Text>}
           </Stack>
         </Group>
-        <Text size="sm" fw={700} c={isIncome ? 'teal.7' : 'red.6'} style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+        <Text pr='xs' size="sm" fw={700} c={isIncome ? 'teal.7' : 'red.6'} style={{ flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
           {isIncome ? '+' : '-'}{formatMoney(transaction.amount)}
         </Text>
       </Group>
