@@ -1,4 +1,4 @@
-import { Stack, Text } from '@mantine/core'
+import { Box, Stack, Text } from '@mantine/core'
 import type { Transaction } from '../domain/transaction'
 import { TransactionRow } from './TransactionRow'
 
@@ -19,12 +19,12 @@ export function TransactionGroups({
     <Stack gap="md">
       {groups.map((group) => (
         <section key={group.date}>
-          <Text mb="xs" size="sm" c="dimmed" fw={600}>{group.label}</Text>
-          <Stack gap="xs">
+          <Text mb={6} size="sm" c="dimmed" fw={600}>{group.label}</Text>
+          <Box className="transaction-list">
             {group.transactions.map((transaction) => (
               <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
             ))}
-          </Stack>
+          </Box>
         </section>
       ))}
     </Stack>

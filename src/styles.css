@@ -1,8 +1,11 @@
 :root {
-  --book-green: #16a574;
-  --book-bg: #f7f9f7;
-  --book-text: #20231f;
-  --book-border: #e7ebe7;
+  --book-green: #34745e;
+  --book-bg: #f4f6f3;
+  --book-surface: #ffffff;
+  --book-surface-muted: #f0f4f1;
+  --book-text: #202622;
+  --book-muted: #707871;
+  --book-border: #e1e6e2;
 }
 
 html,
@@ -22,4 +25,47 @@ button {
   border: 0;
   font: inherit;
   touch-action: manipulation;
+}
+
+.ledger-surface {
+  background: linear-gradient(135deg, #f0f7f3 0%, #ffffff 58%, #f8f5ed 100%);
+  border: 1px solid var(--book-border);
+  box-shadow: 0 8px 24px rgb(36 70 56 / 6%);
+}
+
+.ledger-panel {
+  background: rgb(255 255 255 / 72%);
+  border: 1px solid var(--book-border);
+  border-radius: 12px;
+}
+
+.transaction-list {
+  background: transparent;
+}
+
+.transaction-row {
+  display: block;
+  width: 100%;
+  padding: 8px 2px;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border-bottom: 1px solid var(--book-border);
+}
+
+.transaction-row:last-child {
+  border-bottom: 0;
+}
+
+.transaction-row:active {
+  background: var(--book-surface-muted);
+}
+
+.bottom-nav-item {
+  position: relative;
+  border-radius: 10px;
+}
+
+.bottom-nav-item[data-active='true'] {
+  background: var(--book-surface-muted);
 }

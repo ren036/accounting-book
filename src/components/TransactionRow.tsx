@@ -2,7 +2,7 @@ import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
 import { CategoryEmoji, getCategoryVisual } from './CategoryEmoji'
-import { Badge, Center, Group, Paper, Stack, Text } from '@mantine/core'
+import { Badge, Center, Group, Stack, Text, UnstyledButton } from '@mantine/core'
 
 type TransactionRowProps = {
   transaction: Transaction
@@ -16,18 +16,11 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
   const categoryVisual = getCategoryVisual(transaction.category)
 
   return (
-    <Paper
+    <UnstyledButton
       component="button"
       type="button"
-      w="100%"
-      px="md"
-      py="xs"
-      radius="lg"
-      ta="left"
-      c="inherit"
-      bg={isExcludedFromBudget ? 'yellow.0' : 'rgba(255,255,255,.9)'}
-      withBorder={isExcludedFromBudget}
-      style={{ borderColor: isExcludedFromBudget ? 'var(--mantine-color-yellow-3)' : 'transparent' }}
+      className="transaction-row"
+      bg={isExcludedFromBudget ? 'yellow.0' : undefined}
       onClick={() => onOpen(transaction.id)}
     >
       <Group justify="space-between" gap="sm" wrap="nowrap">
@@ -47,6 +40,6 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
           {isIncome ? '+' : '-'}{formatMoney(transaction.amount)}
         </Text>
       </Group>
-    </Paper>
+    </UnstyledButton>
   )
 }

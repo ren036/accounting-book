@@ -1,7 +1,7 @@
-import { Paper, Stack, Text } from '@mantine/core'
+import { Box, Stack, Text } from '@mantine/core'
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
-  return <Paper p="xl" ta="center" c="dimmed">{children}</Paper>
+  return <Box py={36} ta="center" c="dimmed">{children}</Box>
 }
 
 export function SummaryMetric({

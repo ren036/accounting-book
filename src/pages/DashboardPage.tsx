@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Box, Button, Group, Menu, Paper, Progress, Stack, Text, ThemeIcon, Title } from '@mantine/core'
+import { Box, Button, Group, Menu, Paper, Progress, Stack, Text, Title, UnstyledButton } from '@mantine/core'
 import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
 import { TransactionGroups } from '../components/TransactionGroups'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
@@ -9,7 +9,7 @@ import { summarizeBudget, summarizeDailyExpense } from '../domain/budget'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { ArrowRight, ChevronDown, ImagePlus, PiggyBank, RotateCcw } from 'lucide-react'
+import { ArrowRight, ChevronDown, ImagePlus, RotateCcw } from 'lucide-react'
 import { showMessage } from '../ui/feedback'
 import { EmptyState } from '../ui/display'
 import { PageLayout } from '../ui/layout'
@@ -21,13 +21,14 @@ type DashboardPageProps = {
   totalSavings: number
   savingsAmountsHidden: boolean
   onOpen: (id: string) => void
+  onCreate: () => void
   onOpenBudget: () => void
   onOpenSavings: () => void
   onSavingsAmountsHiddenChange: (value: boolean) => Promise<void>
   onBalanceCardBackgroundChange: (value: string | null) => Promise<void>
 }
 
-export function DashboardPage({ transactions, budgets, balanceCardBackground, disposableBalance, totalSavings, savingsAmountsHidden, onOpen, onOpenBudget, onOpenSavings, onSavingsAmountsHiddenChange, onBalanceCardBackgroundChange }: DashboardPageProps) {
+export function DashboardPage({ transactions, budgets, balanceCardBackground, disposableBalance, totalSavings, savingsAmountsHidden, onOpen, onCreate, onOpenBudget, onOpenSavings, onSavingsAmountsHiddenChange, onBalanceCardBackgroundChange }: DashboardPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const backgroundInputRef = useRef<HTMLInputElement | null>(null)
   const month = currentMonth()
@@ -39,6 +40,8 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   const hasSearchQuery = searchQuery.trim().length > 0
   const budgetBarPercentage = budgetProgress ? Math.min(Math.max(budgetProgress.percentage, 0), 100) : 0
   const budgetExceeded = Boolean(budgetProgress && budgetProgress.percentage > 100)
+  const monthLabel = `${Number(month.slice(5))}月账本`
+  const transactionCount = transactions.filter((transaction) => transaction.occurredAt.startsWith(month)).length
 
   async function handleBackgroundFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -68,13 +71,20 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
 
   return (
     <PageLayout gap="sm" headerGap="sm" contentGap="md" header={<>
+        <Group justify="space-between" align="flex-end">
+          <Box>
+            <Text size="xs" c="dimmed">{month.slice(0, 4)}年</Text>
+            <Title order={1} fz={24} fw={700}>{monthLabel}</Title>
+          </Box>
+          <Text size="xs" c="dimmed">{transactionCount} 笔记录</Text>
+        </Group>
         <Paper
+          className="ledger-surface"
           pos="relative"
-          mih={142}
+          mih={152}
           px="lg"
           py="md"
-          c="white"
-          shadow="md"
+          c={balanceCardBackground ? 'white' : 'inherit'}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -82,16 +92,17 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             backgroundPosition: 'center',
             backgroundSize: 'cover',
             backgroundImage: balanceCardBackground
-              ? `linear-gradient(135deg, rgb(7 75 62 / 20%), rgb(10 42 36 / 18%)), url(${JSON.stringify(balanceCardBackground)})`
-              : 'radial-gradient(circle at 20% 0%, #4f46e5 0, transparent 34%), linear-gradient(#111827, #111827)',
+              ? `linear-gradient(rgb(25 24 20 / 44%), rgb(25 24 20 / 44%)), url(${JSON.stringify(balanceCardBackground)})`
+              : undefined,
+            backgroundColor: balanceCardBackground ? undefined : 'var(--book-surface)',
           }}
         >
           <Group justify="space-between" align="center" wrap="nowrap">
-            <Text size="sm" c="rgba(255,255,255,.82)" fw={500}>当前可支配</Text>
+            <Text size="sm" c={balanceCardBackground ? 'rgba(255,255,255,.85)' : 'dimmed'} fw={500}>可支配余额</Text>
             <Menu position="bottom-end" shadow="md">
               <Menu.Target>
-                <Button size="compact-xs" color="gray" variant="white" rightSection={<ChevronDown size={12} />}>
-                  背景
+                <Button size="compact-xs" color={balanceCardBackground ? 'gray' : 'dark'} variant={balanceCardBackground ? 'white' : 'subtle'} rightSection={<ChevronDown size={12} />}>
+                  封面
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
@@ -106,21 +117,21 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
           </Group>
           <Text mt={4} fz="clamp(30px, 10vw, 38px)" fw={750} lh={1.15} style={{ letterSpacing: '-0.035em' }}>{privateMoney(disposableBalance, savingsAmountsHidden)}</Text>
           <Box component="input" ref={backgroundInputRef} display="none" type="file" accept="image/*" onChange={handleBackgroundFile} />
-          <Group mt="auto" gap="lg" pt="md" wrap="nowrap">
-            <Text size="xs" c="rgba(255,255,255,.84)">月收入 <Text component="span" c="white" fw={650}>{formatMoney(summary.income)}</Text></Text>
-            <Text size="xs" c="rgba(255,255,255,.84)">月支出 <Text component="span" c="white" fw={650}>{formatMoney(summary.expense)}</Text></Text>
+          <Group mt="auto" gap="xl" pt="md" wrap="nowrap" style={{ borderTop: `1px solid ${balanceCardBackground ? 'rgba(255,255,255,.3)' : 'var(--book-border)'}` }}>
+            <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>收入 <Text component="span" c={balanceCardBackground ? 'white' : 'teal.8'} fw={650}>{formatMoney(summary.income)}</Text></Text>
+            <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>支出 <Text component="span" c={balanceCardBackground ? 'white' : 'red.7'} fw={650}>{formatMoney(summary.expense)}</Text></Text>
+            <UnstyledButton ml="auto" c="inherit" onClick={onOpenSavings}>
+              <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>储蓄 <Text component="span" c={balanceCardBackground ? 'white' : 'inherit'} fw={650}>{privateMoney(totalSavings, savingsAmountsHidden)}</Text></Text>
+            </UnstyledButton>
           </Group>
         </Paper>
-        <Paper component="button" type="button" p="md" w="100%" ta="left" c="inherit" onClick={onOpenBudget}>
+        <Box component="button" type="button" className="ledger-panel" p="md" w="100%" ta="left" c="inherit" onClick={onOpenBudget}>
           <Stack gap="xs">
           <Group justify="space-between" gap="xs" wrap="nowrap">
-            <Group gap="xs" wrap="nowrap" miw={0}>
-              <ThemeIcon color="teal" variant="light" radius="md" size={34}><PiggyBank size={17} /></ThemeIcon>
-              <Box>
-                <Text size="sm" fw={700} lh={1.25}>本月预算</Text>
-                <Text size="xs" c="dimmed">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</Text>
-              </Box>
-            </Group>
+            <Box>
+              <Text size="sm" fw={700} lh={1.25}>本月预算</Text>
+              <Text size="xs" c="dimmed">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没设置预算'}</Text>
+            </Box>
             <Group gap={3} wrap="nowrap" c={budgetExceeded ? 'red.6' : 'teal.7'}><Text size="sm" fw={650}>{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}</Text><ArrowRight size={15} /></Group>
           </Group>
           {budgetProgress && (
@@ -133,16 +144,29 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
             </>
           )}
           {!budgetProgress && (
-            <Group justify="space-between" bg="teal.0" c="teal.8" px="sm" py={7} style={{ borderRadius: 12 }}><Text size="xs">控制支出，从设定目标开始</Text><Text size="xs" fw={700}>立即设置</Text></Group>
+            <Text size="xs" c="dimmed">设一个数，月底更容易看清花了多少。</Text>
           )}
           </Stack>
-        </Paper>
-        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
-          <Title order={3} size="h5">当月账单详情</Title>
-        </CollapsibleTransactionSearch>
+        </Box>
       </>}>
+        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
+          <Group gap="xs" align="baseline">
+            <Title order={3} size="h5">本月流水</Title>
+            <Text size="xs" c="dimmed">{hasSearchQuery ? `${groups.reduce((count, group) => count + group.transactions.length, 0)} 条结果` : `${transactionCount} 笔`}</Text>
+          </Group>
+        </CollapsibleTransactionSearch>
         {groups.length === 0 ? (
-          <EmptyState>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</EmptyState>
+          hasSearchQuery ? (
+            <EmptyState>没有找到匹配的账单</EmptyState>
+          ) : (
+            <Group py="lg" justify="space-between" gap="md" wrap="nowrap">
+              <Box>
+                <Text size="sm" fw={650}>本月暂无流水</Text>
+                <Text mt={2} size="xs" c="dimmed">记下的收支会出现在这里</Text>
+              </Box>
+              <Button flex="0 0 auto" px={0} size="compact-sm" variant="transparent" rightSection={<ArrowRight size={14} />} onClick={onCreate}>记一笔</Button>
+            </Group>
+          )
         ) : (
           <TransactionGroups groups={groups} onOpen={onOpen} />
         )}

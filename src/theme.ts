@@ -17,67 +17,67 @@ import {
 
 export const bookTheme = createTheme({
   primaryColor: 'teal',
-  primaryShade: 6,
-  defaultRadius: 'lg',
-  fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  primaryShade: 7,
+  defaultRadius: 'sm',
+  fontFamily: '"Noto Sans SC", "Microsoft YaHei", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   headings: {
     fontFamily: 'inherit',
     fontWeight: '700',
   },
   radius: {
-    xs: '6px',
-    sm: '10px',
-    md: '14px',
-    lg: '18px',
-    xl: '22px',
+    xs: '4px',
+    sm: '8px',
+    md: '12px',
+    lg: '16px',
+    xl: '18px',
   },
   colors: {
     teal: [
-      '#e5f7ef',
-      '#d0f1e4',
-      '#a5e3cf',
-      '#78d4b8',
-      '#4bc49f',
-      '#26b487',
-      '#16a574',
-      '#10875f',
-      '#0b6b4d',
-      '#07533c',
+      '#edf6f2',
+      '#d8ebe3',
+      '#b4d8c9',
+      '#8fc4af',
+      '#6caf95',
+      '#509a7e',
+      '#3f876d',
+      '#34745e',
+      '#2a5e4d',
+      '#214a3e',
     ],
   },
   components: {
     Paper: Paper.extend({
-      defaultProps: { radius: 'xl', shadow: 'xs' },
+      defaultProps: { radius: 'md', shadow: undefined },
     }),
     Button: Button.extend({
-      defaultProps: { radius: 'xl' },
+      defaultProps: { radius: 'sm' },
     }),
     ActionIcon: ActionIcon.extend({
-      defaultProps: { radius: 'xl' },
+      defaultProps: { radius: 'sm' },
     }),
     SegmentedControl: SegmentedControl.extend({
-      defaultProps: { color: 'teal', radius: 'xl' },
+      defaultProps: { color: 'teal', radius: 'sm' },
     }),
     Select: Select.extend({
-      defaultProps: { radius: 'xl' },
+      defaultProps: { radius: 'sm' },
     }),
     TextInput: TextInput.extend({
-      defaultProps: { radius: 'lg' },
+      defaultProps: { radius: 'sm' },
     }),
     Textarea: Textarea.extend({
-      defaultProps: { radius: 'lg' },
+      defaultProps: { radius: 'sm' },
     }),
     NumberInput: NumberInput.extend({
-      defaultProps: { radius: 'lg' },
+      defaultProps: { radius: 'sm' },
     }),
     FileInput: FileInput.extend({
-      defaultProps: { radius: 'lg' },
+      defaultProps: { radius: 'sm' },
     }),
     Drawer: Drawer.extend({
-      defaultProps: { position: 'bottom', radius: 'xl' },
+      defaultProps: { position: 'bottom', radius: 'lg' },
     }),
     Progress: Progress.extend({
-      defaultProps: { color: 'teal', radius: 'xl' },
+      defaultProps: { color: 'teal', radius: 'xs' },
     }),
     Switch: Switch.extend({
       defaultProps: {

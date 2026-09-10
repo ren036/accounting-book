@@ -72,7 +72,7 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
         </SimpleGrid>
 
         <Group mt="xs" justify="space-between" align="flex-end">
-          <Box><Text size="xs" fw={800} tt="uppercase" c="teal.7">账目明细</Text><Title order={2} size="h4">{hasSearchQuery ? '搜索结果' : '月度明细'}</Title></Box>
+          <Box><Text size="xs" fw={600} c="dimmed">账目明细</Text><Title order={2} size="h4">{hasSearchQuery ? '搜索结果' : '月度明细'}</Title></Box>
           <Text size="xs" c="dimmed">{months.length} 个月</Text>
         </Group>
         {months.length === 0 && hasSearchQuery ? (

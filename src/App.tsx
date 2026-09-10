@@ -178,6 +178,7 @@ export function App() {
                 totalSavings={totalSavings}
                 savingsAmountsHidden={savingsAmountsHidden}
                 onOpen={setViewingTransactionId}
+                onCreate={() => applyNavigationState(switchMainTab('entry'))}
                 onOpenBudget={() => openFunds('budget')}
                 onOpenSavings={() => openFunds('savings')}
                 onSavingsAmountsHiddenChange={handleSavingsAmountsHiddenChange}

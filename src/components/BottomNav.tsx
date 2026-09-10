@@ -1,4 +1,4 @@
-import { Paper, SimpleGrid, Stack, UnstyledButton, Text } from '@mantine/core'
+import { Box, SimpleGrid, Stack, UnstyledButton, Text } from '@mantine/core'
 import { ChartPie, CirclePlus, Home, WalletCards, Settings, type LucideIcon } from 'lucide-react'
 
 export type PageKey = 'dashboard' | 'entry' | 'budget' | 'stats' | 'settings'
@@ -18,15 +18,13 @@ const items: Array<{ key: PageKey; label: string; icon: LucideIcon }> = [
 
 export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
-    <Paper
+    <Box
       component="nav"
-      radius={0}
-      shadow="md"
-      bg="rgba(255, 255, 255, 0.95)"
+      bg="var(--book-surface)"
       px="xs"
       pt="xs"
       pb="calc(12px + env(safe-area-inset-bottom))"
-      style={{ flexShrink: 0, borderTop: '1px solid var(--book-border)', backdropFilter: 'blur(16px)', zIndex: 100 }}
+      style={{ flexShrink: 0, borderTop: '1px solid var(--book-border)', zIndex: 100 }}
       aria-label="底部导航"
     >
       <SimpleGrid cols={items.length} spacing={0}>
@@ -34,7 +32,7 @@ export function BottomNav({ currentPage, onChange }: BottomNavProps) {
           const active = currentPage === item.key
           const Icon = item.icon
           return (
-            <UnstyledButton key={item.key} py={4} c={active ? 'teal.7' : 'gray.6'} aria-current={active ? 'page' : undefined} onClick={() => onChange(item.key)}>
+            <UnstyledButton key={item.key} className="bottom-nav-item" data-active={active} py={5} c={active ? 'teal.8' : 'gray.6'} aria-current={active ? 'page' : undefined} onClick={() => onChange(item.key)}>
               <Stack align="center" gap={2}>
                 <Icon size={20} strokeWidth={2.2} />
                 <Text size="xs" fw={active ? 700 : 500}>{item.label}</Text>
@@ -43,6 +41,6 @@ export function BottomNav({ currentPage, onChange }: BottomNavProps) {
           )
         })}
       </SimpleGrid>
-    </Paper>
+    </Box>
   )
 }
