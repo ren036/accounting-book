@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { AutoCenter, Segmented } from "antd-mobile";
+import { Box, SegmentedControl, Stack, Title } from "@mantine/core";
 import type { MonthlyBudget } from "../domain/budget";
 import type { SavingsBucket, SavingsMovement } from "../domain/savings";
 import type { Transaction } from "../domain/transaction";
-import { pageClass } from "../ui/classes";
 import { BudgetPage } from "./BudgetPage";
 import { SavingsPage } from "./SavingsPage";
 
@@ -27,19 +26,18 @@ export function FundsPage(props: FundsPageProps) {
   );
 
   return (
-    <section className={`${pageClass} flex h-full min-h-0 flex-col gap-3 p-3`}>
-      <AutoCenter className="text-lg">资金</AutoCenter>
-      <Segmented
-        className="book-filter"
-        block
-        options={[
+    <Stack component="section" h="100%" mih={0} gap="md" p="md">
+      <Title order={2} size="h4" ta="center">资金</Title>
+      <SegmentedControl
+        fullWidth
+        data={[
           { label: "储蓄", value: "savings" },
           { label: "预算", value: "budget" },
         ]}
         value={tab}
         onChange={(value) => setTab(value as "budget" | "savings")}
       />
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+      <Box mih={0} flex={1} style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         {tab === "budget" ? (
           <BudgetPage
             embedded
@@ -59,7 +57,7 @@ export function FundsPage(props: FundsPageProps) {
             onOpeningBalanceChange={props.onOpeningBalanceChange}
           />
         )}
-      </div>
-    </section>
+      </Box>
+    </Stack>
   );
 }

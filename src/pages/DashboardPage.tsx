@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Button, Dialog, Toast } from 'antd-mobile'
+import { Box, Button, Group, Paper, Progress, Stack, Text, ThemeIcon, Title } from '@mantine/core'
 import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
@@ -9,8 +9,8 @@ import { summarizeBudget, summarizeDailyExpense } from '../domain/budget'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { ArrowRight, PiggyBank } from 'lucide-react'
-import { cardClass, emptyClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass } from '../ui/classes'
+import { ArrowRight, ImagePlus, PiggyBank } from 'lucide-react'
+import { showMessage } from '../ui/feedback'
 type DashboardPageProps = {
   transactions: Transaction[]
   budgets: MonthlyBudget[]
@@ -43,121 +43,114 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
     event.target.value = ''
     if (!file) return
     if (!file.type.startsWith('image/')) {
-      Toast.show({ content: '请选择图片文件' })
+      showMessage('请选择图片文件')
       return
     }
     if (file.size > 8 * 1024 * 1024) {
-      Toast.show({ content: '图片不能超过 8MB' })
+      showMessage('图片不能超过 8MB')
       return
     }
 
     await onBalanceCardBackgroundChange(await readFileAsDataUrl(file))
-    Toast.show({ content: '背景已更新' })
+    showMessage('背景已更新')
   }
 
   function handleBackgroundButton() {
-    if (!balanceCardBackground) {
-      backgroundInputRef.current?.click()
-      return
-    }
-    Dialog.show({
-      content: '更换或恢复本月结余卡片背景',
-      actions: [
-        { key: 'change', text: '选择新图片' },
-        { key: 'reset', text: '恢复默认背景', danger: true },
-        { key: 'cancel', text: '取消' }
-      ],
-      closeOnAction: true,
-      onAction: async (action) => {
-        if (action.key === 'change') backgroundInputRef.current?.click()
-        if (action.key === 'reset') {
-          await onBalanceCardBackgroundChange(null)
-          Toast.show({ content: '已恢复默认背景' })
-        }
-      }
-    })
+    backgroundInputRef.current?.click()
   }
 
   return (
-    <section className={`${fixedListPageClass} !gap-2.5`}>
-      <div className={`${fixedListHeaderClass} !gap-2.5`}>
-        <div
-          className="relative flex min-h-[150px] flex-col overflow-hidden rounded-[28px] bg-[radial-gradient(circle_at_20%_0%,#4f46e5_0,transparent_34%)] bg-cover bg-center bg-gray-900 p-7 pb-4 text-white shadow-[0_18px_48px_rgb(17_24_39/24%)] [&>span]:text-gray-300 [&>strong]:block [&>strong]:text-[42px]"
-          style={balanceCardBackground ? { backgroundImage: `linear-gradient(rgb(10 15 20 / 45%), rgb(10 15 20 / 62%)), url(${JSON.stringify(balanceCardBackground)})` } : undefined}
+    <Stack component="section" h="100%" mih={0} gap="sm" p="md">
+      <Stack gap="sm" style={{ flexShrink: 0 }}>
+        <Paper
+          pos="relative"
+          mih={142}
+          px="lg"
+          py="md"
+          radius="xl"
+          c="white"
+          shadow="md"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundImage: balanceCardBackground
+              ? `linear-gradient(135deg, rgb(7 75 62 / 70%), rgb(10 42 36 / 68%)), url(${JSON.stringify(balanceCardBackground)})`
+              : 'radial-gradient(circle at 20% 0%, #4f46e5 0, transparent 34%), linear-gradient(#111827, #111827)',
+          }}
         >
-          <span>当前可支配</span>
-          <strong>{privateMoney(disposableBalance, savingsAmountsHidden)}</strong>
-          <button type="button" className="absolute right-4 top-4 rounded-full border-0 bg-white/90 px-3 py-2 text-xs text-gray-700 shadow-sm" onClick={handleBackgroundButton}>
-            更换背景
-          </button>
-          <input ref={backgroundInputRef} className="hidden" type="file" accept="image/*" onChange={handleBackgroundFile} />
-          <div className="mt-auto flex items-center gap-3 whitespace-nowrap pt-5 text-sm text-white">
-            <span className="!text-white">月收入：{formatMoney(summary.income)}</span>
-            <span className="!text-white">月支出：{formatMoney(summary.expense)}</span>
-          </div>
-        </div>
-        <button type="button" className={`${cardClass} !p-2.5 grid w-full gap-1.5 border-0 text-left transition-[transform,box-shadow] active:scale-[.99]`} onClick={onOpenBudget}>
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--book-green-soft)] text-[var(--book-green)]"><PiggyBank size={15} /></span>
-              <div>
-                <strong className="block text-[13px] leading-4">本月预算</strong>
-                <span className="block text-[10px] leading-3 text-[var(--book-muted)]">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</span>
-              </div>
-            </div>
-            <span className={`flex shrink-0 items-center gap-1 text-sm font-semibold ${budgetExceeded ? 'text-[var(--book-expense)]' : 'text-[var(--book-green)]'}`}>{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}<ArrowRight size={16} /></span>
-          </div>
+          <Group justify="space-between" align="center" wrap="nowrap">
+            <Text size="sm" c="rgba(255,255,255,.82)" fw={500}>当前可支配</Text>
+            <Button
+              size="compact-xs"
+              radius="xl"
+              color="gray"
+              variant="white"
+              leftSection={<ImagePlus size={13} />}
+              onClick={handleBackgroundButton}
+            >
+              更换背景
+            </Button>
+          </Group>
+          <Text mt={4} fz="clamp(30px, 10vw, 38px)" fw={750} lh={1.15} style={{ letterSpacing: '-0.035em' }}>{privateMoney(disposableBalance, savingsAmountsHidden)}</Text>
+          <Box component="input" ref={backgroundInputRef} display="none" type="file" accept="image/*" onChange={handleBackgroundFile} />
+          <Group mt="auto" gap="lg" pt="md" wrap="nowrap">
+            <Text size="xs" c="rgba(255,255,255,.84)">月收入 <Text component="span" c="white" fw={650}>{formatMoney(summary.income)}</Text></Text>
+            <Text size="xs" c="rgba(255,255,255,.84)">月支出 <Text component="span" c="white" fw={650}>{formatMoney(summary.expense)}</Text></Text>
+          </Group>
+        </Paper>
+        <Paper component="button" type="button" p="md" radius="xl" shadow="xs" w="100%" ta="left" c="inherit" onClick={onOpenBudget}>
+          <Stack gap="xs">
+          <Group justify="space-between" gap="xs" wrap="nowrap">
+            <Group gap="xs" wrap="nowrap" miw={0}>
+              <ThemeIcon color="teal" variant="light" radius="md" size={34}><PiggyBank size={17} /></ThemeIcon>
+              <Box>
+                <Text size="sm" fw={700} lh={1.25}>本月预算</Text>
+                <Text size="xs" c="dimmed">{budget ? `已用 ${formatMoney(budgetProgress?.spent ?? 0)} / ${formatMoney(budget.amount)}` : '还没有设置预算'}</Text>
+              </Box>
+            </Group>
+            <Group gap={3} wrap="nowrap" c={budgetExceeded ? 'red.6' : 'teal.7'}><Text size="sm" fw={650}>{budgetProgress ? `${budgetProgress.percentage.toFixed(0)}%` : '去设置'}</Text><ArrowRight size={15} /></Group>
+          </Group>
           {budgetProgress && (
             <>
-              <div className="grid gap-1">
-                <div className="h-1 overflow-hidden rounded-full bg-[var(--book-green-soft)]">
-                  <div
-                    className={`h-full rounded-full transition-[width] ${budgetExceeded ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`}
-                    style={{ width: `${budgetBarPercentage}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-[9px] leading-3 text-[var(--book-muted)]"><span>已使用</span><span>{budgetExceeded ? '已超出预算' : '预算进度'}</span></div>
-              </div>
-              <div className="flex items-center justify-between gap-3 text-[11px] leading-3">
-                <div>
-                  <span className="text-[10px] text-[var(--book-muted)]">{budgetProgress.remaining >= 0 ? '剩余' : '超出'} </span>
-                  <strong className={`text-xs ${budgetExceeded ? 'text-[var(--book-expense)]' : 'text-[var(--book-ink)]'}`}>{formatMoney(Math.abs(budgetProgress.remaining))}</strong>
-                </div>
-                <span className="text-[10px] text-[var(--book-muted)]">{month.replace('-', '年')}月</span>
-              </div>
+              <Progress value={budgetBarPercentage} color={budgetExceeded ? 'red' : 'teal'} size={4} radius="xl" />
+              <Group justify="space-between">
+                <Text size="xs" c="dimmed">{budgetProgress.remaining >= 0 ? '剩余' : '超出'} <Text component="span" fw={700} c={budgetExceeded ? 'red.6' : 'dark'}>{formatMoney(Math.abs(budgetProgress.remaining))}</Text></Text>
+                <Text size="xs" c="dimmed">{month.replace('-', '年')}月</Text>
+              </Group>
             </>
           )}
           {!budgetProgress && (
-            <div className="flex items-center justify-between rounded-xl bg-[var(--book-green-soft)] px-3 py-1.5 text-xs text-[var(--book-green-dark)]">
-              <span>还没有设置本月预算</span>
-              <span className="font-semibold">立即设置</span>
-            </div>
+            <Group justify="space-between" bg="teal.0" px="sm" py={7} style={{ borderRadius: 12 }}><Text size="xs" c="teal.8">控制支出，从设定目标开始</Text><Text size="xs" fw={700} c="teal.8">立即设置</Text></Group>
           )}
-        </button>
+          </Stack>
+        </Paper>
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
-          <h3 className="!m-0">当月账单详情</h3>
+          <Title order={3} size="h5">当月账单详情</Title>
         </CollapsibleTransactionSearch>
-      </div>
+      </Stack>
 
-      <section className={`${fixedListContentClass} grid content-start gap-3`}>
+      <Box component="section" mih={0} flex={1} style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         {groups.length === 0 ? (
-          <p className={emptyClass}>{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</p>
+          <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">{hasSearchQuery ? '没有找到匹配的账单' : '这个月还没有账单'}</Text></Paper>
         ) : (
-          <div>
+          <Stack gap="md">
             {groups.map((group) => (
-              <section className="daily-group" key={group.date}>
-                {group.label}
-                <div className="grid gap-2.5">
+              <Stack component="section" gap="xs" key={group.date}>
+                <Text size="sm" c="dimmed" fw={600}>{group.label}</Text>
+                <Stack gap="xs">
                   {group.transactions.map((transaction) => (
                     <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
                   ))}
-                </div>
-              </section>
+                </Stack>
+              </Stack>
             ))}
-          </div>
+          </Stack>
         )}
-      </section>
-    </section>
+      </Box>
+    </Stack>
   )
 }
 

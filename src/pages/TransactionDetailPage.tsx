@@ -1,10 +1,10 @@
-import { AutoCenter, Button, Dialog } from 'antd-mobile'
+import { ActionIcon, Box, Button, Center, Divider, Group, Paper, Stack, Text, Title } from '@mantine/core'
 import { CategoryEmoji } from '../components/CategoryEmoji'
 import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
-import { DeleteOutline, LeftOutline } from 'antd-mobile-icons'
-import { cardClass, expenseClass, incomeClass, pageClass, pageTitleClass } from '../ui/classes'
+import { ArrowLeft, Trash2 } from 'lucide-react'
+import { confirmAction } from '../ui/feedback'
 
 type TransactionDetailPageProps = {
   transaction: Transaction
@@ -18,49 +18,64 @@ export function TransactionDetailPage({ transaction, onBack, onDeleted, onEdit }
   const note = getTransactionNoteDisplay(transaction.note)
 
   async function handleDelete() {
-    const confirmed = await Dialog.confirm({
-      content: '确定删除这笔账单吗？',
-      confirmText: '删除',
-      cancelText: '取消'
+    const confirmed = await confirmAction({
+      message: '确定删除这笔账单吗？',
+      confirmLabel: '删除',
+      cancelLabel: '取消',
+      destructive: true,
     })
 
     if (confirmed) await onDeleted(transaction.id)
   }
 
   return (
-    <section className={`${pageClass} p-3`}>
-      <div className={pageTitleClass}>
-        <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
-          <LeftOutline fontSize={22} color='black' scale={2.2} />
-        </Button>
-        <AutoCenter className="text-lg">账单详情</AutoCenter>
-        <Button color="danger" fill="none" size="middle" aria-label="删除账单" onClick={handleDelete}>
-          <DeleteOutline fontSize={22} />
-        </Button>
-      </div>
+    <Box component="section" p="md">
+      <Group justify="space-between" mb="md">
+        <ActionIcon color="dark" variant="subtle" size="lg" aria-label="返回" onClick={onBack}>
+          <ArrowLeft size={22} />
+        </ActionIcon>
+        <Title order={2} size="h4">账单详情</Title>
+        <ActionIcon color="red" variant="subtle" size="lg" aria-label="删除账单" onClick={handleDelete}>
+          <Trash2 size={21} />
+        </ActionIcon>
+      </Group>
 
-      <article className={`${cardClass} grid gap-[22px]`}>
-        <div className="grid justify-items-center gap-1.5 py-3.5 [&>small]:text-gray-500 [&>strong]:text-[38px]">
-          <span className="!m-0 !inline-flex items-center gap-2">
+      <Paper component="article" p="lg" radius="xl" shadow="xs">
+        <Stack gap="xl">
+        <Center>
+          <Stack align="center" gap={6} py="sm">
+          <Group gap="xs">
             <CategoryEmoji category={transaction.category} />
             {transaction.category}
-          </span>
-          <strong className={isIncome ? incomeClass : expenseClass}>
+          </Group>
+          <Text fw={700} fz={38} c={isIncome ? 'teal.7' : 'red.6'}>
             {isIncome ? '+' : '-'}{formatMoney(transaction.amount)}
-          </strong>
-          <small>{isIncome ? '收入' : '支出'}</small>
-        </div>
+          </Text>
+          <Text size="sm" c="dimmed">{isIncome ? '收入' : '支出'}</Text>
+          </Stack>
+        </Center>
 
-        <dl className="m-0 grid gap-0 [&>div]:grid [&>div]:grid-cols-[auto_minmax(0,1fr)] [&>div]:gap-6 [&>div]:border-t [&>div]:border-gray-200 [&>div]:py-3.5 [&_dd]:text-right">
-          <div><dt>日期</dt><dd>{transaction.occurredAt.slice(0, 10)}</dd></div>
-          <div><dt>备注</dt><dd>{note ?? '无备注'}</dd></div>
-          {!isIncome && <div><dt>日常消费</dt><dd>{transaction.includeInBudget !== false ? '计入' : '不计入（非日常支出）'}</dd></div>}
-        </dl>
+        <Stack gap={0}>
+          <DetailRow label="日期" value={transaction.occurredAt.slice(0, 10)} />
+          <DetailRow label="备注" value={note ?? '无备注'} />
+          {!isIncome && <DetailRow label="日常消费" value={transaction.includeInBudget !== false ? '计入' : '不计入（非日常支出）'} />}
+        </Stack>
 
-        <Button color='primary' fill='outline' shape='rounded' type="button" onClick={onEdit} >
-           编辑
-          </Button>
-      </article>
-    </section>
+        <Button color="teal" variant="outline" radius="xl" type="button" onClick={onEdit}>编辑</Button>
+        </Stack>
+      </Paper>
+    </Box>
+  )
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <>
+      <Divider />
+      <Group justify="space-between" gap="xl" py="md" wrap="nowrap">
+        <Text component="dt">{label}</Text>
+        <Text component="dd" ta="right" m={0}>{value}</Text>
+      </Group>
+    </>
   )
 }

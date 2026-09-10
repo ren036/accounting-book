@@ -2,7 +2,7 @@ import type { Transaction } from '../domain/transaction'
 import { getTransactionNoteDisplay } from '../domain/transaction'
 import { formatMoney } from '../lib/money'
 import { CategoryEmoji, getCategoryVisual } from './CategoryEmoji'
-import { expenseClass, incomeClass } from '../ui/classes'
+import { Badge, Box, Group, Paper, Stack, Text } from '@mantine/core'
 
 type TransactionRowProps = {
   transaction: Transaction
@@ -16,22 +16,24 @@ export function TransactionRow({ transaction, onOpen }: TransactionRowProps) {
   const categoryVisual = getCategoryVisual(transaction.category)
 
   return (
-    <button className={`grid w-full grid-cols-[1fr_auto] items-center gap-3 rounded-[18px] border p-3.5 text-left text-inherit ${isExcludedFromBudget ? 'border-amber-200 bg-amber-50/90' : 'border-transparent bg-white/90'}`} type="button" onClick={() => onOpen(transaction.id)}>
-      <div className="inline-flex items-center gap-2 [&_p]:mt-1 [&_p]:mb-0 [&_p]:text-gray-500">
-        <span className="grid size-9 shrink-0 place-items-center rounded-[50%]" style={{ background: categoryVisual.background }}>
+    <Paper component="button" type="button" w="100%" p="md" radius="lg" withBorder={isExcludedFromBudget} bg={isExcludedFromBudget ? 'yellow.0' : 'rgba(255,255,255,.9)'} ta="left" c="inherit" style={{ borderColor: isExcludedFromBudget ? 'var(--mantine-color-yellow-3)' : 'transparent' }} onClick={() => onOpen(transaction.id)}>
+      <Group justify="space-between" gap="md" wrap="nowrap">
+      <Group gap="xs" wrap="nowrap" miw={0}>
+        <Box w={36} h={36} display="grid" style={{ flexShrink: 0, placeItems: 'center', borderRadius: '50%', background: categoryVisual.background }}>
           <CategoryEmoji category={transaction.category} size={19} />
-        </span>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <strong>{transaction.category}</strong>
-            {isExcludedFromBudget && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">非日常支出</span>}
-          </div>
-          {note && <p>{note}</p>}
-        </div>
-      </div>
-      <div className={isIncome ? incomeClass : expenseClass}>
+        </Box>
+        <Stack gap={2} miw={0}>
+          <Group gap={6}>
+            <Text fw={700}>{transaction.category}</Text>
+            {isExcludedFromBudget && <Badge color="yellow" variant="light" size="xs">非日常支出</Badge>}
+          </Group>
+          {note && <Text size="sm" c="dimmed" truncate>{note}</Text>}
+        </Stack>
+      </Group>
+      <Text fw={600} c={isIncome ? 'teal.7' : 'red.6'}>
         {isIncome ? '+' : '-'}{formatMoney(transaction.amount)}
-      </div>
-    </button>
+      </Text>
+      </Group>
+    </Paper>
   )
 }

@@ -1,4 +1,4 @@
-import { TabBar } from 'antd-mobile'
+import { Box, UnstyledButton, Text } from '@mantine/core'
 import { ChartPie, CirclePlus, Home, WalletCards, Settings } from 'lucide-react'
 import { JSX } from 'react/jsx-runtime'
 
@@ -19,20 +19,32 @@ const items: Array<{ key: PageKey; label: string, icon: JSX.Element }> = [
 
 export function BottomNav({ currentPage, onChange }: BottomNavProps) {
   return (
-    <TabBar
-      className="fixed inset-x-0 bottom-0 border-t border-[var(--book-border)] bg-[var(--book-card)]/95 p-2 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-8px_28px_rgb(32_47_43/7%)] backdrop-blur-xl"
-      activeKey={currentPage}
+    <Box
+      component="nav"
+      pos="fixed"
+      left={0}
+      right={0}
+      bottom={0}
+      bg="rgba(255, 255, 255, 0.95)"
+      px="xs"
+      pt="xs"
+      pb="calc(12px + env(safe-area-inset-bottom))"
+      style={{ borderTop: '1px solid var(--book-border)', boxShadow: '0 -8px 28px rgb(32 47 43 / 7%)', backdropFilter: 'blur(16px)', zIndex: 100 }}
       aria-label="底部导航"
-      onChange={(key) => onChange(key as PageKey)}
     >
-      
-      {items.map((item) => (
-        <TabBar.Item
-          key={item.key}
-          icon={item.icon}
-          title={item.label}
-        />
-      ))}
-    </TabBar>
+      <Box display="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+        {items.map((item) => {
+          const active = currentPage === item.key
+          return (
+            <UnstyledButton key={item.key} py={4} c={active ? 'teal.7' : 'gray.6'} onClick={() => onChange(item.key)}>
+              <Box display="flex" style={{ flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                {item.icon}
+                <Text size="xs" fw={active ? 700 : 500}>{item.label}</Text>
+              </Box>
+            </UnstyledButton>
+          )
+        })}
+      </Box>
+    </Box>
   )
 }

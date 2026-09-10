@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { Box, Center, Loader, Text } from '@mantine/core'
 import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
@@ -19,7 +20,6 @@ import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
-import { emptyClass, pageClass } from './ui/classes'
 import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
 import { FundsPage } from './pages/FundsPage'
 
@@ -34,7 +34,7 @@ const StatsPage = lazy(async () => {
 })
 
 export function App() {
-  const { isKeyboardOpen, viewportHeight, offsetTop } = useKeyboardViewportFrame()
+  const { isKeyboardOpen, viewportHeight } = useKeyboardViewportFrame()
 
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -139,20 +139,17 @@ export function App() {
     ? transactions.find((transaction) => transaction.id === viewingTransactionId)
     : null
   const isTransactionFormPage = Boolean(editingTransaction) || (!viewingTransaction && currentPage === 'entry')
-  const isFixedListPage = !editingTransaction
-    && !viewingTransaction
-    && (currentPage === 'dashboard' || currentPage === 'budget' || currentPage === 'stats')
   const disposableBalance = summarizeDisposable(transactions, savingsMovements, openingDisposableBalance).balance
   const totalSavings = getTotalSavings(savingsMovements, savingsBuckets)
 
   return (
-    <main
-      className={`min-h-dvh bg-[var(--book-bg)] font-sans text-[var(--book-text)] ${isTransactionFormPage ? 'fixed inset-x-0 box-border min-h-0 w-full overflow-hidden pt-3' : ''} ${isFixedListPage ? 'flex h-dvh min-h-0 flex-col overflow-hidden pb-[calc(64px+env(safe-area-inset-bottom))]' : ''}`}
-      style={isTransactionFormPage ? {
-        height: viewportHeight > 0 ? `${viewportHeight}px` : '100dvh',
-        minHeight: 0,
-        top: `${offsetTop}px`,
-      } : undefined}
+    <Box
+      component="main"
+      h={viewportHeight > 0 ? viewportHeight : '100dvh'}
+      mih={0}
+      bg="var(--book-bg)"
+      c="var(--book-text)"
+      style={{ overflow: 'hidden' }}
     >
       {editingTransaction ? (
         <EditTransactionPage
@@ -210,7 +207,7 @@ export function App() {
             }}
           />}
           {currentPage === 'stats' && viewingStatsMonth === null && (
-            <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载统计...</p></section>}>
+            <Suspense fallback={<LoadingPage label="正在加载统计..." />}>
               <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
             </Suspense>
           )}
@@ -225,7 +222,7 @@ export function App() {
             />
           )}
           {currentPage === 'settings' && (
-            <Suspense fallback={<section className={pageClass}><p className={emptyClass}>正在加载设置...</p></section>}>
+            <Suspense fallback={<LoadingPage label="正在加载设置..." />}>
               <SettingsPage onChanged={reloadAllData} />
             </Suspense>
           )}
@@ -240,6 +237,10 @@ export function App() {
           }}
         />
       )}
-    </main>
+    </Box>
   )
+}
+
+function LoadingPage({ label }: { label: string }) {
+  return <Center h="100%"><Box ta="center"><Loader color="teal" size="sm" /><Text mt="sm" c="dimmed">{label}</Text></Box></Center>
 }

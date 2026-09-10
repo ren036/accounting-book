@@ -1,5 +1,6 @@
 import { Check, ChevronDown, Delete } from 'lucide-react'
 import { parseAmountExpression } from '../lib/money'
+import { ActionIcon, Box, Button, Divider, Group, Paper, SimpleGrid, Text } from '@mantine/core'
 
 type AmountInputProps = { value: string; onActivateKeyboard: () => void }
 type AmountKeyboardProps = { value: string; onChange: (value: string) => void; onSubmit?: () => void; onDismiss?: () => void }
@@ -11,20 +12,20 @@ export function AmountInput({ value, onActivateKeyboard }: AmountInputProps) {
   const hasExpression = /[+-]/.test(value)
 
   return (
-    <section
-      className="rounded-[var(--book-radius-card)] bg-white p-5 shadow-[var(--book-shadow-card)]"
+    <Paper component="section" p="md" radius="xl" shadow="xs"
       aria-label="金额输入区，点击显示数字键盘"
       onClick={onActivateKeyboard}
     >
-      <span className="text-sm text-[var(--book-muted)]">金额</span>
-      <div className="mt-3 flex items-end gap-2 border-b border-neutral-100 pb-4">
-        <span className="pb-1 text-2xl font-semibold">¥</span>
-        <output className="min-w-0 flex-1 truncate text-right text-[40px] font-semibold leading-none tracking-tight" aria-label={`金额 ${value || '0'}`}>
+      <Text size="sm" c="dimmed">金额</Text>
+      <Group mt="sm" align="flex-end" gap="xs" pb="md" wrap="nowrap">
+        <Text pb={4} fz={24} fw={600}>¥</Text>
+        <Text component="output" miw={0} flex={1} truncate ta="right" fz={40} fw={600} lh={1} aria-label={`金额 ${value || '0'}`}>
           {value || '0'}
-        </output>
-      </div>
-      {hasExpression && <p className="m-0 mt-2 text-right text-sm font-semibold text-[var(--book-green)]">{Number.isFinite(calculated) ? `= ${formatAmount(calculated)}` : '算式未完成'}</p>}
-    </section>
+        </Text>
+      </Group>
+      <Divider />
+      {hasExpression && <Text mt="xs" ta="right" size="sm" fw={600} c="teal.7">{Number.isFinite(calculated) ? `= ${formatAmount(calculated)}` : '算式未完成'}</Text>}
+    </Paper>
   )
 }
 
@@ -40,32 +41,32 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
   }
 
   return (
-    <section className="bg-white p-3 pt-1" aria-label="金额键盘">
+    <Box component="section" bg="white" p="sm" pt={4} aria-label="金额键盘">
       {onDismiss && (
-        <button type="button" aria-label="收起数字键盘" onClick={onDismiss} className="grid h-4 w-full place-items-center border-0 bg-transparent p-0">
+        <ActionIcon type="button" aria-label="收起数字键盘" onClick={onDismiss} variant="transparent" color="gray" w="100%" h={20}>
           <ChevronDown aria-hidden size={17} strokeWidth={2.2} />
-        </button>
+        </ActionIcon>
       )}
-      <div className={`grid gap-2 ${onSubmit ? 'grid-cols-[3fr_1fr]' : ''}`}>
-        <div className="grid grid-cols-3 gap-2">
+      <Group gap={6} align="stretch" wrap="nowrap">
+        <SimpleGrid cols={3} spacing={6} flex={3}>
           {keys.map((key) => (
-            <button key={key} type="button" aria-label={key === 'backspace' ? '删除一位' : `输入 ${key}`} onClick={() => press(key)} className="grid min-h-12 place-items-center rounded-2xl border-0 bg-neutral-100 text-xl font-medium text-neutral-800 transition-[transform,background-color] duration-100 active:scale-[.97] active:bg-neutral-200">
+            <Button key={key} type="button" aria-label={key === 'backspace' ? '删除一位' : `输入 ${key}`} onClick={() => press(key)} variant="light" color="gray" radius="lg" mih={44} fz="lg" c="dark">
               {key === 'backspace' ? <Delete aria-hidden size={22} /> : key}
-            </button>
+            </Button>
           ))}
-        </div>
+        </SimpleGrid>
         {onSubmit && (
-          <div className="grid min-h-0 grid-rows-4 gap-2">
-            <button type="button" aria-label="输入加号" onClick={() => press('+')} className="grid min-h-0 place-items-center rounded-xl border-0 bg-[var(--book-green-soft)] text-2xl font-semibold text-[var(--book-green)] active:opacity-70">+</button>
-            <button type="button" aria-label="输入减号" onClick={() => press('-')} className="grid min-h-0 place-items-center rounded-xl border-0 bg-[var(--book-green-soft)] text-2xl font-semibold text-[var(--book-green)] active:opacity-70">−</button>
-            <button type="button" aria-label="计算金额" onClick={() => press('equals')} className="grid min-h-0 place-items-center rounded-xl border-0 bg-neutral-100 text-xl font-semibold text-neutral-700 active:bg-neutral-200">=</button>
-            <button type="button" onClick={onSubmit} className="flex min-h-12 items-center justify-center gap-1.5 rounded-2xl border-0 bg-[var(--book-green)] font-semibold text-white transition active:scale-[.98] active:bg-[var(--book-green-dark)]">
-              <Check aria-hidden size={19} />完成
-            </button>
-          </div>
+          <SimpleGrid cols={1} spacing={6} flex={1} style={{ gridTemplateRows: 'repeat(4, minmax(0, 1fr))' }}>
+            <Button h="100%" mih={44} type="button" aria-label="输入加号" onClick={() => press('+')} variant="light" color="teal" radius="lg" fz="xl">+</Button>
+            <Button h="100%" mih={44} type="button" aria-label="输入减号" onClick={() => press('-')} variant="light" color="teal" radius="lg" fz="xl">−</Button>
+            <Button h="100%" mih={44} type="button" aria-label="计算金额" onClick={() => press('equals')} variant="light" color="gray" radius="lg" fz="xl">=</Button>
+            <Button h="100%" mih={44} px="xs" type="button" onClick={onSubmit} color="teal" radius="lg" leftSection={<Check aria-hidden size={18} />}>
+              完成
+            </Button>
+          </SimpleGrid>
         )}
-      </div>
-    </section>
+      </Group>
+    </Box>
   )
 }
 

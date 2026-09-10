@@ -5,8 +5,8 @@ import { clampInputDateToMax, combineDateWithTime, todayInputValue } from '../li
 import { parseAmountExpression } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
-import { Switch, Toast } from 'antd-mobile'
-import { fieldClass } from '../ui/classes'
+import { Box, Divider, Paper, SegmentedControl, Stack, Switch, Textarea, TextInput } from '@mantine/core'
+import { showMessage } from '../ui/feedback'
 
 type TransactionFormProps = {
   id?: string
@@ -34,7 +34,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
 
     const numericAmount = parseAmountExpression(amount)
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      Toast.show({ content: '请输入大于 0 的金额' })
+      showMessage('请输入大于 0 的金额')
       return
     }
 
@@ -98,59 +98,65 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
   }, [showAmountKeyboard, viewportHeight])
 
   return (
-    <form id={id} className="flex h-full min-h-0 flex-col overflow-hidden" onSubmit={handleSubmit}>
-      <div className="mx-auto my-2 grid w-44 shrink-0 grid-cols-2 rounded-full bg-neutral-200/70 p-1">
-        {(['expense', 'income'] as const).map((item) => (
-          <button key={item} type="button" onClick={() => handleTypeChange(item)} className={`h-9 rounded-full border-0 text-sm transition-colors ${type === item ? 'bg-white font-semibold text-[var(--book-green)] shadow-sm' : 'bg-transparent text-neutral-500'}`}>
-            {item === 'expense' ? '支出' : '收入'}
-          </button>
-        ))}
-      </div>
+    <Box component="form" id={id} h="100%" mih={0} display="flex" style={{ flexDirection: 'column', overflow: 'hidden' }} onSubmit={handleSubmit}>
+      <SegmentedControl
+        w={176}
+        mx="auto"
+        my="xs"
+        radius="xl"
+        value={type}
+        data={[{ label: '支出', value: 'expense' }, { label: '收入', value: 'income' }]}
+        onChange={(value) => handleTypeChange(value as TransactionType)}
+      />
 
-      <div ref={scrollContainerRef} className="flex min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden overscroll-y-contain px-3 pb-4 [&>*]:shrink-0">
+      <Stack ref={scrollContainerRef} mih={0} flex={1} gap="xs" px="md" pb="md" style={{ overflowY: 'auto', overflowX: 'hidden', overscrollBehaviorY: 'contain' }}>
         <AmountInput value={amount} onActivateKeyboard={showKeyboard} />
 
         <CategoryPicker categories={categories} value={category} onChange={setCategory} />
 
-        <label className={`${fieldClass} scroll-mb-4`}>
-          <span>日期</span>
-          <input
-            className="native-date-input"
-            type="date"
-            value={occurredAt}
-            max={maxDate}
-            onFocus={handleNativeFieldFocus}
-            onBlur={handleNativeFieldBlur}
-            onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
-          />
-        </label>
-
-        {type === 'expense' && (
-          <label className={`${fieldClass} scroll-mb-4 grid-cols-[minmax(0,1fr)_auto] items-center`}>
-            <span>
-              <strong className="block">计入日常消费</strong>
-              <small className="mt-1 block text-[var(--book-muted)]">关闭后仍会记账并减少可支配金额，但不进入日常消费和预算</small>
-            </span>
-            <Switch checked={includeInBudget} onChange={setIncludeInBudget} aria-label="计入日常消费" />
-          </label>
-        )}
-
-        <label className={`${fieldClass} scroll-mb-4`}>
-          <span>备注</span>
-          <textarea value={note} onFocus={handleNativeFieldFocus} onBlur={handleNativeFieldBlur} onChange={(event) => setNote(event.target.value)} />
-        </label>
-      </div>
+        <Paper p="md" radius="xl" shadow="xs" style={{ scrollMarginBottom: 16 }}>
+          <Stack gap="md">
+            <TextInput
+              label="日期"
+              type="date"
+              value={occurredAt}
+              max={maxDate}
+              onFocus={handleNativeFieldFocus}
+              onBlur={handleNativeFieldBlur}
+              onChange={(event) => setOccurredAt(clampInputDateToMax(event.target.value, maxDate))}
+            />
+            {type === 'expense' && (
+              <>
+                <Divider />
+            <Switch
+              color="teal"
+              checked={includeInBudget}
+              onChange={(event) => setIncludeInBudget(event.currentTarget.checked)}
+              aria-label="计入日常消费"
+              label="计入日常消费"
+              description="关闭后仍会记账并减少可支配金额，但不进入日常消费和预算"
+              labelPosition="left"
+              w="100%"
+              styles={{ body: { justifyContent: 'space-between' }, labelWrapper: { flex: 1 } }}
+            />
+              </>
+            )}
+            <Divider />
+            <Textarea label="备注" value={note} autosize minRows={2} maxRows={3} onFocus={handleNativeFieldFocus} onBlur={handleNativeFieldBlur} onChange={(event) => setNote(event.target.value)} />
+          </Stack>
+        </Paper>
+      </Stack>
 
       {showAmountKeyboard && (
-        <div className="shrink-0 bg-white pb-[max(0px,env(safe-area-inset-bottom))]">
+        <Box bg="white" pb="env(safe-area-inset-bottom)" style={{ flexShrink: 0 }}>
           <AmountKeyboard
             value={amount}
             onChange={setAmount}
             onDismiss={() => setShowAmountKeyboard(false)}
             onSubmit={() => document.getElementById(id)?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))}
           />
-        </div>
+        </Box>
       )}
-    </form>
+    </Box>
   )
 }

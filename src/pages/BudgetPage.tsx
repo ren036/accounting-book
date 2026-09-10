@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AutoCenter, Button, Dialog, Toast } from 'antd-mobile'
+import { Box, Button, Group, NumberInput, Paper, Progress, Stack, Text, TextInput, Title } from '@mantine/core'
 import type { MonthlyBudget } from '../domain/budget'
 import { summarizeBudget } from '../domain/budget'
 import type { Transaction } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { deleteBudget, saveBudget } from '../lib/db'
 import { formatMoney } from '../lib/money'
-import { cardClass, fieldClass, pageClass } from '../ui/classes'
+import { confirmAction, showMessage } from '../ui/feedback'
 
 type BudgetPageProps = {
   embedded?: boolean
@@ -32,67 +32,76 @@ export function BudgetPage({ embedded = false, transactions, budgets, onChanged,
     event.preventDefault()
     const numericAmount = Number(amount)
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      Toast.show({ content: '请输入大于 0 的预算金额' })
+      showMessage('请输入大于 0 的预算金额')
       return
     }
 
     await saveBudget({ month, amount: Math.round(numericAmount * 100) / 100 })
     await onChanged()
-    Toast.show({ content: '预算已保存' })
+    showMessage('预算已保存')
   }
 
   async function handleDelete() {
     if (!activeBudget) return
-    const confirmed = await Dialog.confirm({
-      content: `确定清除 ${month.replace('-', '年')}月的预算吗？`,
-      confirmText: '清除',
-      cancelText: '取消'
+    const confirmed = await confirmAction({
+      message: `确定清除 ${month.replace('-', '年')}月的预算吗？`,
+      confirmLabel: '清除',
+      cancelLabel: '取消',
+      destructive: true,
     })
     if (!confirmed) return
     await deleteBudget(month)
     await onChanged()
-    Toast.show({ content: '预算已清除' })
+    showMessage('预算已清除')
   }
 
   return (
-    <section className={embedded ? '' : `${pageClass} h-full overflow-y-auto p-3`}>
-      {!embedded && <AutoCenter className="mb-3 text-lg">月度预算</AutoCenter>}
+    <Box component="section" h={embedded ? undefined : '100%'} p={embedded ? 0 : 'md'} style={embedded ? undefined : { overflowY: 'auto' }}>
+      <Stack gap="md">
+        {!embedded && <Title order={2} size="h4" ta="center">月度预算</Title>}
 
-      <div className="grid gap-3">
-        <label className={fieldClass}>
-          <span>选择月份</span>
-          <input type="month" value={month} onChange={(event) => setMonth(event.target.value || currentMonth())} />
-        </label>
+        <TextInput
+          label="选择月份"
+          type="month"
+          value={month}
+          onChange={(event) => setMonth(event.target.value || currentMonth())}
+        />
 
-        <button type="button" className={`${cardClass} grid w-full gap-4 text-left text-inherit`} onClick={() => onOpenMonth(month)} aria-label={`查看${month}月详细账单`}>
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <span className="text-sm text-[var(--book-muted)]">{activeBudget ? '本月预算' : '尚未设置预算'}</span>
-              <strong className="mt-1 block text-3xl">{activeBudget ? formatMoney(activeBudget.amount) : '—'}</strong>
-            </div>
-            {progress && <span className={progress.remaining < 0 ? 'text-[var(--book-expense)]' : 'text-[var(--book-green)]'}>{progress.percentage.toFixed(0)}%</span>}
-          </div>
+        <Paper component="button" type="button" p="lg" radius="xl" shadow="xs" w="100%" ta="left" onClick={() => onOpenMonth(month)} aria-label={`查看${month}月详细账单`}>
+          <Stack gap="md">
+            <Group justify="space-between" align="flex-end">
+              <Box>
+                <Text size="sm" c="dimmed">{activeBudget ? '本月预算' : '尚未设置预算'}</Text>
+                <Text mt={4} fz={30} fw={700}>{activeBudget ? formatMoney(activeBudget.amount) : '—'}</Text>
+              </Box>
+              {progress && <Text fw={600} c={progress.remaining < 0 ? 'red.6' : 'teal.7'}>{progress.percentage.toFixed(0)}%</Text>}
+            </Group>
 
-          <div className="h-3 overflow-hidden rounded-full bg-gray-100" aria-label="预算使用进度">
-            <div className={`h-full rounded-full transition-[width] ${progress && progress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${barPercentage}%` }} />
-          </div>
+            <Progress value={barPercentage} color={progress && progress.percentage > 100 ? 'red' : 'teal'} size="md" radius="xl" aria-label="预算使用进度" />
 
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div><span className="block text-[var(--book-muted)]">日常消费</span><strong className="mt-1 block text-lg">{formatMoney(progress?.spent ?? 0)}</strong></div>
-            <div><span className="block text-[var(--book-muted)]">{progress && progress.remaining < 0 ? '已超出' : '剩余'}</span><strong className={`mt-1 block text-lg ${progress && progress.remaining < 0 ? 'text-[var(--book-expense)]' : ''}`}>{formatMoney(Math.abs(progress?.remaining ?? 0))}</strong></div>
-          </div>
-          <span className="text-right text-xs font-semibold text-[var(--book-green)]">查看本月详细账单 →</span>
-        </button>
+            <Group grow align="flex-start">
+              <Box><Text size="sm" c="dimmed">日常消费</Text><Text mt={4} fz="lg" fw={700}>{formatMoney(progress?.spent ?? 0)}</Text></Box>
+              <Box><Text size="sm" c="dimmed">{progress && progress.remaining < 0 ? '已超出' : '剩余'}</Text><Text mt={4} fz="lg" fw={700} c={progress && progress.remaining < 0 ? 'red.6' : undefined}>{formatMoney(Math.abs(progress?.remaining ?? 0))}</Text></Box>
+            </Group>
+            <Text ta="right" size="xs" fw={700} c="teal.7">查看本月详细账单 →</Text>
+          </Stack>
+        </Paper>
 
-        <form className={`${cardClass} grid gap-3`} onSubmit={handleSave}>
-          <label className="grid gap-2">
-            <span>预算金额</span>
-            <input className="box-border w-full rounded-[var(--book-radius-control)] border border-[var(--book-border)] bg-white/60 p-3 text-base" type="number" inputMode="decimal" min="1" step="1" placeholder="请输入本月预算" value={amount} onChange={(event) => setAmount(event.target.value)} />
-          </label>
-          <Button color="primary" shape="rounded" type="submit">{activeBudget ? '更新预算' : '设置预算'}</Button>
-          {activeBudget && <Button className="!text-[var(--book-expense)]" fill="none" type="button" onClick={handleDelete}>清除本月预算</Button>}
-        </form>
-      </div>
-    </section>
+        <Paper component="form" p="lg" radius="xl" shadow="xs" onSubmit={handleSave}>
+          <Stack gap="md">
+            <NumberInput
+              label="预算金额"
+              min={1}
+              step={1}
+              placeholder="请输入本月预算"
+              value={amount}
+              onChange={(value) => setAmount(String(value))}
+            />
+            <Button color="teal" radius="xl" type="submit">{activeBudget ? '更新预算' : '设置预算'}</Button>
+            {activeBudget && <Button color="red" variant="subtle" type="button" onClick={handleDelete}>清除本月预算</Button>}
+          </Stack>
+        </Paper>
+      </Stack>
+    </Box>
   )
 }

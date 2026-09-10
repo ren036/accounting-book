@@ -2,6 +2,7 @@ import { Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAx
 import type { CategorySummary, MonthDetailSummary } from '../domain/summary'
 import { formatMoney } from '../lib/money'
 import { CategoryEmoji, getCategoryVisual } from './CategoryEmoji'
+import { Box, Center, Group, Paper, SimpleGrid, Stack, Text, Title } from '@mantine/core'
 
 export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months: MonthDetailSummary[]; expenseLabel?: string }) {
   const data = [...months].reverse().map((month) => ({ name: `${Number(month.month.slice(5))}月`, income: month.income, expense: month.expense }))
@@ -9,7 +10,7 @@ export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months:
   return (
     <ChartCard eyebrow="年度走势" title="月度收支">
       {data.length === 0 ? <EmptyChart /> : (
-        <div className="h-52 w-full">
+        <Box h={208} w="100%">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 10, right: 8, bottom: 0, left: -20 }}>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#747782', fontSize: 11 }} />
@@ -19,7 +20,7 @@ export function MonthlyTrendChart({ months, expenseLabel = '支出' }: { months:
               <Line type="monotone" dataKey="expense" name={expenseLabel} stroke="#df626d" strokeWidth={3} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+        </Box>
       )}
     </ChartCard>
   )
@@ -46,8 +47,8 @@ export function CategoryChart({
   return (
     <ChartCard eyebrow={eyebrow} title={title}>
       {total === 0 ? <EmptyChart /> : (
-        <div className="grid grid-cols-[minmax(0,1fr)_112px] items-center gap-2">
-          <div className="relative h-48 min-w-0">
+        <SimpleGrid cols={2} spacing="xs" style={{ gridTemplateColumns: 'minmax(0, 1fr) 112px', alignItems: 'center' }}>
+          <Box pos="relative" h={192} miw={0}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={data} dataKey="amount" nameKey="category" innerRadius="58%" outerRadius="82%" paddingAngle={2} stroke="none">
@@ -56,33 +57,29 @@ export function CategoryChart({
                 <Tooltip formatter={(value) => `¥${formatMoney(Number(value))}`} contentStyle={{ border: 0, borderRadius: 14, boxShadow: '0 8px 24px rgb(31 35 32 / 10%)' }} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xs text-[var(--book-muted)]">{totalLabel}</span>
-              <strong className="mt-1 text-lg">¥{compactMoney(total)}</strong>
-            </div>
-          </div>
-          <div className="grid gap-2">
+            <Center pos="absolute" inset={0} style={{ pointerEvents: 'none' }}><Stack gap={2} align="center"><Text size="xs" c="dimmed">{totalLabel}</Text><Text fz="lg" fw={700}>¥{compactMoney(total)}</Text></Stack></Center>
+          </Box>
+          <Stack gap="xs">
             {data.map((item) => (
-              <div key={item.category} className="grid grid-cols-[8px_minmax(0,1fr)] items-center gap-x-2 text-xs">
-                <i className="size-2 rounded-full" style={{ background: getCategoryVisual(item.category).color }} />
-                <span className="flex min-w-0 items-center gap-1 truncate"><CategoryEmoji category={item.category} size={14} />{item.category}</span>
-                <span className="col-start-2 text-[10px] text-[var(--book-muted)]">
+              <Box key={item.category}>
+                <Group gap={6} wrap="nowrap"><Box w={8} h={8} style={{ flexShrink: 0, borderRadius: '50%', background: getCategoryVisual(item.category).color }} /><Text size="xs" truncate><CategoryEmoji category={item.category} size={14} /> {item.category}</Text></Group>
+                <Text ml={14} size="xs" c="dimmed">
                   {Math.round(item.amount / total * 100)}% · ¥{formatMoney(item.amount)}
-                </span>
-              </div>
+                </Text>
+              </Box>
             ))}
-          </div>
-        </div>
+          </Stack>
+        </SimpleGrid>
       )}
     </ChartCard>
   )
 }
 
 function ChartCard({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <section className="min-w-0 rounded-[var(--book-radius-card)] bg-white p-[18px] shadow-[var(--book-shadow-card)]"><span className="mb-1 block text-[11px] font-bold tracking-[.12em] text-[var(--book-green)]">{eyebrow}</span><h2 className="m-0 mb-3 text-lg">{title}</h2>{children}</section>
+  return <Paper component="section" miw={0} p={18} radius="xl" shadow="xs"><Text size="xs" fw={700} tt="uppercase" c="teal.7">{eyebrow}</Text><Title order={2} size="h4" mb="md">{title}</Title>{children}</Paper>
 }
 
-function EmptyChart() { return <div className="grid min-h-48 place-items-center rounded-2xl bg-neutral-50 text-sm text-[var(--book-muted)]">暂无数据</div> }
+function EmptyChart() { return <Center mih={192} bg="gray.0" style={{ borderRadius: 16 }}><Text size="sm" c="dimmed">暂无数据</Text></Center> }
 
 function groupSmallCategories(categories: CategorySummary[]): CategorySummary[] {
   if (categories.length <= 6) return categories

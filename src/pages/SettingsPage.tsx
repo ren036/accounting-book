@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { AutoCenter, Button, Dialog } from 'antd-mobile'
+import { useState } from 'react'
+import { Alert, Box, Button, Divider, FileInput, Paper, Stack, Text, Title } from '@mantine/core'
 import { parseBackup, serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
 import {
@@ -15,7 +15,7 @@ import {
 } from '../lib/db'
 import { downloadBlob } from '../lib/download'
 import { getStorageMode } from '../lib/storageMode'
-import { cardClass, fieldClass, pageClass } from '../ui/classes'
+import { confirmAction } from '../ui/feedback'
 
 const versionUpdatedAt = new Intl.DateTimeFormat('zh-CN', {
   year: 'numeric',
@@ -35,7 +35,6 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   const [selectedImportFile, setSelectedImportFile] = useState<File | null>(null)
   const [isImporting, setIsImporting] = useState(false)
   const storageMode = getStorageMode()
-  const importInputRef = useRef<HTMLInputElement | null>(null)
 
   async function handleJsonExport() {
     const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
@@ -65,12 +64,6 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
     downloadBlob(blob, createBackupFileName('xlsx'))
   }
 
-  function handleImportFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? null
-    setSelectedImportFile(file)
-    setMessage(file ? `已选择文件：${file.name}` : '')
-  }
-
   async function handleImport() {
     if (!selectedImportFile) {
       setMessage('请先选择要导入的备份文件。')
@@ -97,17 +90,15 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
     } finally {
       setIsImporting(false)
       setSelectedImportFile(null)
-      if (importInputRef.current) {
-        importInputRef.current.value = ''
-      }
     }
   }
 
   async function handleClearAll() {
-    const confirmed = await Dialog.confirm({
-      content: '确定清空全部账单、预算和储蓄数据吗？此操作不可恢复。',
-      confirmText: '清空',
-      cancelText: '取消'
+    const confirmed = await confirmAction({
+      message: '确定清空全部账单、预算和储蓄数据吗？此操作不可恢复。',
+      confirmLabel: '清空',
+      cancelLabel: '取消',
+      destructive: true,
     })
 
     if (!confirmed) return
@@ -118,46 +109,49 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   return (
-    <section className={`${pageClass} p-3`}>
-      <AutoCenter className="mb-2 text-lg">设置</AutoCenter>
-      <div className={`${cardClass} grid gap-4`}>
-        <div>
-          <strong>{storageMode.label}</strong>
-          <p className="text-[var(--book-muted)]">{storageMode.description}</p>
-        </div>
+    <Box component="section" p="md">
+      <Title order={2} size="h4" ta="center" mb="sm">设置</Title>
+      <Paper p="lg" radius="xl" shadow="xs">
+        <Stack gap="md">
+        <Box>
+          <Text fw={700}>{storageMode.label}</Text>
+          <Text mt="xs" c="dimmed">{storageMode.description}</Text>
+        </Box>
 
-        <hr className="w-full border-0 border-t border-[var(--book-border)]" />
+        <Divider />
 
-        <Button color="primary" type="button" shape="rounded" onClick={handleJsonExport}>
+        <Button color="teal" radius="xl" type="button" onClick={handleJsonExport}>
           导出 JSON
         </Button>
-        <Button color='primary' fill='solid' className="!bg-[#5b8def] !border-[#5b8def]" type="button" shape="rounded" onClick={handleExcelExport}>
+        <Button color="blue" radius="xl" type="button" onClick={handleExcelExport}>
           导出 Excel
         </Button>
-        <label className={fieldClass}>
-          <span>导入备份</span>
-          <input
-            ref={importInputRef}
-            type="file"
-            accept=".json,.xls,.xlsx,application/json"
-            onChange={handleImportFileChange}
-          />
-        </label>
-        <Button color="primary" type="button" shape="rounded" onClick={handleImport} disabled={!selectedImportFile || isImporting}>
+        <FileInput
+          label="导入备份"
+          accept=".json,.xls,.xlsx,application/json"
+          value={selectedImportFile}
+          onChange={(file) => {
+            setSelectedImportFile(file)
+            setMessage(file ? `已选择文件：${file.name}` : '')
+          }}
+          clearable
+        />
+        <Button color="teal" radius="xl" type="button" onClick={handleImport} disabled={!selectedImportFile} loading={isImporting}>
           {isImporting ? '导入中...' : '导入'}
         </Button>
 
-        <Button className="!border-[#f4cdd2] !bg-[#fff1f2] !text-[#c74f5b]" type="button" shape="rounded" onClick={handleClearAll}>
+        <Button color="red" variant="light" radius="xl" type="button" onClick={handleClearAll}>
           清空全部数据
         </Button>
 
-        {message && <p className="m-0 text-[#4f6fae]">{message}</p>}
+        {message && <Alert color="blue" variant="light">{message}</Alert>}
 
-        <p className="m-0 text-center text-xs text-[var(--book-muted)]">
+        <Text ta="center" size="xs" c="dimmed">
           版本 v{__APP_VERSION__} · 更新于 {versionUpdatedAt}
-        </p>
-      </div>
-    </section>
+        </Text>
+        </Stack>
+      </Paper>
+    </Box>
   )
 }
 

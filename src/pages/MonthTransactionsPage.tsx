@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CollapsibleTransactionSearch } from '../components/CollapsibleTransactionSearch'
 import { TransactionRow } from '../components/TransactionRow'
 import { CategoryChart } from '../components/StatisticsCharts'
@@ -9,10 +9,8 @@ import type { Transaction, TransactionType } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth, shiftMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { AutoCenter, Button, Dropdown, Segmented } from 'antd-mobile'
-import type { DropdownRef } from 'antd-mobile'
-import { CheckOutline, LeftOutline } from 'antd-mobile-icons'
-import { cardClass, compactSummaryClass, emptyClass, expenseClass, fixedListContentClass, fixedListPageClass, incomeClass, pageTitleClass } from '../ui/classes'
+import { ActionIcon, Box, Group, Paper, Progress, SegmentedControl, Select, SimpleGrid, Stack, Text } from '@mantine/core'
+import { ArrowLeft } from 'lucide-react'
 
 type MonthTransactionsPageProps = {
   month: string
@@ -26,7 +24,6 @@ type MonthTransactionsPageProps = {
 export function MonthTransactionsPage({ month, transactions, budget, onBack, onChangeMonth, onOpen }: MonthTransactionsPageProps) {
   const [activeType, setActiveType] = useState<TransactionType>('expense')
   const [searchQuery, setSearchQuery] = useState('')
-  const monthDropdownRef = useRef<DropdownRef>(null)
   const selectableMonths = useMemo(() => {
     const recordedMonths = transactions
       .map((transaction) => transaction.occurredAt.slice(0, 7))
@@ -56,82 +53,46 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
   const changeMonth = (nextMonth: string) => {
     setSearchQuery('')
     onChangeMonth(nextMonth)
-    monthDropdownRef.current?.close()
   }
 
   return (
-    <section className={`${fixedListPageClass} !gap-2 !pt-1`}>
-      <div className="grid gap-2">
-        <div className={pageTitleClass}>
-          <Button color="primary" fill="none" size="middle" aria-label="返回" onClick={onBack}>
-            <LeftOutline fontSize={22} />
-          </Button>
-          <AutoCenter className="w-full">
-            <Dropdown
-              ref={monthDropdownRef}
-              className="w-full max-w-[210px] overflow-hidden rounded-full border border-[var(--book-border)] bg-white [&_.adm-dropdown-item-title]:w-full [&_.adm-dropdown-item-title]:justify-center [&_.adm-dropdown-item-title]:!px-4 [&_.adm-dropdown-item-title]:!py-2 [&_.adm-dropdown-item-title-text]:font-semibold [&_.adm-dropdown-item-title-text]:text-[var(--book-green)] [&_.adm-dropdown-nav]:border-0"
-              aria-label="选择账单月份"
-            >
-              <Dropdown.Item key="month" title={`${month.replace('-', '年')}月账单`} highlight>
-                <div className="max-h-[55vh] overflow-y-auto bg-white px-3 py-2">
-                  {selectableMonths.map((value) => {
-                    const selected = value === month
-                    return (
-                      <button
-                        key={value}
-                        type="button"
-                        className={`grid w-full grid-cols-[1fr_24px] items-center rounded-xl border-0 px-4 py-3 text-left text-base ${selected ? 'bg-[var(--book-green-soft)] font-semibold text-[var(--book-green)]' : 'bg-transparent text-inherit'}`}
-                        aria-current={selected ? 'true' : undefined}
-                        onClick={() => changeMonth(value)}
-                      >
-                        <span>{value.replace('-', '年')}月账单</span>
-                        {selected && <CheckOutline aria-hidden="true" />}
-                      </button>
-                    )
-                  })}
-                </div>
-              </Dropdown.Item>
-            </Dropdown>
-          </AutoCenter>
-          <span aria-hidden="true" />
-        </div>
+    <Stack component="section" h="100%" mih={0} gap="xs" p="md" pt="xs">
+      <Stack gap="xs" style={{ flexShrink: 0 }}>
+        <Group justify="space-between" wrap="nowrap">
+          <ActionIcon color="dark" variant="subtle" size="lg" aria-label="返回" onClick={onBack}><ArrowLeft size={22} /></ActionIcon>
+          <Select
+            w={210}
+            radius="xl"
+            aria-label="选择账单月份"
+            value={month}
+            data={selectableMonths.map((value) => ({ value, label: `${value.replace('-', '年')}月账单` }))}
+            onChange={(value) => value && changeMonth(value)}
+            allowDeselect={false}
+          />
+          <Box w={36} aria-hidden="true" />
+        </Group>
 
-        <div className={`${compactSummaryClass} [&>div>span]:w-full [&>div>strong]:w-full [&>div]:text-center`}>
-          <div>
-            <span>收入</span>
-            <strong className={incomeClass}>{formatMoney(summary.income)}</strong>
-          </div>
-          <div>
-            <span>支出</span>
-            <strong className={expenseClass}>{formatMoney(summary.expense)}</strong>
-          </div>
-          <div>
-            <span>结余</span>
-            <strong>{formatMoney(summary.balance)}</strong>
-          </div>
-        </div>
-        <div className={`${cardClass} grid gap-1.5 !px-3 !py-2.5`}>
-          <div className="flex items-end justify-between gap-3">
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-              <span className="text-sm text-[var(--book-muted)]">本月预算</span>
-              <strong className="break-all text-base">{budget ? formatMoney(budget.amount) : '未设置'}</strong>
-            </div>
-            {budgetProgress && <span className={budgetProgress.remaining < 0 ? expenseClass : incomeClass}>{budgetProgress.percentage.toFixed(0)}%</span>}
-          </div>
+        <Paper p="sm" radius="xl" shadow="xs"><SimpleGrid cols={3}>
+          <SummaryItem label="收入" value={formatMoney(summary.income)} color="teal.7" />
+          <SummaryItem label="支出" value={formatMoney(summary.expense)} color="red.6" />
+          <SummaryItem label="结余" value={formatMoney(summary.balance)} />
+        </SimpleGrid></Paper>
+        <Paper p="sm" radius="xl" shadow="xs">
+          <Stack gap={6}>
+          <Group justify="space-between" align="flex-end">
+            <Group gap="xs"><Text size="sm" c="dimmed">本月预算</Text><Text fw={700}>{budget ? formatMoney(budget.amount) : '未设置'}</Text></Group>
+            {budgetProgress && <Text fw={700} c={budgetProgress.remaining < 0 ? 'red.6' : 'teal.7'}>{budgetProgress.percentage.toFixed(0)}%</Text>}
+          </Group>
           {budgetProgress && (
             <>
-              <div className="h-1.5 overflow-hidden rounded-full bg-gray-100" aria-label="预算使用进度">
-                <div className={`h-full rounded-full ${budgetProgress.percentage > 100 ? 'bg-[var(--book-expense)]' : 'bg-[var(--book-green)]'}`} style={{ width: `${budgetBarPercentage}%` }} />
-              </div>
-              <div className="flex justify-between text-xs text-[var(--book-muted)]">
-                <span>日常消费 {formatMoney(budgetProgress.spent)}</span>
-                <span>{budgetProgress.remaining < 0 ? '超出' : '剩余'} {formatMoney(Math.abs(budgetProgress.remaining))}</span>
-              </div>
+              <Progress value={budgetBarPercentage} color={budgetProgress.percentage > 100 ? 'red' : 'teal'} size={6} radius="xl" aria-label="预算使用进度" />
+              <Group justify="space-between"><Text size="xs" c="dimmed">日常消费 {formatMoney(budgetProgress.spent)}</Text><Text size="xs" c="dimmed">{budgetProgress.remaining < 0 ? '超出' : '剩余'} {formatMoney(Math.abs(budgetProgress.remaining))}</Text></Group>
             </>
           )}
-        </div>
+          </Stack>
+        </Paper>
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
-          <Segmented block className="book-filter" options={[
+          <SegmentedControl fullWidth data={[
             { label: '支出', value: 'expense' },
             { label: '收入', value: 'income' },
           ]}
@@ -139,9 +100,9 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
             onChange={(value) => setActiveType(value as TransactionType)}
           />
         </CollapsibleTransactionSearch>
-      </div>
+      </Stack>
 
-      <section className={`${fixedListContentClass} grid content-start gap-2.5`}>
+      <Stack component="section" mih={0} flex={1} gap="sm" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
         <CategoryChart
           categories={categories}
           eyebrow="月度构成"
@@ -149,22 +110,26 @@ export function MonthTransactionsPage({ month, transactions, budget, onBack, onC
           totalLabel={`总${activeType === 'expense' ? '支出' : '收入'}`}
         />
         {groups.length === 0 ? (
-          <p className={emptyClass}>{emptyText}</p>
+          <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">{emptyText}</Text></Paper>
         ) : (
-          <div>
+          <Stack gap="md">
             {groups.map((group) => (
-              <section className="daily-group" key={group.date}>
-                {group.label}
-                <div className="grid gap-2.5">
+              <Stack component="section" gap="xs" key={group.date}>
+                <Text size="sm" c="dimmed" fw={600}>{group.label}</Text>
+                <Stack gap="xs">
                   {group.transactions.map((transaction) => (
                     <TransactionRow key={transaction.id} transaction={transaction} onOpen={onOpen} />
                   ))}
-                </div>
-              </section>
+                </Stack>
+              </Stack>
             ))}
-          </div>
+          </Stack>
         )}
-      </section>
-    </section>
+      </Stack>
+    </Stack>
   )
+}
+
+function SummaryItem({ label, value, color }: { label: string; value: string; color?: string }) {
+  return <Stack gap={2} ta="center"><Text size="xs" c="dimmed">{label}</Text><Text size="sm" fw={700} c={color}>{value}</Text></Stack>
 }

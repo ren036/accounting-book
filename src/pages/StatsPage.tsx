@@ -6,8 +6,7 @@ import type { Transaction } from '../domain/transaction'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth, currentYear } from '../lib/dates'
 import { formatMoney } from '../lib/money'
-import { compactSummaryClass, emptyClass, expenseClass, fixedListContentClass, fixedListHeaderClass, fixedListPageClass, incomeClass } from '../ui/classes'
-import { AutoCenter, Segmented } from 'antd-mobile'
+import { Box, Group, Paper, SegmentedControl, Select, SimpleGrid, Stack, Text, Title } from '@mantine/core'
 
 type StatsPageProps = {
   transactions: Transaction[]
@@ -35,85 +34,70 @@ export function StatsPage({ transactions, onOpenMonth }: StatsPageProps) {
     .filter((month) => !hasSearchQuery || matchingMonths.has(month.month))
 
   return (
-    <section className={fixedListPageClass}>
-      <div className={fixedListHeaderClass}>
-        <div className="flex items-center justify-between gap-3">
-          <AutoCenter className="text-lg font-semibold">统计分析</AutoCenter>
-          <label>
-            <select className="w-[150px] rounded-full border border-neutral-200 bg-white px-4 py-[9px] font-semibold text-[var(--book-green)]" aria-label="统计年份" value={year} onChange={(event) => setYear(event.target.value)}>
-              {availableYears.map((item) => (
-                <option key={item} value={item}>
-                  {item}年
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+    <Stack component="section" h="100%" mih={0} p="md" gap="md">
+      <Stack gap="md" style={{ flexShrink: 0 }}>
+        <Group justify="space-between" gap="md" wrap="nowrap">
+          <Title order={2} size="h4">统计分析</Title>
+          <Select
+            w={150}
+            radius="xl"
+            aria-label="统计年份"
+            value={year}
+            data={availableYears.map((item) => ({ value: item, label: `${item}年` }))}
+            onChange={(value) => value && setYear(value)}
+          />
+        </Group>
 
         <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
-          <Segmented
-            className="book-filter"
-            block
-            options={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
+          <SegmentedControl
+            fullWidth
+            data={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
             value={expenseScope}
             onChange={(value) => setExpenseScope(value as 'all' | 'daily')}
           />
         </CollapsibleTransactionSearch>
 
-        <div className={`${compactSummaryClass} [&>div>span]:w-full [&>div>strong]:w-full [&>div]:text-center`}>
-          <div>
-            <span>总收入</span>
-            <strong className={incomeClass}>{formatMoney(summary.income)}</strong>
-          </div>
-          <div>
-            <span>{expenseScope === 'daily' ? '日常消费' : '总支出'}</span>
-            <strong className={expenseClass}>{formatMoney(summary.expense)}</strong>
-          </div>
-          <div>
-            <span>结余</span>
-            <strong>{summary.balance >= 0 ? '+' : ''}{formatMoney(summary.balance)}</strong>
-          </div>
-        </div>
+        <Paper p="sm" radius="xl" shadow="xs">
+          <SimpleGrid cols={3}>
+            <SummaryItem label="总收入" value={formatMoney(summary.income)} color="teal.7" />
+            <SummaryItem label={expenseScope === 'daily' ? '日常消费' : '总支出'} value={formatMoney(summary.expense)} color="red.6" />
+            <SummaryItem label="结余" value={`${summary.balance >= 0 ? '+' : ''}${formatMoney(summary.balance)}`} />
+          </SimpleGrid>
+        </Paper>
 
-      </div>
+      </Stack>
 
-      <section className={`${fixedListContentClass} grid content-start gap-2.5`}>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] gap-3">
+      <Stack component="section" mih={0} flex={1} gap="md" style={{ overflowY: 'auto', overscrollBehavior: 'contain' }}>
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
           <MonthlyTrendChart months={months} expenseLabel={expenseScope === 'daily' ? '日常消费' : '支出'} />
           <ExpenseCategoryChart categories={expenseCategories} daily={expenseScope === 'daily'} />
-        </div>
+        </SimpleGrid>
 
-        <div className="mt-2 flex items-end justify-between gap-3 [&>span]:text-xs [&>span]:text-slate-400 [&_h2]:m-0">
-          <div>
-            <span className="mb-1 block text-[11px] font-extrabold tracking-[.12em] text-[var(--book-green)]">账目明细</span>
-            <h2>{hasSearchQuery ? '搜索结果' : '月度明细'}</h2>
-          </div>
-          <span>{months.length} 个月</span>
-        </div>
+        <Group mt="xs" justify="space-between" align="flex-end">
+          <Box><Text size="xs" fw={800} tt="uppercase" c="teal.7">账目明细</Text><Title order={2} size="h4">{hasSearchQuery ? '搜索结果' : '月度明细'}</Title></Box>
+          <Text size="xs" c="dimmed">{months.length} 个月</Text>
+        </Group>
         {months.length === 0 && hasSearchQuery ? (
-          <p className={emptyClass}>这一年没有找到匹配的账单</p>
+          <Paper p="xl" radius="xl"><Text ta="center" c="dimmed">这一年没有找到匹配的账单</Text></Paper>
         ) : (
-          <div className="grid gap-2.5">
+          <Stack gap="xs">
             {months.map((month) => (
-              <button className="grid w-full grid-cols-[56px_repeat(3,1fr)] items-center gap-2.5 rounded-[18px] border-0 bg-white p-3.5 text-left text-[14px] text-inherit shadow-[var(--book-shadow-card)] [&>div]:grid [&>div]:gap-1 [&_span]:text-[11px] [&_span]:text-gray-500 [&_b]:text-[13px]" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
-                <strong>{month.label}</strong>
-                <div>
-                  <span>收入</span>
-                  <b className={incomeClass}>{formatMoney(month.income)}</b>
-                </div>
-                <div>
-                  <span>{expenseScope === 'daily' ? '日常消费' : '支出'}</span>
-                  <b className={expenseClass}>{formatMoney(month.expense)}</b>
-                </div>
-                <div>
-                  <span>结余</span>
-                  <b>{formatMoney(month.balance)}</b>
-                </div>
-              </button>
+              <Paper component="button" w="100%" p="md" radius="lg" shadow="xs" ta="left" c="inherit" key={month.month} type="button" onClick={() => onOpenMonth(month.month)}>
+                <SimpleGrid cols={4} spacing="xs" style={{ alignItems: 'center' }}>
+                  <Text fw={700}>{month.label}</Text>
+                  <SummaryItem label="收入" value={formatMoney(month.income)} color="teal.7" compact />
+                  <SummaryItem label={expenseScope === 'daily' ? '日常消费' : '支出'} value={formatMoney(month.expense)} color="red.6" compact />
+                  <SummaryItem label="结余" value={formatMoney(month.balance)} compact />
+                </SimpleGrid>
+              </Paper>
             ))}
-          </div>
+          </Stack>
         )}
-      </section>
-    </section>
+      </Stack>
+    </Stack>
   )
+}
+
+function SummaryItem({ label, value, color, compact = false }: { label: string; value: string; color?: string; compact?: boolean }) {
+  return <Stack gap={2} ta="center"><Text size="xs" c="dimmed">{label}</Text><Text size={compact ? 'xs' : 'sm'} fw={700} c={color}>{value}</Text></Stack>
 }
