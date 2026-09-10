@@ -68,7 +68,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   }
 
   return (
-    <PageLayout gap="sm" headerGap="sm" contentGap="md" header={<>
+    <PageLayout gap="xs" headerGap="xs" contentGap="xs" header={<>
         <Paper
           className="ledger-surface"
           pos="relative"
