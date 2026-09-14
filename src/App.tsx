@@ -166,7 +166,6 @@ export function App() {
         top: offsetTop,
         right: 0,
         left: 0,
-        width: '100%',
         overflow: 'hidden',
       }}
     >
@@ -175,7 +174,7 @@ export function App() {
         <OpeningPage />
       ) : (
         <>
-          <Box className="book-app-enter app-page-scroll" flex={1} mih={0}>
+          <Box className="book-app-enter" flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
         {editingTransaction ? (
           <EditTransactionPage
             transaction={editingTransaction}
