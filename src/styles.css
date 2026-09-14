@@ -49,6 +49,17 @@ button {
   touch-action: manipulation;
 }
 
+/*
+ * iOS Safari zooms the page when a text control smaller than 16px receives
+ * focus. Keep native controls at the same safe minimum as Mantine controls so
+ * the keyboard can open and close without leaving the app viewport enlarged.
+ */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
 .ledger-surface {
   background: linear-gradient(135deg, var(--book-ledger-start) 0%, var(--book-ledger-middle) 58%, var(--book-ledger-end) 100%);
   border: 1px solid var(--book-border);

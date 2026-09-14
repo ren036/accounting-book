@@ -59,19 +59,24 @@ export const bookTheme = createTheme({
       defaultProps: { color: 'teal', radius: 'sm' },
     }),
     Select: Select.extend({
-      defaultProps: { radius: 'sm' },
+      defaultProps: { radius: 'sm', size: 'md' },
+      styles: { input: { fontSize: '16px' } },
     }),
     TextInput: TextInput.extend({
-      defaultProps: { radius: 'sm' },
+      defaultProps: { radius: 'sm', size: 'md' },
+      styles: { input: { fontSize: '16px' } },
     }),
     Textarea: Textarea.extend({
-      defaultProps: { radius: 'sm' },
+      defaultProps: { radius: 'sm', size: 'md' },
+      styles: { input: { fontSize: '16px' } },
     }),
     NumberInput: NumberInput.extend({
-      defaultProps: { radius: 'sm' },
+      defaultProps: { radius: 'sm', size: 'md' },
+      styles: { input: { fontSize: '16px' } },
     }),
     FileInput: FileInput.extend({
-      defaultProps: { radius: 'sm' },
+      defaultProps: { radius: 'sm', size: 'md' },
+      styles: { input: { fontSize: '16px' } },
     }),
     Drawer: Drawer.extend({
       defaultProps: { position: 'bottom', radius: 'lg' },
