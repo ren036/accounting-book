@@ -30,6 +30,7 @@ type DashboardPageProps = {
 
 export function DashboardPage({ transactions, budgets, balanceCardBackground, disposableBalance, totalSavings, savingsAmountsHidden, onOpen, onCreate, onOpenBudget, onOpenSavings, onSavingsAmountsHiddenChange, onBalanceCardBackgroundChange }: DashboardPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchExpanded, setSearchExpanded] = useState(false)
   const backgroundInputRef = useRef<HTMLInputElement | null>(null)
   const month = currentMonth()
   const summary = summarizeMonth(transactions, month)
@@ -68,7 +69,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
   }
 
   return (
-    <PageLayout gap="xs" headerGap="xs" contentGap="xs" header={<>
+    <PageLayout scrollAll={searchExpanded} gap="xs" headerGap="xs" contentGap="xs" header={<>
         <Paper
           className="ledger-surface"
           pos="relative"
@@ -140,7 +141,7 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
           </Stack>
         </Box>
       </>}>
-        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery}>
+        <CollapsibleTransactionSearch value={searchQuery} onChange={setSearchQuery} onExpandedChange={setSearchExpanded}>
           <Group gap="xs" align="baseline" px='xs'>
             <Title order={3} size="h5">{`${Number(month.slice(5))}月流水`}</Title>
             <Text size="xs" c="dimmed">{hasSearchQuery ? `${groups.reduce((count, group) => count + group.transactions.length, 0)} 条结果` : `${transactionCount} 笔`}</Text>
