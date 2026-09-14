@@ -35,7 +35,7 @@ const StatsPage = lazy(async () => {
 })
 
 export function App() {
-  const { isKeyboardOpen, viewportHeight } = useKeyboardViewportFrame()
+  const { isKeyboardOpen, viewportHeight, offsetTop } = useKeyboardViewportFrame()
 
   const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -161,7 +161,14 @@ export function App() {
       mih={0}
       bg="var(--book-bg)"
       c="var(--book-text)"
-      style={{ overflow: 'hidden' }}
+      style={{
+        position: 'fixed',
+        top: offsetTop,
+        right: 0,
+        left: 0,
+        width: '100%',
+        overflow: 'hidden',
+      }}
     >
       <PwaUpdatePrompt />
       {initialLoading ? (
