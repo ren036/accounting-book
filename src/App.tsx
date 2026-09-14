@@ -175,7 +175,7 @@ export function App() {
         <OpeningPage />
       ) : (
         <>
-          <Box className="book-app-enter" flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
+          <Box className="book-app-enter app-page-scroll" flex={1} mih={0}>
         {editingTransaction ? (
           <EditTransactionPage
             transaction={editingTransaction}

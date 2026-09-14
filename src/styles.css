@@ -63,6 +63,13 @@ select {
   font-size: 16px;
 }
 
+.app-page-scroll {
+  overflow-x: hidden;
+  overflow-y: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
 .ledger-surface {
   background: linear-gradient(135deg, var(--book-ledger-start) 0%, var(--book-ledger-middle) 58%, var(--book-ledger-end) 100%);
   border: 1px solid var(--book-border);
