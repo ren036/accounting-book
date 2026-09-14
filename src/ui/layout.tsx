@@ -1,4 +1,4 @@
-import { ScrollArea, Stack, type StackProps } from '@mantine/core'
+import { Stack, type StackProps } from '@mantine/core'
 
 type PageLayoutProps = {
   header: React.ReactNode
@@ -18,11 +18,9 @@ export function PageLayout({
   paddingTop = 'md',
 }: PageLayoutProps) {
   return (
-    <Stack h="100%" mih={0} gap={gap} p="sm" pt={paddingTop} pb={0}>
-      <Stack flex="0 0 auto" gap={headerGap}>{header}</Stack>
-      <ScrollArea flex={1} mih={0} mx={-4} type="auto" offsetScrollbars="y" scrollbarSize={5}>
-        <Stack gap={contentGap} px={4} pb="md">{children}</Stack>
-      </ScrollArea>
+    <Stack gap={gap} p="sm" pt={paddingTop} pb="md">
+      <Stack gap={headerGap}>{header}</Stack>
+      <Stack gap={contentGap}>{children}</Stack>
     </Stack>
   )
 }
