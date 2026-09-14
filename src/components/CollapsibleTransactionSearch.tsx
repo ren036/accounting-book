@@ -7,11 +7,10 @@ import { Box, Button, Group, Stack } from '@mantine/core'
 type CollapsibleTransactionSearchProps = {
   value: string
   onChange: (value: string) => void
-  onExpandedChange?: (expanded: boolean) => void
   children: ReactNode
 }
 
-export function CollapsibleTransactionSearch({ value, onChange, onExpandedChange, children }: CollapsibleTransactionSearchProps) {
+export function CollapsibleTransactionSearch({ value, onChange, children }: CollapsibleTransactionSearchProps) {
   const [expanded, setExpanded] = useState(false)
   const searchId = useId()
 
@@ -28,9 +27,7 @@ export function CollapsibleTransactionSearch({ value, onChange, onExpandedChange
           aria-expanded={expanded}
           aria-controls={searchId}
           onClick={() => {
-            const nextExpanded = !expanded
-            setExpanded(nextExpanded)
-            onExpandedChange?.(nextExpanded)
+            setExpanded(!expanded)
             if (expanded) onChange('')
           }}
         >

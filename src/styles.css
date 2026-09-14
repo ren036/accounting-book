@@ -51,6 +51,21 @@ button {
   touch-action: manipulation;
 }
 
+.page-layout__content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.page-layout:has(input:focus, textarea:focus, select:focus, [contenteditable='true']:focus) {
+  height: auto;
+  min-height: 100%;
+}
+
+.page-layout:has(input:focus, textarea:focus, select:focus, [contenteditable='true']:focus) > .page-layout__content {
+  flex: none;
+  overflow: visible;
+}
+
 .ledger-surface {
   background: linear-gradient(135deg, var(--book-ledger-start) 0%, var(--book-ledger-middle) 58%, var(--book-ledger-end) 100%);
   border: 1px solid var(--book-border);
