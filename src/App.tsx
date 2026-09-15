@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Box, Center, Flex, Loader, Text } from '@mantine/core'
 import { BottomNav, type PageKey } from './components/BottomNav'
-import { finishCreatingTransaction, switchMainTab } from './domain/navigation'
+import { finishCreatingTransaction, switchMainTab, type AppNavigationState } from './domain/navigation'
 import type { Transaction } from './domain/transaction'
 import type { MonthlyBudget } from './domain/budget'
 import { getTotalSavings, summarizeDisposable, type SavingsBucket, type SavingsMovement } from './domain/savings'
@@ -87,11 +87,6 @@ export function App() {
     setOpeningDisposableBalance(value)
   }
 
-  async function handleSavingsAmountsHiddenChange(value: boolean) {
-    await setPreference('savings-amounts-hidden', String(value))
-    setSavingsAmountsHidden(value)
-  }
-
   function openFunds(tab: 'budget' | 'savings') {
     setFundsInitialTab(tab)
     applyNavigationState(switchMainTab('budget'))
@@ -119,11 +114,7 @@ export function App() {
     applyNavigationState(finishCreatingTransaction())
   }
 
-  function applyNavigationState(state: {
-    currentPage: PageKey
-    editingTransactionId: string | null
-    viewingStatsMonth: string | null
-  }) {
+  function applyNavigationState(state: AppNavigationState) {
     setCurrentPage(state.currentPage)
     setEditingTransactionId(state.editingTransactionId)
     setViewingTransactionId(null)
@@ -203,7 +194,6 @@ export function App() {
                 onCreate={() => applyNavigationState(switchMainTab('entry'))}
                 onOpenBudget={() => openFunds('budget')}
                 onOpenSavings={() => openFunds('savings')}
-                onSavingsAmountsHiddenChange={handleSavingsAmountsHiddenChange}
                 onBalanceCardBackgroundChange={handleBalanceCardBackgroundChange}
               />
             )}

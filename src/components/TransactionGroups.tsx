@@ -1,22 +1,15 @@
 import { Box, Stack, Text } from '@mantine/core'
-import type { Transaction } from '../domain/transaction'
+import type { DailyTransactionGroup } from '../domain/summary'
 import { TransactionRow } from './TransactionRow'
-
-type TransactionGroup = {
-  date: string
-  label: string
-  transactions: Transaction[]
-}
 
 export function TransactionGroups({
   groups,
   onOpen,
 }: {
-  groups: TransactionGroup[]
+  groups: DailyTransactionGroup[]
   onOpen: (id: string) => void
 }) {
   return (
-    <>
     <Stack gap="xs">
       {groups.map((group) => (
         <section key={group.date}>
@@ -29,6 +22,5 @@ export function TransactionGroups({
         </section>
       ))}
     </Stack>
-    </>
   )
 }

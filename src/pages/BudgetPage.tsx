@@ -5,7 +5,7 @@ import { summarizeBudget } from '../domain/budget'
 import type { Transaction } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { deleteBudget, saveBudget } from '../lib/db'
-import { formatMoney } from '../lib/money'
+import { formatMoney, roundMoney } from '../lib/money'
 import { confirmAction, showMessage } from '../ui/feedback'
 
 type BudgetPageProps = {
@@ -35,7 +35,7 @@ export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: Bu
       return
     }
 
-    await saveBudget({ month, amount: Math.round(numericAmount * 100) / 100 })
+    await saveBudget({ month, amount: roundMoney(numericAmount) })
     await onChanged()
     showMessage('预算已保存')
   }

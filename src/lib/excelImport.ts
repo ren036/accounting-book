@@ -1,12 +1,13 @@
 import * as XLSX from 'xlsx'
 import type { Transaction, TransactionType } from '../domain/transaction'
+import { roundMoney } from './money'
 
-export type ExcelImportResult = {
+type ExcelImportResult = {
   transactions: Transaction[]
   skipped: number
 }
 
-export function parseExcelRows(rows: unknown[][]): ExcelImportResult {
+function parseExcelRows(rows: unknown[][]): ExcelImportResult {
   const transactions: Transaction[] = []
   let skipped = 0
 
@@ -63,7 +64,7 @@ function parseType(value: unknown): TransactionType | null {
 function parseAmount(value: unknown): number | null {
   const amount = typeof value === 'number' ? value : Number(String(value ?? '').trim())
   if (!Number.isFinite(amount) || amount <= 0) return null
-  return Math.round(amount * 100) / 100
+  return roundMoney(amount)
 }
 
 function parseDate(value: unknown): string | null {

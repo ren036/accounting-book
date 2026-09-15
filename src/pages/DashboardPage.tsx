@@ -5,10 +5,10 @@ import { TransactionGroups } from '../components/TransactionGroups'
 import { groupMonthTransactionsByDay, summarizeMonth } from '../domain/summary'
 import type { Transaction } from '../domain/transaction'
 import type { MonthlyBudget } from '../domain/budget'
-import { summarizeBudget, summarizeDailyExpense } from '../domain/budget'
+import { summarizeBudget } from '../domain/budget'
 import { searchTransactions } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
-import { formatMoney } from '../lib/money'
+import { formatMoney, formatPrivateMoney } from '../lib/money'
 import { ArrowRight, ChevronDown, ImagePlus, RotateCcw } from 'lucide-react'
 import { showMessage } from '../ui/feedback'
 import { EmptyState } from '../ui/display'
@@ -24,11 +24,10 @@ type DashboardPageProps = {
   onCreate: () => void
   onOpenBudget: () => void
   onOpenSavings: () => void
-  onSavingsAmountsHiddenChange: (value: boolean) => Promise<void>
   onBalanceCardBackgroundChange: (value: string | null) => Promise<void>
 }
 
-export function DashboardPage({ transactions, budgets, balanceCardBackground, disposableBalance, totalSavings, savingsAmountsHidden, onOpen, onCreate, onOpenBudget, onOpenSavings, onSavingsAmountsHiddenChange, onBalanceCardBackgroundChange }: DashboardPageProps) {
+export function DashboardPage({ transactions, budgets, balanceCardBackground, disposableBalance, totalSavings, savingsAmountsHidden, onOpen, onCreate, onOpenBudget, onOpenSavings, onBalanceCardBackgroundChange }: DashboardPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const backgroundInputRef = useRef<HTMLInputElement | null>(null)
   const month = currentMonth()
@@ -106,13 +105,13 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
               </Menu.Dropdown>
             </Menu>
           </Group>
-          <Text mt={4} fz="clamp(30px, 10vw, 38px)" fw={750} lh={1.15} style={{ letterSpacing: '-0.035em' }}>{privateMoney(disposableBalance, savingsAmountsHidden)}</Text>
+          <Text mt={4} fz="clamp(30px, 10vw, 38px)" fw={750} lh={1.15} style={{ letterSpacing: '-0.035em' }}>{formatPrivateMoney(disposableBalance, savingsAmountsHidden)}</Text>
           <Box component="input" ref={backgroundInputRef} display="none" type="file" accept="image/*" onChange={handleBackgroundFile} />
           <Group mt="auto" gap="xl" pt="md" wrap="nowrap" style={{ borderTop: `1px solid ${balanceCardBackground ? 'rgba(255,255,255,.3)' : 'var(--book-border)'}` }}>
             <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>收入 <Text component="span" c={balanceCardBackground ? 'white' : 'teal.8'} fw={650}>{formatMoney(summary.income)}</Text></Text>
             <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>支出 <Text component="span" c={balanceCardBackground ? 'white' : 'red.7'} fw={650}>{formatMoney(summary.expense)}</Text></Text>
             <UnstyledButton ml="auto" c="inherit" onClick={onOpenSavings}>
-              <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>储蓄 <Text component="span" c={balanceCardBackground ? 'white' : 'inherit'} fw={650}>{privateMoney(totalSavings, savingsAmountsHidden)}</Text></Text>
+              <Text size="xs" c={balanceCardBackground ? 'rgba(255,255,255,.84)' : 'dimmed'}>储蓄 <Text component="span" c={balanceCardBackground ? 'white' : 'inherit'} fw={650}>{formatPrivateMoney(totalSavings, savingsAmountsHidden)}</Text></Text>
             </UnstyledButton>
           </Group>
         </Paper>
@@ -164,10 +163,6 @@ export function DashboardPage({ transactions, budgets, balanceCardBackground, di
     </PageLayout>
   )
   
-}
-
-function privateMoney(amount: number, hidden: boolean): string {
-  return hidden ? '******' : formatMoney(amount)
 }
 
 function readFileAsDataUrl(file: File): Promise<string> {

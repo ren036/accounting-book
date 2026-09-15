@@ -1,6 +1,7 @@
 import type { Transaction } from './transaction'
+import { roundMoney } from '../lib/money'
 
-export type SavingsBucketKind = 'general' | 'goal'
+type SavingsBucketKind = 'general' | 'goal'
 export type SavingsBucketStatus = 'active' | 'used' | 'cancelled'
 
 export type SavingsBucket = {
@@ -24,14 +25,14 @@ export type SavingsMovement = {
   note: string
 }
 
-export type MonthlySavingsSummary = {
+type MonthlySavingsSummary = {
   month: string
   deposits: number
   withdrawals: number
   net: number
 }
 
-export type DisposableSummary = {
+type DisposableSummary = {
   openingBalance: number
   income: number
   expense: number
@@ -143,8 +144,4 @@ export function getSuggestedMonthlyDeposit(bucket: SavingsBucket, balance: numbe
 
 function sum(values: number[]): number {
   return roundMoney(values.reduce((total, value) => total + value, 0))
-}
-
-function roundMoney(value: number): number {
-  return Math.round(value * 100) / 100
 }

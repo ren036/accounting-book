@@ -1,4 +1,4 @@
-export type StorageMode = {
+type StorageMode = {
   kind: 'local-only'
   label: string
   description: string

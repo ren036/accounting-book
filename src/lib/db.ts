@@ -129,10 +129,6 @@ export async function deleteTransaction(id: string): Promise<void> {
   await db.transactions.delete(id)
 }
 
-export async function clearTransactions(): Promise<void> {
-  await db.transactions.clear()
-}
-
 export async function clearAllData(): Promise<void> {
   await db.transaction('rw', db.transactions, db.budgets, db.preferences, db.savingsBuckets, db.savingsMovements, async () => {
     await db.transactions.clear()

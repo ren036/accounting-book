@@ -5,7 +5,7 @@ export type MonthlyBudget = {
   amount: number
 }
 
-export type BudgetProgress = {
+type BudgetProgress = {
   spent: number
   remaining: number
   percentage: number
@@ -21,10 +21,12 @@ export function summarizeBudget(transactions: Transaction[], budget: MonthlyBudg
   }
 }
 
-export function summarizeDailyExpense(transactions: Transaction[], prefix: string): number {
+function summarizeDailyExpense(transactions: Transaction[], prefix: string): number {
   return transactions
-    .filter((transaction) => transaction.type === 'expense')
-    .filter((transaction) => transaction.includeInBudget !== false)
-    .filter((transaction) => transaction.occurredAt.startsWith(prefix))
+    .filter((transaction) => (
+      transaction.type === 'expense'
+      && transaction.includeInBudget !== false
+      && transaction.occurredAt.startsWith(prefix)
+    ))
     .reduce((total, transaction) => total + transaction.amount, 0)
 }

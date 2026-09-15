@@ -17,7 +17,7 @@ import {
 import type { Transaction } from '../domain/transaction'
 import { combineDateWithTime, currentMonth, currentYear, todayInputValue } from '../lib/dates'
 import { deleteSavingsMovement, saveSavingsBucket, saveSavingsMovement } from '../lib/db'
-import { formatMoney } from '../lib/money'
+import { formatMoney, formatPrivateMoney, roundMoney } from '../lib/money'
 import { confirmAction, showMessage } from '../ui/feedback'
 import { EmptyState } from '../ui/display'
 
@@ -90,7 +90,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
   async function handleSaveGoal(event: React.FormEvent) {
     event.preventDefault()
     const name = goalName.trim()
-    const targetAmount = roundAmount(Number(goalAmount))
+    const targetAmount = positiveAmount(Number(goalAmount))
     if (!name) return showMessage('请输入专项资金名称')
     if (targetAmount === null) return showMessage('请输入大于 0 的目标金额')
 
@@ -150,7 +150,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
     event.preventDefault()
     const value = Number(openingAmount)
     if (!Number.isFinite(value)) return showMessage('请输入正确的当前金额')
-    const calibratedOpeningBalance = calibrateOpeningDisposableBalance(transactions, movements, Math.round(value * 100) / 100)
+    const calibratedOpeningBalance = calibrateOpeningDisposableBalance(transactions, movements, roundMoney(value))
     await onOpeningBalanceChange(calibratedOpeningBalance)
     setOpeningEditorOpen(false)
     showMessage('当前可支配金额已校准')
@@ -159,7 +159,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
   async function handleSaveMovement(event: React.FormEvent) {
     event.preventDefault()
     if (!movementEditor) return
-    const amount = roundAmount(Number(movementAmount))
+    const amount = positiveAmount(Number(movementAmount))
     if (amount === null) return showMessage('请输入大于 0 的金额')
 
     const existingBalance = getBucketBalance(
@@ -203,12 +203,12 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
             setOpeningEditorOpen(true)
           }}>
           <Text size="sm" c="dimmed">当前可支配</Text>
-          <Text mt="xs" fz="xl" fw={700} c={disposable.balance < 0 ? 'red.6' : 'teal.7'}>{privateMoney(disposable.balance, amountsHidden)}</Text>
+          <Text mt="xs" fz="xl" fw={700} c={disposable.balance < 0 ? 'red.6' : 'teal.7'}>{formatPrivateMoney(disposable.balance, amountsHidden)}</Text>
           <Text mt="xs" size="xs" c="dimmed">包含历月结转 · 点击校准金额</Text>
         </Paper>
         <Paper p="lg">
           <Text size="sm" c="dimmed">储蓄总额</Text>
-          <Text mt="xs" fz="xl" fw={700}>{privateMoney(totalSavings, amountsHidden)}</Text>
+          <Text mt="xs" fz="xl" fw={700}>{formatPrivateMoney(totalSavings, amountsHidden)}</Text>
           <Text mt="xs" size="xs" c="dimmed">通用储蓄与未结束专项</Text>
         </Paper>
       </SimpleGrid>
@@ -321,6 +321,7 @@ function BucketCard({ bucket, balance, onDeposit, onWithdraw, onEdit, amountsHid
   const depositLabel = bucket.status === 'used' ? '已使用' : bucket.status === 'cancelled' ? '已取消' : targetReached ? '已存够' : '存入'
   const statusLabel = bucket.status === 'used' ? '已使用' : bucket.status === 'cancelled' ? '已取消' : targetReached ? '已存够' : '存钱中'
   const statusColor = bucket.status === 'used' ? 'yellow' : bucket.status === 'cancelled' ? 'gray' : targetReached ? 'teal' : 'blue'
+  const suggestedMonthlyDeposit = getSuggestedMonthlyDeposit(bucket, balance)
   return (
     <Paper component="article" p="lg">
       <Stack gap="md">
@@ -328,12 +329,12 @@ function BucketCard({ bucket, balance, onDeposit, onWithdraw, onEdit, amountsHid
           <Group gap="xs" wrap="nowrap"><ThemeIcon color="teal" variant="light" radius="xl" size="lg">{bucket.kind === 'general' ? <Landmark size={20} /> : <Target size={20} />}</ThemeIcon><Box><Text fw={700}>{bucket.name}</Text>{bucket.targetDate && <Text size="xs" c="dimmed">目标日期 {bucket.targetDate}</Text>}</Box></Group>
           {bucket.kind === 'goal' && <Group gap={4} wrap="nowrap"><Badge color={statusColor} variant="light" leftSection={<CheckCircle2 size={12} />}>{statusLabel}</Badge>{onEdit && <ActionIcon variant="light" color="gray" aria-label={`编辑${bucket.name}`} onClick={onEdit}><Pencil size={15} /></ActionIcon>}</Group>}
         </Group>
-        <Text fz="xl" fw={700}>{privateMoney(balance, amountsHidden)}{bucket.targetAmount && <Text component="span" size="sm" c="dimmed"> / {privateMoney(bucket.targetAmount, amountsHidden)}</Text>}</Text>
+        <Text fz="xl" fw={700}>{formatPrivateMoney(balance, amountsHidden)}{bucket.targetAmount && <Text component="span" size="sm" c="dimmed"> / {formatPrivateMoney(bucket.targetAmount, amountsHidden)}</Text>}</Text>
         {bucket.targetAmount && <Progress value={Math.min(progress, 100)} size="sm" />}
-        {bucket.targetAmount && !targetReached && bucket.status === 'active' && <Text size="xs" c="dimmed">还需 {privateMoney(Math.max(bucket.targetAmount - balance, 0), amountsHidden)} · 已完成 {progress.toFixed(0)}%</Text>}
+        {bucket.targetAmount && !targetReached && bucket.status === 'active' && <Text size="xs" c="dimmed">还需 {formatPrivateMoney(Math.max(bucket.targetAmount - balance, 0), amountsHidden)} · 已完成 {progress.toFixed(0)}%</Text>}
         {bucket.status === 'used' && <Text size="xs" c="dimmed">该金额已使用，并已从储蓄总额移除</Text>}
         {bucket.status === 'cancelled' && <Text size="xs" c="dimmed">专项已取消，剩余金额已退回可支配</Text>}
-        {getSuggestedMonthlyDeposit(bucket, balance) !== null && !targetReached && <Box p="sm" bg="var(--mantine-color-teal-light)" c="var(--mantine-color-teal-light-color)" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {privateMoney(getSuggestedMonthlyDeposit(bucket, balance) ?? 0, amountsHidden)}</Text></Box>}
+        {suggestedMonthlyDeposit !== null && !targetReached && <Box p="sm" bg="var(--mantine-color-teal-light)" c="var(--mantine-color-teal-light-color)" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {formatPrivateMoney(suggestedMonthlyDeposit, amountsHidden)}</Text></Box>}
         <SimpleGrid cols={2} spacing="xs"><Button disabled={depositDisabled} onClick={onDeposit}>{depositLabel}</Button><Button variant="light" color="gray" disabled={isClosed || balance <= 0} onClick={onWithdraw}>取出</Button></SimpleGrid>
       </Stack>
     </Paper>
@@ -351,8 +352,8 @@ function SavingsTrend({ movements, amountsHidden }: { movements: ReturnType<type
         {visible.map((item) => (
           <Stack key={item.month} h="100%" gap="xs" align="center">
             <Group flex={1} align="flex-end" gap={4} wrap="nowrap">
-              <Box w={8} bg="teal.6" title={`存入 ${privateMoney(item.deposits, amountsHidden)}`} style={{ borderRadius: '4px 4px 0 0', height: `${Math.max(item.deposits / maximum * 100, item.deposits ? 5 : 0)}%` }} />
-              <Box w={8} bg="red.5" title={`取出 ${privateMoney(item.withdrawals, amountsHidden)}`} style={{ borderRadius: '4px 4px 0 0', height: `${Math.max(item.withdrawals / maximum * 100, item.withdrawals ? 5 : 0)}%` }} />
+              <Box w={8} bg="teal.6" title={`存入 ${formatPrivateMoney(item.deposits, amountsHidden)}`} style={{ borderRadius: '4px 4px 0 0', height: `${Math.max(item.deposits / maximum * 100, item.deposits ? 5 : 0)}%` }} />
+              <Box w={8} bg="red.5" title={`取出 ${formatPrivateMoney(item.withdrawals, amountsHidden)}`} style={{ borderRadius: '4px 4px 0 0', height: `${Math.max(item.withdrawals / maximum * 100, item.withdrawals ? 5 : 0)}%` }} />
             </Group>
             <Text size="xs" c="dimmed">{Number(item.month.slice(5))}月</Text>
           </Stack>
@@ -364,11 +365,7 @@ function SavingsTrend({ movements, amountsHidden }: { movements: ReturnType<type
   )
 }
 
-function privateMoney(amount: number, hidden: boolean): string {
-  return hidden ? '******' : formatMoney(amount)
-}
-
-function roundAmount(value: number): number | null {
+function positiveAmount(value: number): number | null {
   if (!Number.isFinite(value) || value <= 0) return null
-  return Math.round(value * 100) / 100
+  return roundMoney(value)
 }

@@ -1,5 +1,5 @@
 import { Check, ChevronDown, Delete } from 'lucide-react'
-import { parseAmountExpression } from '../lib/money'
+import { parseAmountExpression, roundMoney } from '../lib/money'
 import { ActionIcon, Box, Button, Divider, Group, Paper, SimpleGrid, Text } from '@mantine/core'
 
 type AmountInputProps = { value: string; onActivateKeyboard: () => void }
@@ -82,4 +82,4 @@ function nextAmountExpression(current: string, key: string): string {
   return `${current}${key}`
 }
 
-function formatAmount(amount: number): string { return String(Math.round(amount * 100) / 100) }
+function formatAmount(amount: number): string { return String(roundMoney(amount)) }

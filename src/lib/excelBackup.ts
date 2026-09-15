@@ -2,8 +2,9 @@ import * as XLSX from 'xlsx'
 import { normalizeSavingsBucketStatus, type SavingsBucket, type SavingsMovement } from '../domain/savings'
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { formatOccurredAtForExport } from './dates'
+import { roundMoney } from './money'
 
-export type ExcelImportResult = {
+type ExcelImportResult = {
   transactions: Transaction[]
   savingsBuckets: SavingsBucket[]
   savingsMovements: SavingsMovement[]
@@ -151,6 +152,6 @@ function isEmptyRow(row: unknown[]): boolean { return row.length === 0 || row.ev
 function isPresent<T>(value: T | null): value is T { return value !== null }
 function parseType(value: unknown): TransactionType | null { const text = String(value ?? '').trim(); return text === 'income' || text === 'expense' ? text : null }
 function parseReadableType(value: unknown): TransactionType | null { const text = String(value ?? '').trim(); return text === '收入' ? 'income' : text === '支出' ? 'expense' : null }
-function parseAmount(value: unknown): number | null { const amount = typeof value === 'number' ? value : Number(String(value ?? '').trim()); return Number.isFinite(amount) && amount > 0 ? Math.round(amount * 100) / 100 : null }
+function parseAmount(value: unknown): number | null { const amount = typeof value === 'number' ? value : Number(String(value ?? '').trim()); return Number.isFinite(amount) && amount > 0 ? roundMoney(amount) : null }
 function parseDate(value: unknown): string | null { const text = String(value ?? '').trim(); return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null }
 function isSupportedOccurredAt(value: string): boolean { return /^\d{4}-\d{2}-\d{2}$/.test(value) || /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) }

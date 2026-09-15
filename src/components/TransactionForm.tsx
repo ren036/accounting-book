@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { expenseCategories, incomeCategories } from '../domain/categories'
 import type { EditableTransactionFields, Transaction, TransactionType } from '../domain/transaction'
 import { clampInputDateToMax, combineDateWithTime, todayInputValue } from '../lib/dates'
-import { parseAmountExpression } from '../lib/money'
+import { parseAmountExpression, roundMoney } from '../lib/money'
 import { AmountInput, AmountKeyboard } from './AmountInput'
 import { CategoryPicker } from './CategoryPicker'
 import { Box, Divider, Flex, Paper, SegmentedControl, Stack, Switch, Textarea, TextInput } from '@mantine/core'
@@ -41,7 +41,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
     const selectedDate = clampInputDateToMax(occurredAt, maxDate)
     const fields = {
       type,
-      amount: Math.round(numericAmount * 100) / 100,
+      amount: roundMoney(numericAmount),
       category,
       note: note.trim(),
       occurredAt: combineDateWithTime(selectedDate, initialTransaction?.occurredAt),

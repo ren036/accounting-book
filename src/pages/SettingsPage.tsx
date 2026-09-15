@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Alert, Box, Button, Divider, FileInput, Group, Paper, Progress, SegmentedControl, Stack, Text, Title, useMantineColorScheme } from '@mantine/core'
 import { HardDrive, Moon, Sun } from 'lucide-react'
-import { parseBackup, serializeBackup } from '../lib/backup'
+import { serializeBackup } from '../lib/backup'
 import { createBackupFileName } from '../lib/backupFileName'
+import { parseImportFile } from '../lib/importBackup'
 import {
   clearAllData,
   getPreference,
@@ -60,15 +61,8 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   async function handleJsonExport() {
-    const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
-      listTransactions(), listSavingsBuckets(), listSavingsMovements(), getPreference('opening-disposable-balance')
-    ])
-    const blob = new Blob([serializeBackup({
-      transactions,
-      savingsBuckets,
-      savingsMovements,
-      openingDisposableBalance: Number(openingBalanceText ?? 0)
-    })], {
+    const data = await loadBackupData()
+    const blob = new Blob([serializeBackup(data)], {
       type: 'application/json'
     })
 
@@ -77,10 +71,8 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
 
   async function handleExcelExport() {
     const { serializeExcelBackup } = await import('../lib/excelBackup')
-    const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
-      listTransactions(), listSavingsBuckets(), listSavingsMovements(), getPreference('opening-disposable-balance')
-    ])
-    const blob = new Blob([serializeExcelBackup(transactions, savingsBuckets, savingsMovements, Number(openingBalanceText ?? 0))], {
+    const { transactions, savingsBuckets, savingsMovements, openingDisposableBalance } = await loadBackupData()
+    const blob = new Blob([serializeExcelBackup(transactions, savingsBuckets, savingsMovements, openingDisposableBalance)], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     })
 
@@ -197,6 +189,20 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
     </Box>
   )
 }
+async function loadBackupData() {
+  const [transactions, savingsBuckets, savingsMovements, openingBalanceText] = await Promise.all([
+    listTransactions(),
+    listSavingsBuckets(),
+    listSavingsMovements(),
+    getPreference('opening-disposable-balance')
+  ])
+  return {
+    transactions,
+    savingsBuckets,
+    savingsMovements,
+    openingDisposableBalance: Number(openingBalanceText ?? 0)
+  }
+}
 
 function LocalStorageCard({ info }: { info: LocalStorageInfo | null | undefined }) {
   const description = info === undefined
@@ -224,56 +230,4 @@ function LocalStorageCard({ info }: { info: LocalStorageInfo | null | undefined 
       />
     </Box>
   )
-}
-
-type ImportResult = {
-  data: Awaited<ReturnType<typeof parseBackup>>
-  kind: 'full-backup' | 'transactions'
-  message: string
-}
-
-async function parseImportFile(file: File): Promise<ImportResult> {
-  const fileName = file.name.toLowerCase()
-
-  if (fileName.endsWith('.json')) {
-    return {
-      data: parseBackup(await file.text()),
-      kind: 'full-backup',
-      message: '导入完成。'
-    }
-  }
-
-  if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
-    const buffer = await file.arrayBuffer()
-    const [{ parseExcelBackup, parseReadableTransactionsSheet }, { parseExcelFile }] = await Promise.all([
-      import('../lib/excelBackup'),
-      import('../lib/excelImport')
-    ])
-    const backupResult = parseExcelBackup(buffer)
-    if (backupResult) {
-      return {
-        data: backupResult,
-        kind: backupResult.includesSavingsData ? 'full-backup' : 'transactions',
-        message: `导入完成：成功 ${backupResult.transactions.length} 条，跳过 ${backupResult.skipped} 条。`
-      }
-    }
-
-    const readableResult = parseReadableTransactionsSheet(buffer)
-    if (readableResult) {
-      return {
-        data: { transactions: readableResult.transactions, savingsBuckets: [], savingsMovements: [], openingDisposableBalance: 0 },
-        kind: 'transactions',
-        message: `导入完成：成功 ${readableResult.transactions.length} 条，跳过 ${readableResult.skipped} 条。`
-      }
-    }
-
-    const result = parseExcelFile(buffer)
-    return {
-      data: { transactions: result.transactions, savingsBuckets: [], savingsMovements: [], openingDisposableBalance: 0 },
-      kind: 'transactions',
-      message: `导入完成：成功 ${result.transactions.length} 条，跳过 ${result.skipped} 条。`
-    }
-  }
-
-  throw new Error('不支持的导入文件格式')
 }
