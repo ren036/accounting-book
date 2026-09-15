@@ -1,6 +1,6 @@
 import { Button, Flex, Group, Title } from '@mantine/core'
 import type { EditableTransactionFields, Transaction } from '../domain/transaction'
-import { TransactionForm } from './TransactionForm'
+import { TransactionForm } from '../components/TransactionForm'
 
 type TransactionEditorPageProps = {
   title: string

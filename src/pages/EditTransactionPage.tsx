@@ -1,4 +1,4 @@
-import { TransactionEditorPage } from '../components/TransactionEditorPage'
+import { TransactionEditorPage } from './TransactionEditorPage'
 import type { EditableTransactionFields, Transaction } from '../domain/transaction'
 import { updateTransaction } from '../domain/transaction'
 import { saveTransaction } from '../lib/db'

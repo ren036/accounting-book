@@ -1,8 +1,7 @@
 import { useId, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Search, X } from 'lucide-react'
-import { TransactionSearch } from './TransactionSearch'
-import { Box, Button, Group, Stack } from '@mantine/core'
+import { ActionIcon, Box, Button, Group, Stack, TextInput } from '@mantine/core'
 
 type CollapsibleTransactionSearchProps = {
   value: string
@@ -35,7 +34,23 @@ export function CollapsibleTransactionSearch({ value, onChange, children }: Coll
         </Button>
       </Group>
       <Box id={searchId} hidden={!expanded}>
-        {expanded && <TransactionSearch value={value} onChange={onChange} autoFocus />}
+        {expanded && (
+          <TextInput
+            autoFocus
+            aria-label="搜索账单"
+            leftSection={<Search aria-hidden="true" size={19} strokeWidth={2.2} />}
+            rightSection={value ? (
+              <ActionIcon color="teal" variant="light" size="sm" aria-label="清空搜索" onClick={() => onChange('')}>
+                <X aria-hidden="true" size={15} />
+              </ActionIcon>
+            ) : undefined}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder="搜索分类、备注、金额或日期"
+            type="search"
+            value={value}
+            size="md"
+          />
+        )}
       </Box>
     </Stack>
   )
