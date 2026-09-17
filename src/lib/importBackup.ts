@@ -22,10 +22,7 @@ export async function parseImportFile(file: File): Promise<ImportResult> {
   }
 
   const buffer = await file.arrayBuffer()
-  const [{ parseExcelBackup, parseReadableTransactionsSheet }, { parseExcelFile }] = await Promise.all([
-    import('./excelBackup'),
-    import('./excelImport')
-  ])
+  const { parseExcelBackup, parseReadableTransactionsSheet } = await import('./excelBackup')
   const backupResult = parseExcelBackup(buffer)
   if (backupResult) {
     return {
@@ -44,12 +41,7 @@ export async function parseImportFile(file: File): Promise<ImportResult> {
     }
   }
 
-  const result = parseExcelFile(buffer)
-  return {
-    data: toTransactionOnlyBackup(result),
-    kind: 'transactions',
-    message: `导入完成：成功 ${result.transactions.length} 条，跳过 ${result.skipped} 条。`
-  }
+  throw new Error('Excel 文件格式不支持，请导入本应用导出的备份文件')
 }
 
 function toTransactionOnlyBackup(result: { transactions: BackupData['transactions']; skipped: number }): BackupData {
