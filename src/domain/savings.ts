@@ -89,17 +89,21 @@ export function summarizeDisposable(
   openingBalance: number,
   before?: string
 ): DisposableSummary {
-  const includedTransactions = before
-    ? transactions.filter((transaction) => transaction.occurredAt < before)
-    : transactions
-  const includedMovements = before
-    ? movements.filter((movement) => movement.occurredAt < before)
-    : movements
+  const totals = transactions.reduce((result, transaction) => {
+    if (before && transaction.occurredAt >= before) return result
+    result[transaction.type] += transaction.amount
+    return result
+  }, { income: 0, expense: 0 })
+  const movementTotals = movements.reduce((result, movement) => {
+    if (before && movement.occurredAt >= before) return result
+    result[movement.type === 'deposit' ? 'deposits' : 'withdrawals'] += movement.amount
+    return result
+  }, { deposits: 0, withdrawals: 0 })
 
-  const income = sum(includedTransactions.filter(({ type }) => type === 'income').map(({ amount }) => amount))
-  const expense = sum(includedTransactions.filter(({ type }) => type === 'expense').map(({ amount }) => amount))
-  const deposits = sum(includedMovements.filter(({ type }) => type === 'deposit').map(({ amount }) => amount))
-  const withdrawals = sum(includedMovements.filter(({ type }) => type === 'withdrawal').map(({ amount }) => amount))
+  const income = roundMoney(totals.income)
+  const expense = roundMoney(totals.expense)
+  const deposits = roundMoney(movementTotals.deposits)
+  const withdrawals = roundMoney(movementTotals.withdrawals)
 
   return {
     openingBalance: roundMoney(openingBalance),
@@ -127,11 +131,21 @@ export function getGoalProgress(bucket: SavingsBucket, balance: number): number 
 
 export function summarizeSavingsMonths(movements: SavingsMovement[], year: string, throughMonth: string): MonthlySavingsSummary[] {
   const upperMonth = throughMonth.startsWith(year) ? Number(throughMonth.slice(5, 7)) : 12
+  const monthlyTotals = movements.reduce<Record<string, { deposits: number; withdrawals: number }>>((result, movement) => {
+    const month = movement.occurredAt.slice(0, 7)
+    const monthNumber = Number(month.slice(5, 7))
+    if (!month.startsWith(year) || monthNumber < 1 || monthNumber > upperMonth) return result
+
+    const totals = result[month] ??= { deposits: 0, withdrawals: 0 }
+    totals[movement.type === 'deposit' ? 'deposits' : 'withdrawals'] += movement.amount
+    return result
+  }, {})
+
   return Array.from({ length: upperMonth }, (_item, index) => index + 1).map((monthNumber) => {
     const month = `${year}-${String(monthNumber).padStart(2, '0')}`
-    const monthMovements = movements.filter((movement) => movement.occurredAt.startsWith(month))
-    const deposits = sum(monthMovements.filter(({ type }) => type === 'deposit').map(({ amount }) => amount))
-    const withdrawals = sum(monthMovements.filter(({ type }) => type === 'withdrawal').map(({ amount }) => amount))
+    const totals = monthlyTotals[month] ?? { deposits: 0, withdrawals: 0 }
+    const deposits = roundMoney(totals.deposits)
+    const withdrawals = roundMoney(totals.withdrawals)
     return { month, deposits, withdrawals, net: roundMoney(deposits - withdrawals) }
   })
 }
@@ -145,8 +159,4 @@ export function getSuggestedMonthlyDeposit(bucket: SavingsBucket, balance: numbe
   if (!targetYear || !targetMonth) return null
   const monthsRemaining = Math.max((targetYear - today.getFullYear()) * 12 + targetMonth - today.getMonth(), 1)
   return Math.ceil(remaining / monthsRemaining * 100) / 100
-}
-
-function sum(values: number[]): number {
-  return roundMoney(values.reduce((total, value) => total + value, 0))
 }

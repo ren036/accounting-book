@@ -22,11 +22,13 @@ export function summarizeBudget(transactions: Transaction[], budget: MonthlyBudg
 }
 
 function summarizeDailyExpense(transactions: Transaction[], prefix: string): number {
-  return transactions
-    .filter((transaction) => (
-      transaction.type === 'expense'
-      && transaction.includeInBudget !== false
-      && transaction.occurredAt.startsWith(prefix)
-    ))
-    .reduce((total, transaction) => total + transaction.amount, 0)
+  return transactions.reduce((total, transaction) => {
+    if (
+      transaction.type !== 'expense'
+      || transaction.includeInBudget === false
+      || !transaction.occurredAt.startsWith(prefix)
+    ) return total
+
+    return total + transaction.amount
+  }, 0)
 }

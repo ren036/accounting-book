@@ -32,8 +32,7 @@ export function summarizeCategoriesByPrefix(
   type: TransactionType
 ): CategorySummary[] {
   const totals = transactions
-    .filter((transaction) => transaction.type === type)
-    .filter((transaction) => transaction.occurredAt.startsWith(prefix))
+    .filter((transaction) => transaction.type === type && transaction.occurredAt.startsWith(prefix))
     .reduce<Record<string, number>>((result, transaction) => {
       result[transaction.category] = (result[transaction.category] ?? 0) + transaction.amount
       return result
@@ -53,11 +52,10 @@ export function summarizeYear(transactions: Transaction[], year: string): MonthS
 }
 
 export function summarizeYearMonths(transactions: Transaction[], year: string, currentMonth?: string): MonthDetailSummary[] {
-  const activeMonths = transactions
-    .map((transaction) => transaction.occurredAt.slice(0, 7))
-    .sort()
-
-  const oldestMonth = activeMonths[0]
+  const oldestMonth = transactions.reduce<string | undefined>((oldest, transaction) => {
+    const month = transaction.occurredAt.slice(0, 7)
+    return oldest === undefined || month < oldest ? month : oldest
+  }, undefined)
   const lowerBoundMonth = oldestMonth?.startsWith(year) ? Number(oldestMonth.slice(5, 7)) : 1
   const upperBoundMonth = currentMonth?.startsWith(year) ? Number(currentMonth.slice(5, 7)) : 12
 
@@ -75,11 +73,9 @@ export function summarizeYearMonths(transactions: Transaction[], year: string, c
 
 export function getAvailableStatYears(transactions: Transaction[], currentMonth: string): string[] {
   const currentYear = Number(currentMonth.slice(0, 4))
-  const activeMonths = transactions
-    .map((transaction) => transaction.occurredAt.slice(0, 7))
-    .sort()
-
-  const oldestYear = activeMonths.length > 0 ? Number(activeMonths[0].slice(0, 4)) : currentYear
+  const oldestYear = transactions.reduce((oldest, transaction) => {
+    return Math.min(oldest, Number(transaction.occurredAt.slice(0, 4)))
+  }, currentYear)
 
   return Array.from({ length: currentYear - oldestYear + 1 }, (_item, index) => String(currentYear - index))
 }
