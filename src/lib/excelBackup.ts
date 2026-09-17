@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx'
 import { normalizeSavingsBucketStatus, type SavingsBucket, type SavingsMovement } from '../domain/savings'
 import type { Transaction, TransactionType } from '../domain/transaction'
-import { formatOccurredAtForExport } from './dates'
+import { isSupportedOccurredAt } from './dates'
 import { roundMoney } from './money'
 
 type ExcelImportResult = {
@@ -27,18 +27,18 @@ export function serializeExcelBackup(
     [...exportedHeaders, 'includeInBudget'],
     ...transactions.map((transaction) => [
       transaction.id, transaction.type, transaction.amount, transaction.category, transaction.note,
-      formatOccurredAtForExport(transaction.occurredAt), transaction.includeInBudget
+      requireSupportedOccurredAt(transaction.occurredAt), transaction.includeInBudget
     ])
   ]), 'Transactions')
 
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
     ['id', 'kind', 'name', 'targetAmount', 'targetDate', 'createdAt', 'status'],
-    ...savingsBuckets.map((bucket) => [bucket.id, bucket.kind, bucket.name, bucket.targetAmount ?? '', bucket.targetDate ?? '', bucket.createdAt, bucket.status])
+    ...savingsBuckets.map((bucket) => [bucket.id, bucket.kind, bucket.name, bucket.targetAmount ?? '', bucket.targetDate ?? '', requireSupportedOccurredAt(bucket.createdAt), bucket.status])
   ]), 'SavingsBuckets')
 
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
     ['id', 'bucketId', 'type', 'amount', 'occurredAt', 'note'],
-    ...savingsMovements.map((movement) => [movement.id, movement.bucketId, movement.type, movement.amount, formatOccurredAtForExport(movement.occurredAt), movement.note])
+    ...savingsMovements.map((movement) => [movement.id, movement.bucketId, movement.type, movement.amount, requireSupportedOccurredAt(movement.occurredAt), movement.note])
   ]), 'SavingsMovements')
 
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
@@ -103,7 +103,7 @@ function parseExportedRow(row: unknown[]): Transaction | null {
   const amount = parseAmount(row[2])
   const category = String(row[3] ?? '').trim()
   const note = String(row[4] ?? '').trim()
-  const occurredAt = formatOccurredAtForExport(String(row[5] ?? '').trim())
+  const occurredAt = String(row[5] ?? '').trim()
   if (!id || !type || amount === null || !category || !isSupportedOccurredAt(occurredAt)) return null
   return { id, type, amount, category, note, occurredAt, includeInBudget: row[6] !== false && String(row[6]).toLowerCase() !== 'false' }
 }
@@ -114,7 +114,7 @@ function parseReadableRow(row: unknown[]): Transaction | null {
   const type = parseReadableType(row[1])
   const amount = parseAmount(row[2])
   if (!date || !type || amount === null) return null
-  return { id: crypto.randomUUID(), type, amount, category: String(row[3] ?? '').trim() || '其他', note: String(row[4] ?? '').trim(), occurredAt: `${date}T00:00:00.000Z`, includeInBudget: type === 'expense' }
+  return { id: crypto.randomUUID(), type, amount, category: String(row[3] ?? '').trim() || '其他', note: String(row[4] ?? '').trim(), occurredAt: date, includeInBudget: type === 'expense' }
 }
 
 function parseBucketRow(row: unknown[]): SavingsBucket | null {
@@ -123,9 +123,10 @@ function parseBucketRow(row: unknown[]): SavingsBucket | null {
   const name = String(row[2] ?? '').trim()
   const targetAmountText = String(row[3] ?? '').trim()
   const targetAmount = targetAmountText ? Number(targetAmountText) : null
+  const createdAt = String(row[5] ?? '').trim()
   const status = String(row[6] ?? '')
-  if (!id || !name || (kind !== 'general' && kind !== 'goal') || !['active', 'used', 'cancelled', 'completed', 'consumed', 'archived'].includes(status)) return null
-  return { id, kind, name, targetAmount: targetAmount !== null && Number.isFinite(targetAmount) ? targetAmount : null, targetDate: String(row[4] ?? '').trim() || null, createdAt: String(row[5] ?? ''), status: normalizeSavingsBucketStatus(status) }
+  if (!id || !name || !isSupportedOccurredAt(createdAt) || (kind !== 'general' && kind !== 'goal') || !['active', 'used', 'cancelled', 'completed', 'consumed', 'archived'].includes(status)) return null
+  return { id, kind, name, targetAmount: targetAmount !== null && Number.isFinite(targetAmount) ? targetAmount : null, targetDate: String(row[4] ?? '').trim() || null, createdAt, status: normalizeSavingsBucketStatus(status) }
 }
 
 function parseMovementRow(row: unknown[]): SavingsMovement | null {
@@ -133,7 +134,7 @@ function parseMovementRow(row: unknown[]): SavingsMovement | null {
   const bucketId = String(row[1] ?? '').trim()
   const type = String(row[2] ?? '')
   const amount = parseAmount(row[3])
-  const occurredAt = formatOccurredAtForExport(String(row[4] ?? '').trim())
+  const occurredAt = String(row[4] ?? '').trim()
   if (!id || !bucketId || (type !== 'deposit' && type !== 'withdrawal') || amount === null || !isSupportedOccurredAt(occurredAt)) return null
   return { id, bucketId, type, amount, occurredAt, note: String(row[5] ?? '').trim() }
 }
@@ -154,4 +155,10 @@ function parseType(value: unknown): TransactionType | null { const text = String
 function parseReadableType(value: unknown): TransactionType | null { const text = String(value ?? '').trim(); return text === '收入' ? 'income' : text === '支出' ? 'expense' : null }
 function parseAmount(value: unknown): number | null { const amount = typeof value === 'number' ? value : Number(String(value ?? '').trim()); return Number.isFinite(amount) && amount > 0 ? roundMoney(amount) : null }
 function parseDate(value: unknown): string | null { const text = String(value ?? '').trim(); return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null }
-function isSupportedOccurredAt(value: string): boolean { return /^\d{4}-\d{2}-\d{2}$/.test(value) || /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value) }
+
+function requireSupportedOccurredAt(value: string): string {
+  if (!isSupportedOccurredAt(value)) {
+    throw new Error('导出数据包含不支持的日期时间格式，只支持 YYYY-MM-DD 或 YYYY-MM-DD HH:mm:ss')
+  }
+  return value
+}

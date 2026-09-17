@@ -1,7 +1,7 @@
-export function createBackupFileName(extension: 'json' | 'xlsx', date = new Date()): string {
-  const iso = date.toISOString()
-  const datePart = iso.slice(0, 10)
-  const timePart = iso.slice(11, 19).replace(/:/g, '')
+import { formatLocalDateTime } from './dates'
 
-  return `accounting-book-${datePart}-${timePart}.${extension}`
+export function createBackupFileName(extension: 'json' | 'xlsx', date = new Date()): string {
+  const [datePart, timePart] = formatLocalDateTime(date).split(' ')
+
+  return `accounting-book-${datePart}-${timePart.replace(/:/g, '')}.${extension}`
 }

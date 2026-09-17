@@ -108,7 +108,28 @@ class AccountingDatabase extends Dexie {
         record.status = normalizeSavingsBucketStatus(record.status)
       })
     })
+    this.version(10).stores({
+      transactions: 'id, type, category, occurredAt',
+      budgets: 'month',
+      preferences: 'key',
+      savingsBuckets: 'id, kind, status, createdAt',
+      savingsMovements: 'id, bucketId, type, occurredAt'
+    }).upgrade(async (transaction) => {
+      await transaction.table<Transaction, string>('transactions').toCollection().modify((record) => {
+        record.occurredAt = stripLegacyTimezoneTime(record.occurredAt)
+      })
+      await transaction.table<SavingsMovement, string>('savingsMovements').toCollection().modify((record) => {
+        record.occurredAt = stripLegacyTimezoneTime(record.occurredAt)
+      })
+      await transaction.table<SavingsBucket, string>('savingsBuckets').toCollection().modify((record) => {
+        record.createdAt = stripLegacyTimezoneTime(record.createdAt)
+      })
+    })
   }
+}
+
+function stripLegacyTimezoneTime(value: string): string {
+  return /^\d{4}-\d{2}-\d{2}T/.test(value) ? value.slice(0, 10) : value
 }
 
 const db = new AccountingDatabase()

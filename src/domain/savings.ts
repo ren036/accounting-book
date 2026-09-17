@@ -1,4 +1,5 @@
 import type { Transaction } from './transaction'
+import { formatLocalDateTime } from '../lib/dates'
 import { roundMoney } from '../lib/money'
 
 type SavingsBucketKind = 'general' | 'goal'
@@ -50,7 +51,7 @@ export function createGeneralSavingsBucket(): SavingsBucket {
     name: '通用储蓄',
     targetAmount: null,
     targetDate: null,
-    createdAt: new Date().toISOString(),
+    createdAt: formatLocalDateTime(),
     status: 'active'
   }
 }

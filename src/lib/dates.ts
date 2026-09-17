@@ -11,10 +11,12 @@ export function combineDateWithTime(date: string, existingOccurredAt?: string, n
   return `${date} ${existingTime ?? formatLocalTime(now)}`
 }
 
-export function formatOccurredAtForExport(occurredAt: string): string {
-  const date = occurredAt.match(/^(\d{4}-\d{2}-\d{2})/)?.[1]
-  if (!date) return occurredAt
-  return /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(occurredAt) ? occurredAt : date
+export function formatLocalDateTime(date = new Date()): string {
+  return `${formatLocalDate(date)} ${formatLocalTime(date)}`
+}
+
+export function isSupportedOccurredAt(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) || /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
 }
 
 export function currentMonth(date = new Date()): string {

@@ -1,6 +1,6 @@
 import { normalizeSavingsBucketStatus, type SavingsBucket, type SavingsMovement } from '../domain/savings'
 import type { Transaction } from '../domain/transaction'
-import { formatOccurredAtForExport } from './dates'
+import { formatLocalDateTime, isSupportedOccurredAt } from './dates'
 
 type LegacyBackupTransaction = Transaction & {
   createdAt?: string
@@ -39,20 +39,23 @@ export function serializeBackup(data: BackupData): string {
   return JSON.stringify(
     {
       version: 2,
-      exportedAt: new Date().toISOString(),
+      exportedAt: formatLocalDateTime(),
       transactions: data.transactions.map((transaction) => ({
         id: transaction.id,
         type: transaction.type,
         amount: transaction.amount,
         category: transaction.category,
         note: transaction.note,
-        occurredAt: formatOccurredAtForExport(transaction.occurredAt),
+        occurredAt: requireSupportedOccurredAt(transaction.occurredAt),
         includeInBudget: transaction.includeInBudget
       })),
-      savingsBuckets: data.savingsBuckets,
+      savingsBuckets: data.savingsBuckets.map((bucket) => ({
+        ...bucket,
+        createdAt: requireSupportedOccurredAt(bucket.createdAt)
+      })),
       savingsMovements: data.savingsMovements.map((movement) => ({
         ...movement,
-        occurredAt: formatOccurredAtForExport(movement.occurredAt)
+        occurredAt: requireSupportedOccurredAt(movement.occurredAt)
       })),
       openingDisposableBalance: data.openingDisposableBalance
     } satisfies BackupFileV2,
@@ -67,6 +70,7 @@ export function parseBackup(content: string): BackupData {
   if ((parsed.version !== 1 && parsed.version !== 2) || !Array.isArray(parsed.transactions)) {
     throw new Error('备份文件格式不正确')
   }
+  requireSupportedOccurredAt(parsed.exportedAt)
 
   const transactions = (parsed.transactions as LegacyBackupTransaction[])
     .filter((transaction) => transaction.deletedAt == null)
@@ -76,7 +80,7 @@ export function parseBackup(content: string): BackupData {
       amount: transaction.amount,
       category: transaction.category,
       note: transaction.note,
-      occurredAt: transaction.occurredAt,
+      occurredAt: requireSupportedOccurredAt(transaction.occurredAt),
       includeInBudget: transaction.type === 'expense' && transaction.includeInBudget !== false
     }))
 
@@ -96,7 +100,7 @@ export function parseBackup(content: string): BackupData {
       name: bucket.name,
       targetAmount: bucket.targetAmount,
       targetDate: bucket.targetDate,
-      createdAt: bucket.createdAt,
+      createdAt: requireSupportedOccurredAt(bucket.createdAt),
       status: normalizeSavingsBucketStatus(bucket.status)
     })),
     savingsMovements: (parsed.savingsMovements as LegacyBackupMovement[]).map((movement) => ({
@@ -104,11 +108,19 @@ export function parseBackup(content: string): BackupData {
       bucketId: movement.bucketId,
       type: movement.type,
       amount: movement.amount,
-      occurredAt: movement.occurredAt,
+      occurredAt: requireSupportedOccurredAt(movement.occurredAt),
       note: movement.note
     })),
     openingDisposableBalance: Number.isFinite(parsed.openingDisposableBalance)
       ? parsed.openingDisposableBalance
       : 0
   }
+}
+
+function requireSupportedOccurredAt(value: unknown): string {
+  const occurredAt = String(value ?? '').trim()
+  if (!isSupportedOccurredAt(occurredAt)) {
+    throw new Error('备份文件包含不支持的日期时间格式，只支持 YYYY-MM-DD 或 YYYY-MM-DD HH:mm:ss')
+  }
+  return occurredAt
 }

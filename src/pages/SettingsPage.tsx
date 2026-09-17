@@ -61,22 +61,32 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   }
 
   async function handleJsonExport() {
-    const data = await loadBackupData()
-    const blob = new Blob([serializeBackup(data)], {
-      type: 'application/json'
-    })
+    try {
+      const data = await loadBackupData()
+      const blob = new Blob([serializeBackup(data)], {
+        type: 'application/json'
+      })
 
-    downloadBlob(blob, createBackupFileName('json'))
+      downloadBlob(blob, createBackupFileName('json'))
+      setMessage('JSON 备份已开始下载。')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : '导出失败。')
+    }
   }
 
   async function handleExcelExport() {
-    const { serializeExcelBackup } = await import('../lib/excelBackup')
-    const { transactions, savingsBuckets, savingsMovements, openingDisposableBalance } = await loadBackupData()
-    const blob = new Blob([serializeExcelBackup(transactions, savingsBuckets, savingsMovements, openingDisposableBalance)], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    })
+    try {
+      const { serializeExcelBackup } = await import('../lib/excelBackup')
+      const { transactions, savingsBuckets, savingsMovements, openingDisposableBalance } = await loadBackupData()
+      const blob = new Blob([serializeExcelBackup(transactions, savingsBuckets, savingsMovements, openingDisposableBalance)], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
 
-    downloadBlob(blob, createBackupFileName('xlsx'))
+      downloadBlob(blob, createBackupFileName('xlsx'))
+      setMessage('Excel 备份已开始下载。')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : '导出失败。')
+    }
   }
 
   async function handleImport() {

@@ -349,6 +349,8 @@ id | type | amount | category | note | occurredAt
 
 每一笔账单占一行。再次导入这个 Excel 时会保留原 `id`，如果本地已有相同 `id` 的账单，会覆盖更新。
 
+`occurredAt` 仅使用以下两种格式：`YYYY-MM-DD HH:mm:ss`，或没有时间时的 `YYYY-MM-DD`。不再支持带时区的 ISO/UTC 时间格式。
+
 设置页支持导入：
 
 ```txt

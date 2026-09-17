@@ -15,7 +15,7 @@ import {
   type SavingsMovementType
 } from '../domain/savings'
 import type { Transaction } from '../domain/transaction'
-import { combineDateWithTime, currentMonth, currentYear, todayInputValue } from '../lib/dates'
+import { combineDateWithTime, currentMonth, currentYear, formatLocalDateTime, todayInputValue } from '../lib/dates'
 import { deleteSavingsMovement, saveSavingsBucket, saveSavingsMovement } from '../lib/db'
 import { formatMoney, formatPrivateMoney, roundMoney } from '../lib/money'
 import { confirmAction, showMessage } from '../ui/feedback'
@@ -122,7 +122,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
       name,
       targetAmount,
       targetDate: goalDate || null,
-      createdAt: editingGoal?.createdAt ?? new Date().toISOString(),
+      createdAt: editingGoal?.createdAt ?? formatLocalDateTime(),
       status
     }
     const refundMovement: SavingsMovement | undefined = editingGoal?.status === 'active' && status === 'cancelled' && balance > 0
