@@ -39,7 +39,6 @@ export function searchTransactions(transactions: Transaction[], query: string): 
       transaction.note,
       String(transaction.amount),
       transaction.amount.toFixed(2),
-      transaction.occurredAt.slice(0, 10),
       typeLabel
     ].join(' ').toLocaleLowerCase()
 

@@ -85,8 +85,11 @@ export function getAvailableStatYears(transactions: Transaction[], currentMonth:
 }
 
 export function groupMonthTransactionsByDay(transactions: Transaction[], month: string): DailyTransactionGroup[] {
+  return groupTransactionsByDay(transactions.filter((transaction) => transaction.occurredAt.startsWith(month)))
+}
+
+export function groupTransactionsByDay(transactions: Transaction[]): DailyTransactionGroup[] {
   const groups = transactions
-    .filter((transaction) => transaction.occurredAt.startsWith(month))
     .reduce<Record<string, Transaction[]>>((result, transaction) => {
       const date = transaction.occurredAt.slice(0, 10)
       result[date] = result[date] ?? []

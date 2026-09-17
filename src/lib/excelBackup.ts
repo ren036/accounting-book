@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx'
-import { normalizeSavingsBucketStatus, type SavingsBucket, type SavingsMovement } from '../domain/savings'
+import type { SavingsBucket, SavingsMovement } from '../domain/savings'
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { isSupportedOccurredAt } from './dates'
 import { roundMoney } from './money'
@@ -9,12 +9,10 @@ type ExcelImportResult = {
   savingsBuckets: SavingsBucket[]
   savingsMovements: SavingsMovement[]
   openingDisposableBalance: number
-  includesSavingsData: boolean
   skipped: number
 }
 
 const exportedHeaders = ['id', 'type', 'amount', 'category', 'note', 'occurredAt']
-const readableHeaders = ['日期', '类型', '金额', '分类', '备注']
 
 export function serializeExcelBackup(
   transactions: Transaction[],
@@ -64,10 +62,10 @@ export function parseExcelBackup(buffer: ArrayBuffer): ExcelImportResult | null 
 
   const bucketRows = readRows(workbook, 'SavingsBuckets')
   const movementRows = readRows(workbook, 'SavingsMovements')
-  const includesSavingsData = Boolean(bucketRows && movementRows)
-  const savingsBuckets = bucketRows?.slice(1).map(parseBucketRow).filter(isPresent) ?? []
-  const savingsMovements = movementRows?.slice(1).map(parseMovementRow).filter(isPresent) ?? []
-  const preferenceRows = readRows(workbook, 'Preferences') ?? []
+  const preferenceRows = readRows(workbook, 'Preferences')
+  if (!bucketRows || !movementRows || !preferenceRows) return null
+  const savingsBuckets = bucketRows.slice(1).map(parseBucketRow).filter(isPresent)
+  const savingsMovements = movementRows.slice(1).map(parseMovementRow).filter(isPresent)
   const openingRow = preferenceRows.find((row) => String(row[0]) === 'openingDisposableBalance')
   const openingDisposableBalance = Number(openingRow?.[1] ?? 0)
 
@@ -76,24 +74,8 @@ export function parseExcelBackup(buffer: ArrayBuffer): ExcelImportResult | null 
     savingsBuckets,
     savingsMovements,
     openingDisposableBalance: Number.isFinite(openingDisposableBalance) ? openingDisposableBalance : 0,
-    includesSavingsData,
     skipped
   }
-}
-
-export function parseReadableTransactionsSheet(buffer: ArrayBuffer): ExcelImportResult | null {
-  const workbook = XLSX.read(buffer, { type: 'array' })
-  const rows = readRows(workbook, 'Transactions')
-  if (!rows || !hasHeaders(rows[0], readableHeaders)) return null
-
-  const transactions: Transaction[] = []
-  let skipped = 0
-  for (const row of rows.slice(1)) {
-    const transaction = parseReadableRow(row)
-    if (transaction) transactions.push(transaction)
-    else if (!isEmptyRow(row)) skipped += 1
-  }
-  return emptySavingsResult(transactions, skipped)
 }
 
 function parseExportedRow(row: unknown[]): Transaction | null {
@@ -108,15 +90,6 @@ function parseExportedRow(row: unknown[]): Transaction | null {
   return { id, type, amount, category, note, occurredAt, includeInBudget: row[6] !== false && String(row[6]).toLowerCase() !== 'false' }
 }
 
-function parseReadableRow(row: unknown[]): Transaction | null {
-  if (isEmptyRow(row)) return null
-  const date = parseDate(row[0])
-  const type = parseReadableType(row[1])
-  const amount = parseAmount(row[2])
-  if (!date || !type || amount === null) return null
-  return { id: crypto.randomUUID(), type, amount, category: String(row[3] ?? '').trim() || '其他', note: String(row[4] ?? '').trim(), occurredAt: date, includeInBudget: type === 'expense' }
-}
-
 function parseBucketRow(row: unknown[]): SavingsBucket | null {
   const id = String(row[0] ?? '').trim()
   const kind = String(row[1] ?? '')
@@ -125,8 +98,8 @@ function parseBucketRow(row: unknown[]): SavingsBucket | null {
   const targetAmount = targetAmountText ? Number(targetAmountText) : null
   const createdAt = String(row[5] ?? '').trim()
   const status = String(row[6] ?? '')
-  if (!id || !name || !isSupportedOccurredAt(createdAt) || (kind !== 'general' && kind !== 'goal') || !['active', 'used', 'cancelled', 'completed', 'consumed', 'archived'].includes(status)) return null
-  return { id, kind, name, targetAmount: targetAmount !== null && Number.isFinite(targetAmount) ? targetAmount : null, targetDate: String(row[4] ?? '').trim() || null, createdAt, status: normalizeSavingsBucketStatus(status) }
+  if (!id || !name || !isSupportedOccurredAt(createdAt) || (kind !== 'general' && kind !== 'goal') || !['active', 'used', 'cancelled'].includes(status)) return null
+  return { id, kind, name, targetAmount: targetAmount !== null && Number.isFinite(targetAmount) ? targetAmount : null, targetDate: String(row[4] ?? '').trim() || null, createdAt, status: status as SavingsBucket['status'] }
 }
 
 function parseMovementRow(row: unknown[]): SavingsMovement | null {
@@ -144,17 +117,11 @@ function readRows(workbook: XLSX.WorkBook, sheetName: string): unknown[][] | nul
   return worksheet ? XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1, raw: true }) : null
 }
 
-function emptySavingsResult(transactions: Transaction[], skipped: number): ExcelImportResult {
-  return { transactions, savingsBuckets: [], savingsMovements: [], openingDisposableBalance: 0, includesSavingsData: false, skipped }
-}
-
 function hasHeaders(row: unknown[] | undefined, headers: string[]): boolean { return Boolean(row && headers.every((header, index) => String(row[index] ?? '').trim() === header)) }
 function isEmptyRow(row: unknown[]): boolean { return row.length === 0 || row.every((cell) => String(cell ?? '').trim() === '') }
 function isPresent<T>(value: T | null): value is T { return value !== null }
 function parseType(value: unknown): TransactionType | null { const text = String(value ?? '').trim(); return text === 'income' || text === 'expense' ? text : null }
-function parseReadableType(value: unknown): TransactionType | null { const text = String(value ?? '').trim(); return text === '收入' ? 'income' : text === '支出' ? 'expense' : null }
 function parseAmount(value: unknown): number | null { const amount = typeof value === 'number' ? value : Number(String(value ?? '').trim()); return Number.isFinite(amount) && amount > 0 ? roundMoney(amount) : null }
-function parseDate(value: unknown): string | null { const text = String(value ?? '').trim(); return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null }
 
 function requireSupportedOccurredAt(value: string): string {
   if (!isSupportedOccurredAt(value)) {

@@ -45,7 +45,7 @@ export function CollapsibleTransactionSearch({ value, onChange, children }: Coll
               </ActionIcon>
             ) : undefined}
             onChange={(event) => onChange(event.target.value)}
-            placeholder="搜索分类、备注、金额或日期"
+            placeholder="搜索分类、备注、金额或收支类型"
             type="search"
             value={value}
             size="md"

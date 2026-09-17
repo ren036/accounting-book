@@ -23,6 +23,7 @@ import { TransactionDetailPage } from './pages/TransactionDetailPage'
 import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
 import { FundsPage } from './pages/FundsPage'
 import { PwaUpdatePrompt } from './components/PwaUpdatePrompt'
+import { currentYear } from './lib/dates'
 
 const SettingsPage = lazy(async () => {
   const module = await import('./pages/SettingsPage')
@@ -32,6 +33,11 @@ const SettingsPage = lazy(async () => {
 const StatsPage = lazy(async () => {
   const module = await import('./pages/StatsPage')
   return { default: module.StatsPage }
+})
+
+const TransactionSearchPage = lazy(async () => {
+  const module = await import('./pages/TransactionSearchPage')
+  return { default: module.TransactionSearchPage }
 })
 
 export function App() {
@@ -49,6 +55,10 @@ export function App() {
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
   const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
   const [viewingStatsMonth, setViewingStatsMonth] = useState<string | null>(null)
+  const [isSearchingTransactions, setIsSearchingTransactions] = useState(false)
+  const [transactionSearchQuery, setTransactionSearchQuery] = useState('')
+  const [transactionSearchYear, setTransactionSearchYear] = useState(currentYear())
+  const [transactionSearchExpenseScope, setTransactionSearchExpenseScope] = useState<'all' | 'daily'>('all')
   const [initialLoading, setInitialLoading] = useState(true)
 
   async function reloadTransactions() {
@@ -119,6 +129,7 @@ export function App() {
     setEditingTransactionId(state.editingTransactionId)
     setViewingTransactionId(null)
     setViewingStatsMonth(state.viewingStatsMonth)
+    setIsSearchingTransactions(false)
   }
 
   useEffect(() => {
@@ -223,7 +234,18 @@ export function App() {
             />}
             {currentPage === 'stats' && viewingStatsMonth === null && (
               <Suspense fallback={<LoadingPage label="正在加载统计..." />}>
-                <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} />
+                {!isSearchingTransactions && <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} onOpenSearch={() => setIsSearchingTransactions(true)} />}
+                {isSearchingTransactions && <TransactionSearchPage
+                  transactions={transactions}
+                  query={transactionSearchQuery}
+                  year={transactionSearchYear}
+                  expenseScope={transactionSearchExpenseScope}
+                  onQueryChange={setTransactionSearchQuery}
+                  onYearChange={setTransactionSearchYear}
+                  onExpenseScopeChange={setTransactionSearchExpenseScope}
+                  onOpen={setViewingTransactionId}
+                  onBack={() => setIsSearchingTransactions(false)}
+                />}
               </Suspense>
             )}
             {currentPage === 'stats' && viewingStatsMonth !== null && (

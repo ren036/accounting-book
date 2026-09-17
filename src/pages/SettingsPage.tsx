@@ -100,13 +100,11 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
       const importResult = await parseImportFile(selectedImportFile)
 
       await saveTransactions(importResult.data.transactions)
-      if (importResult.kind === 'full-backup') {
-        await Promise.all([
-          saveSavingsBuckets(importResult.data.savingsBuckets),
-          saveSavingsMovements(importResult.data.savingsMovements),
-          setPreference('opening-disposable-balance', String(importResult.data.openingDisposableBalance))
-        ])
-      }
+      await Promise.all([
+        saveSavingsBuckets(importResult.data.savingsBuckets),
+        saveSavingsMovements(importResult.data.savingsMovements),
+        setPreference('opening-disposable-balance', String(importResult.data.openingDisposableBalance))
+      ])
 
       await onChanged()
       await refreshLocalStorageInfo()
