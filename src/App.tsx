@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { Box, Center, Flex, Loader, Text } from '@mantine/core'
 import { BottomNav, type PageKey } from './components/BottomNav'
 import { finishCreatingTransaction, switchMainTab, type AppNavigationState } from './domain/navigation'
-import type { Transaction } from './domain/transaction'
+import type { Transaction, TransactionScope } from './domain/transaction'
 import type { MonthlyBudget } from './domain/budget'
 import { getTotalSavings, summarizeDisposable, type SavingsBucket, type SavingsMovement } from './domain/savings'
 import {
@@ -55,10 +55,12 @@ export function App() {
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
   const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
   const [viewingStatsMonth, setViewingStatsMonth] = useState<string | null>(null)
+  const [statsYear, setStatsYear] = useState(currentYear())
+  const [statsExpenseScope, setStatsExpenseScope] = useState<TransactionScope>('all')
   const [isSearchingTransactions, setIsSearchingTransactions] = useState(false)
   const [transactionSearchQuery, setTransactionSearchQuery] = useState('')
   const [transactionSearchYear, setTransactionSearchYear] = useState(currentYear())
-  const [transactionSearchExpenseScope, setTransactionSearchExpenseScope] = useState<'all' | 'daily'>('all')
+  const [transactionSearchExpenseScope, setTransactionSearchExpenseScope] = useState<TransactionScope>('all')
   const [initialLoading, setInitialLoading] = useState(true)
 
   async function reloadTransactions() {
@@ -234,7 +236,15 @@ export function App() {
             />}
             {currentPage === 'stats' && viewingStatsMonth === null && (
               <Suspense fallback={<LoadingPage label="正在加载统计..." />}>
-                {!isSearchingTransactions && <StatsPage transactions={transactions} onOpenMonth={setViewingStatsMonth} onOpenSearch={() => setIsSearchingTransactions(true)} />}
+                {!isSearchingTransactions && <StatsPage
+                  transactions={transactions}
+                  year={statsYear}
+                  expenseScope={statsExpenseScope}
+                  onYearChange={setStatsYear}
+                  onExpenseScopeChange={setStatsExpenseScope}
+                  onOpenMonth={setViewingStatsMonth}
+                  onOpenSearch={() => setIsSearchingTransactions(true)}
+                />}
                 {isSearchingTransactions && <TransactionSearchPage
                   transactions={transactions}
                   query={transactionSearchQuery}

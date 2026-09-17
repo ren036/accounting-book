@@ -1,4 +1,5 @@
 export type TransactionType = 'income' | 'expense'
+export type TransactionScope = 'all' | 'daily'
 
 export type Transaction = {
   id: string
@@ -25,6 +26,16 @@ export function updateTransaction(
 export function getTransactionNoteDisplay(note: string): string | null {
   const trimmed = note.trim()
   return trimmed.length > 0 ? trimmed : null
+}
+
+export function filterTransactionsByScope(transactions: Transaction[], scope: TransactionScope): Transaction[] {
+  return scope === 'daily'
+    ? transactions.filter((transaction) => transaction.type !== 'expense' || transaction.includeInBudget !== false)
+    : transactions
+}
+
+export function filterTransactionsByYear(transactions: Transaction[], year: string): Transaction[] {
+  return transactions.filter((transaction) => transaction.occurredAt.startsWith(year))
 }
 
 export function searchTransactions(transactions: Transaction[], query: string): Transaction[] {

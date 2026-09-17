@@ -2,31 +2,26 @@ import { ActionIcon, Box, Group, SegmentedControl, Select, Stack, Text, TextInpu
 import { ArrowLeft, Search, X } from 'lucide-react'
 import { TransactionGroups } from '../components/TransactionGroups'
 import { getAvailableStatYears, groupTransactionsByDay } from '../domain/summary'
-import { searchTransactions, type Transaction } from '../domain/transaction'
+import { filterTransactionsByScope, filterTransactionsByYear, searchTransactions, type Transaction, type TransactionScope } from '../domain/transaction'
 import { currentMonth } from '../lib/dates'
 import { EmptyState } from '../ui/display'
 import { PageLayout } from '../ui/layout'
-
-type ExpenseScope = 'all' | 'daily'
 
 type TransactionSearchPageProps = {
   transactions: Transaction[]
   query: string
   year: string
-  expenseScope: ExpenseScope
+  expenseScope: TransactionScope
   onQueryChange: (value: string) => void
   onYearChange: (value: string) => void
-  onExpenseScopeChange: (value: ExpenseScope) => void
+  onExpenseScopeChange: (value: TransactionScope) => void
   onOpen: (id: string) => void
   onBack: () => void
 }
 
 export function TransactionSearchPage({ transactions, query, year, expenseScope, onQueryChange, onYearChange, onExpenseScopeChange, onOpen, onBack }: TransactionSearchPageProps) {
   const availableYears = getAvailableStatYears(transactions, currentMonth())
-  const scopedTransactions = expenseScope === 'daily'
-    ? transactions.filter((transaction) => transaction.type !== 'expense' || transaction.includeInBudget !== false)
-    : transactions
-  const results = searchTransactions(scopedTransactions.filter((transaction) => transaction.occurredAt.startsWith(year)), query)
+  const results = searchTransactions(filterTransactionsByYear(filterTransactionsByScope(transactions, expenseScope), year), query)
   const groups = groupTransactionsByDay(results)
 
   return (
@@ -59,7 +54,7 @@ export function TransactionSearchPage({ transactions, query, year, expenseScope,
           fullWidth
           data={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
           value={expenseScope}
-          onChange={(value) => onExpenseScopeChange(value as ExpenseScope)}
+          onChange={(value) => onExpenseScopeChange(value as TransactionScope)}
         />
       </Group>
     </>}>

@@ -1,4 +1,4 @@
-import type { SavingsBucket, SavingsMovement } from '../domain/savings'
+import { isSavingsBucketStatus, type SavingsBucket, type SavingsMovement } from '../domain/savings'
 import type { Transaction } from '../domain/transaction'
 import { formatLocalDateTime, isSupportedOccurredAt } from './dates'
 
@@ -79,7 +79,7 @@ export function parseBackup(content: string): BackupData {
       targetAmount: bucket.targetAmount,
       targetDate: bucket.targetDate,
       createdAt: requireSupportedOccurredAt(bucket.createdAt),
-      status: bucket.status
+      status: requireSavingsBucketStatus(bucket.status)
     })),
     savingsMovements: parsed.savingsMovements.map((movement) => ({
       id: movement.id,
@@ -101,4 +101,9 @@ function requireSupportedOccurredAt(value: unknown): string {
     throw new Error('备份文件包含不支持的日期时间格式，只支持 YYYY-MM-DD 或 YYYY-MM-DD HH:mm:ss')
   }
   return occurredAt
+}
+
+function requireSavingsBucketStatus(value: unknown): SavingsBucket['status'] {
+  if (!isSavingsBucketStatus(value)) throw new Error('备份文件包含不支持的储蓄状态')
+  return value
 }

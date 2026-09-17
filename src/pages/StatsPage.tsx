@@ -1,8 +1,7 @@
-import { useState } from 'react'
 import { ExpenseCategoryChart, MonthlyTrendChart } from '../components/StatisticsCharts'
 import { getAvailableStatYears, summarizeCategoriesByPrefix, summarizeYear, summarizeYearMonths } from '../domain/summary'
-import type { Transaction } from '../domain/transaction'
-import { currentMonth, currentYear } from '../lib/dates'
+import { filterTransactionsByScope, filterTransactionsByYear, type Transaction, type TransactionScope } from '../domain/transaction'
+import { currentMonth } from '../lib/dates'
 import { formatMoney } from '../lib/money'
 import { Box, Button, Group, Paper, SegmentedControl, Select, SimpleGrid, Stack, Text, Title } from '@mantine/core'
 import { Search } from 'lucide-react'
@@ -11,18 +10,17 @@ import { PageLayout } from '../ui/layout'
 
 type StatsPageProps = {
   transactions: Transaction[]
+  year: string
+  expenseScope: TransactionScope
+  onYearChange: (value: string) => void
+  onExpenseScopeChange: (value: TransactionScope) => void
   onOpenMonth: (month: string) => void
   onOpenSearch: () => void
 }
 
-export function StatsPage({ transactions, onOpenMonth, onOpenSearch }: StatsPageProps) {
-  const [year, setYear] = useState(currentYear())
-  const [expenseScope, setExpenseScope] = useState<'all' | 'daily'>('all')
+export function StatsPage({ transactions, year, expenseScope, onYearChange, onExpenseScopeChange, onOpenMonth, onOpenSearch }: StatsPageProps) {
   const availableYears = getAvailableStatYears(transactions, currentMonth())
-  const scopedTransactions = expenseScope === 'daily'
-    ? transactions.filter((transaction) => transaction.type !== 'expense' || transaction.includeInBudget !== false)
-    : transactions
-  const yearTransactions = scopedTransactions.filter((transaction) => transaction.occurredAt.startsWith(year))
+  const yearTransactions = filterTransactionsByYear(filterTransactionsByScope(transactions, expenseScope), year)
   const summary = summarizeYear(yearTransactions, year)
   const expenseCategories = summarizeCategoriesByPrefix(yearTransactions, year, 'expense')
   const months = summarizeYearMonths(yearTransactions, year, currentMonth())
@@ -38,7 +36,7 @@ export function StatsPage({ transactions, onOpenMonth, onOpenSearch }: StatsPage
               aria-label="统计年份"
               value={year}
               data={availableYears.map((item) => ({ value: item, label: `${item}年` }))}
-              onChange={(value) => value && setYear(value)}
+              onChange={(value) => value && onYearChange(value)}
             />
           </Group>
         </Group>
@@ -47,7 +45,7 @@ export function StatsPage({ transactions, onOpenMonth, onOpenSearch }: StatsPage
           fullWidth
           data={[{ label: '全部支出', value: 'all' }, { label: '日常消费', value: 'daily' }]}
           value={expenseScope}
-          onChange={(value) => setExpenseScope(value as 'all' | 'daily')}
+          onChange={(value) => onExpenseScopeChange(value as TransactionScope)}
         />
 
         <Paper p="sm">

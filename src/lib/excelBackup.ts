@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx'
-import type { SavingsBucket, SavingsMovement } from '../domain/savings'
+import { isSavingsBucketStatus, type SavingsBucket, type SavingsMovement } from '../domain/savings'
 import type { Transaction, TransactionType } from '../domain/transaction'
 import { isSupportedOccurredAt } from './dates'
 import { roundMoney } from './money'
@@ -98,8 +98,8 @@ function parseBucketRow(row: unknown[]): SavingsBucket | null {
   const targetAmount = targetAmountText ? Number(targetAmountText) : null
   const createdAt = String(row[5] ?? '').trim()
   const status = String(row[6] ?? '')
-  if (!id || !name || !isSupportedOccurredAt(createdAt) || (kind !== 'general' && kind !== 'goal') || !['active', 'used', 'cancelled'].includes(status)) return null
-  return { id, kind, name, targetAmount: targetAmount !== null && Number.isFinite(targetAmount) ? targetAmount : null, targetDate: String(row[4] ?? '').trim() || null, createdAt, status: status as SavingsBucket['status'] }
+  if (!id || !name || !isSupportedOccurredAt(createdAt) || !isSavingsBucketStatus(status) || (kind !== 'general' && kind !== 'goal')) return null
+  return { id, kind, name, targetAmount: targetAmount !== null && Number.isFinite(targetAmount) ? targetAmount : null, targetDate: String(row[4] ?? '').trim() || null, createdAt, status }
 }
 
 function parseMovementRow(row: unknown[]): SavingsMovement | null {

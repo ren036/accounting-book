@@ -79,6 +79,10 @@ export function normalizeSavingsBucketStatus(status: unknown): SavingsBucketStat
   return 'active'
 }
 
+export function isSavingsBucketStatus(status: unknown): status is SavingsBucketStatus {
+  return status === 'active' || status === 'used' || status === 'cancelled'
+}
+
 export function summarizeDisposable(
   transactions: Transaction[],
   movements: SavingsMovement[],
