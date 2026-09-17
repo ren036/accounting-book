@@ -16,6 +16,7 @@
     "lucide-react": "^1.21.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.4",
     "recharts": "^3.10.1",
     "use-dynamic-viewport": "^0.1.0",
     "vite-plugin-pwa": "^0.21.0",

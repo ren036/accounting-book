@@ -1,305 +1,110 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Box, Center, Flex, Loader, Text } from '@mantine/core'
 import { BottomNav, type PageKey } from './components/BottomNav'
-import { finishCreatingTransaction, switchMainTab, type AppNavigationState } from './domain/navigation'
-import type { Transaction, TransactionScope } from './domain/transaction'
-import type { MonthlyBudget } from './domain/budget'
-import { getTotalSavings, summarizeDisposable, type SavingsBucket, type SavingsMovement } from './domain/savings'
-import {
-  deleteTransaction,
-  ensureGeneralSavingsBucket,
-  getPreference,
-  listBudgets,
-  listSavingsBuckets,
-  listSavingsMovements,
-  listTransactions,
-  setPreference
-} from './lib/db'
 import { DashboardPage } from './pages/DashboardPage'
 import { EditTransactionPage } from './pages/EditTransactionPage'
 import { EntryPage } from './pages/EntryPage'
 import { MonthTransactionsPage } from './pages/MonthTransactionsPage'
 import { TransactionDetailPage } from './pages/TransactionDetailPage'
-import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
 import { FundsPage } from './pages/FundsPage'
 import { PwaUpdatePrompt } from './components/PwaUpdatePrompt'
 import { currentYear } from './lib/dates'
+import { getTotalSavings, summarizeDisposable } from './domain/savings'
+import type { TransactionScope } from './domain/transaction'
+import { useKeyboardViewportFrame } from './hooks/useKeyboardViewportFrame'
+import { AppDataProvider, useAppData } from './context/AppDataContext'
 
-const SettingsPage = lazy(async () => {
-  const module = await import('./pages/SettingsPage')
-  return { default: module.SettingsPage }
-})
-
-const StatsPage = lazy(async () => {
-  const module = await import('./pages/StatsPage')
-  return { default: module.StatsPage }
-})
-
-const TransactionSearchPage = lazy(async () => {
-  const module = await import('./pages/TransactionSearchPage')
-  return { default: module.TransactionSearchPage }
-})
+const SettingsPage = lazy(async () => ({ default: (await import('./pages/SettingsPage')).SettingsPage }))
+const StatsPage = lazy(async () => ({ default: (await import('./pages/StatsPage')).StatsPage }))
+const TransactionSearchPage = lazy(async () => ({ default: (await import('./pages/TransactionSearchPage')).TransactionSearchPage }))
 
 export function App() {
   const { isKeyboardOpen, viewportHeight, offsetTop } = useKeyboardViewportFrame()
-
-  const [currentPage, setCurrentPage] = useState<PageKey>('dashboard')
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [budgets, setBudgets] = useState<MonthlyBudget[]>([])
-  const [savingsBuckets, setSavingsBuckets] = useState<SavingsBucket[]>([])
-  const [savingsMovements, setSavingsMovements] = useState<SavingsMovement[]>([])
-  const [openingDisposableBalance, setOpeningDisposableBalance] = useState(0)
-  const [savingsAmountsHidden, setSavingsAmountsHidden] = useState(false)
-  const [fundsInitialTab, setFundsInitialTab] = useState<'budget' | 'savings'>('savings')
-  const [balanceCardBackground, setBalanceCardBackground] = useState<string | null>(null)
-  const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null)
-  const [viewingTransactionId, setViewingTransactionId] = useState<string | null>(null)
-  const [viewingStatsMonth, setViewingStatsMonth] = useState<string | null>(null)
-  const [statsYear, setStatsYear] = useState(currentYear())
-  const [statsExpenseScope, setStatsExpenseScope] = useState<TransactionScope>('all')
-  const [isSearchingTransactions, setIsSearchingTransactions] = useState(false)
-  const [transactionSearchQuery, setTransactionSearchQuery] = useState('')
-  const [transactionSearchYear, setTransactionSearchYear] = useState(currentYear())
-  const [transactionSearchExpenseScope, setTransactionSearchExpenseScope] = useState<TransactionScope>('all')
-  const [initialLoading, setInitialLoading] = useState(true)
-
-  async function reloadTransactions() {
-    setTransactions(await listTransactions())
-  }
-
-  async function reloadSavings() {
-    await ensureGeneralSavingsBucket()
-    const [buckets, movements, openingBalanceText, amountsHiddenText] = await Promise.all([
-      listSavingsBuckets(),
-      listSavingsMovements(),
-      getPreference('opening-disposable-balance'),
-      getPreference('savings-amounts-hidden')
-    ])
-    setSavingsBuckets(buckets)
-    setSavingsMovements(movements)
-    setOpeningDisposableBalance(Number(openingBalanceText ?? 0))
-    setSavingsAmountsHidden(amountsHiddenText === 'true')
-  }
-
-  async function reloadBudgets() {
-    setBudgets(await listBudgets())
-  }
-
-  async function reloadAllData() {
-    await Promise.all([
-      reloadTransactions(),
-      reloadBudgets(),
-      reloadSavings(),
-      getPreference('balance-card-background').then(setBalanceCardBackground)
-    ])
-  }
-
-  async function handleOpeningBalanceChange(value: number) {
-    await setPreference('opening-disposable-balance', String(value))
-    setOpeningDisposableBalance(value)
-  }
-
-  function openFunds(tab: 'budget' | 'savings') {
-    setFundsInitialTab(tab)
-    applyNavigationState(switchMainTab('budget'))
-  }
-
-  async function handleBalanceCardBackgroundChange(value: string | null) {
-    await setPreference('balance-card-background', value)
-    setBalanceCardBackground(value)
-  }
-
-  async function handleDelete(id: string) {
-    await deleteTransaction(id)
-    await reloadTransactions()
-    setEditingTransactionId(null)
-    setViewingTransactionId(null)
-  }
-
-  async function handleEditSaved() {
-    await reloadTransactions()
-    setEditingTransactionId(null)
-  }
-
-  async function handleEntrySaved() {
-    await reloadTransactions()
-    applyNavigationState(finishCreatingTransaction())
-  }
-
-  function applyNavigationState(state: AppNavigationState) {
-    setCurrentPage(state.currentPage)
-    setEditingTransactionId(state.editingTransactionId)
-    setViewingTransactionId(null)
-    setViewingStatsMonth(state.viewingStatsMonth)
-    setIsSearchingTransactions(false)
-  }
-
-  useEffect(() => {
-    let active = true
-    const minimumOpeningTime = new Promise((resolve) => window.setTimeout(resolve, 500))
-
-    void Promise.allSettled([reloadAllData(), minimumOpeningTime]).then(() => {
-      if (active) setInitialLoading(false)
-    })
-
-    return () => {
-      active = false
-    }
-  }, [])
-
-  const editingTransaction = editingTransactionId
-    ? transactions.find((transaction) => transaction.id === editingTransactionId)
-    : null
-  const viewingTransaction = viewingTransactionId
-    ? transactions.find((transaction) => transaction.id === viewingTransactionId)
-    : null
-  const isTransactionFormPage = Boolean(editingTransaction) || (!viewingTransaction && currentPage === 'entry')
-  const disposableBalance = summarizeDisposable(transactions, savingsMovements, openingDisposableBalance).balance
-  const totalSavings = getTotalSavings(savingsMovements, savingsBuckets)
-
-  return (
-    <Flex
-      component="main"
-      direction="column"
-      h={viewportHeight > 0 ? viewportHeight : '100dvh'}
-      mih={0}
-      bg="var(--book-bg)"
-      c="var(--book-text)"
-      style={{
-        position: 'fixed',
-        top: offsetTop,
-        right: 0,
-        left: 0,
-        overflow: 'hidden',
-      }}
-    >
-      <PwaUpdatePrompt />
-      {initialLoading ? (
-        <OpeningPage />
-      ) : (
-        <>
-          <Box className="book-app-enter" flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}>
-        {editingTransaction ? (
-          <EditTransactionPage
-            transaction={editingTransaction}
-            viewportHeight={viewportHeight}
-            onCancel={() => setEditingTransactionId(null)}
-            onSaved={handleEditSaved}
-          />
-        ) : viewingTransaction ? (
-          <TransactionDetailPage
-            transaction={viewingTransaction}
-            onBack={() => setViewingTransactionId(null)}
-            onDeleted={handleDelete}
-            onEdit={() => setEditingTransactionId(viewingTransaction.id)}
-          />
-        ) : (
-          <>
-            {currentPage === 'dashboard' && (
-              <DashboardPage
-                transactions={transactions}
-                budgets={budgets}
-                balanceCardBackground={balanceCardBackground}
-                disposableBalance={disposableBalance}
-                totalSavings={totalSavings}
-                savingsAmountsHidden={savingsAmountsHidden}
-                onOpen={setViewingTransactionId}
-                onCreate={() => applyNavigationState(switchMainTab('entry'))}
-                onOpenBudget={() => openFunds('budget')}
-                onOpenSavings={() => openFunds('savings')}
-                onBalanceCardBackgroundChange={handleBalanceCardBackgroundChange}
-              />
-            )}
-            {currentPage === 'entry' && (
-              <EntryPage
-                viewportHeight={viewportHeight}
-                onCancel={() => applyNavigationState(finishCreatingTransaction())}
-                onSaved={handleEntrySaved}
-              />
-            )}
-            {currentPage === 'budget' && <FundsPage
-              key={fundsInitialTab}
-              initialTab={fundsInitialTab}
-              transactions={transactions}
-              budgets={budgets}
-              savingsBuckets={savingsBuckets}
-              savingsMovements={savingsMovements}
-              openingDisposableBalance={openingDisposableBalance}
-              amountsHidden={savingsAmountsHidden}
-              onBudgetsChanged={reloadBudgets}
-              onSavingsChanged={reloadSavings}
-              onOpeningBalanceChange={handleOpeningBalanceChange}
-              onOpenMonth={(month) => {
-                setCurrentPage('stats')
-                setViewingStatsMonth(month)
-              }}
-            />}
-            {currentPage === 'stats' && viewingStatsMonth === null && (
-              <Suspense fallback={<LoadingPage label="正在加载统计..." />}>
-                {!isSearchingTransactions && <StatsPage
-                  transactions={transactions}
-                  year={statsYear}
-                  expenseScope={statsExpenseScope}
-                  onYearChange={setStatsYear}
-                  onExpenseScopeChange={setStatsExpenseScope}
-                  onOpenMonth={setViewingStatsMonth}
-                  onOpenSearch={() => setIsSearchingTransactions(true)}
-                />}
-                {isSearchingTransactions && <TransactionSearchPage
-                  transactions={transactions}
-                  query={transactionSearchQuery}
-                  year={transactionSearchYear}
-                  expenseScope={transactionSearchExpenseScope}
-                  onQueryChange={setTransactionSearchQuery}
-                  onYearChange={setTransactionSearchYear}
-                  onExpenseScopeChange={setTransactionSearchExpenseScope}
-                  onOpen={setViewingTransactionId}
-                  onBack={() => setIsSearchingTransactions(false)}
-                />}
-              </Suspense>
-            )}
-            {currentPage === 'stats' && viewingStatsMonth !== null && (
-              <MonthTransactionsPage
-                month={viewingStatsMonth}
-                transactions={transactions}
-                budget={budgets.find((budget) => budget.month === viewingStatsMonth)}
-                onBack={() => setViewingStatsMonth(null)}
-                onChangeMonth={setViewingStatsMonth}
-                onOpen={setViewingTransactionId}
-              />
-            )}
-            {currentPage === 'settings' && (
-              <Suspense fallback={<LoadingPage label="正在加载设置..." />}>
-                <SettingsPage onChanged={reloadAllData} />
-              </Suspense>
-            )}
-          </>
-        )}
-          </Box>
-          {!isTransactionFormPage && !isKeyboardOpen && (
-            <BottomNav
-              currentPage={currentPage}
-              onChange={(page) => {
-                if (page === 'budget') setFundsInitialTab('savings')
-                applyNavigationState(switchMainTab(page))
-              }}
-            />
-          )}
-        </>
-      )}
-    </Flex>
-  )
+  return <AppDataProvider><AppFrame isKeyboardOpen={isKeyboardOpen} viewportHeight={viewportHeight} offsetTop={offsetTop} /></AppDataProvider>
 }
 
-function OpeningPage() {
-  return (
-    <div className="app-boot" role="status" aria-label="记账本正在启动">
-      <div className="app-boot__mark" aria-hidden="true">账</div>
-      <div className="app-boot__title">记账本</div>
-    </div>
-  )
+function AppFrame({ isKeyboardOpen, viewportHeight, offsetTop }: { isKeyboardOpen: boolean; viewportHeight: number; offsetTop: number }) {
+  const { initialLoading } = useAppData()
+  return <BrowserRouter><Flex component="main" direction="column" h={viewportHeight > 0 ? viewportHeight : '100dvh'} mih={0} bg="var(--book-bg)" c="var(--book-text)" style={{ position: 'fixed', top: offsetTop, right: 0, left: 0, overflow: 'hidden' }}><PwaUpdatePrompt />{initialLoading ? <OpeningPage /> : <AppContent isKeyboardOpen={isKeyboardOpen} viewportHeight={viewportHeight} />}</Flex></BrowserRouter>
 }
 
-function LoadingPage({ label }: { label: string }) {
-  return <Center h="100%"><Box ta="center"><Loader color="teal" size="sm" /><Text mt="sm" c="dimmed">{label}</Text></Box></Center>
+function AppContent({ isKeyboardOpen, viewportHeight }: { isKeyboardOpen: boolean; viewportHeight: number }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const showBottomNav = !isKeyboardOpen && !location.pathname.endsWith('/edit') && location.pathname !== '/entry'
+  const currentPage = getCurrentPage(location.pathname)
+  return <><Box className="book-app-enter" flex={1} mih={0} style={{ overflowX: 'hidden', overflowY: 'auto' }}><Routes>
+    <Route path="/" element={<DashboardRoute />} />
+    <Route path="/entry" element={<EntryRoute viewportHeight={viewportHeight} />} />
+    <Route path="/funds" element={<FundsRoute />} />
+    <Route path="/stats" element={<StatsRoute />} />
+    <Route path="/stats/search" element={<TransactionSearchRoute />} />
+    <Route path="/stats/month/:month" element={<MonthRoute />} />
+    <Route path="/transactions/:id" element={<TransactionDetailRoute />} />
+    <Route path="/transactions/:id/edit" element={<EditTransactionRoute viewportHeight={viewportHeight} />} />
+    <Route path="/settings" element={<SettingsRoute />} />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes></Box>{showBottomNav && <BottomNav currentPage={currentPage} onChange={(page) => navigate(page === 'dashboard' ? '/' : `/${page === 'budget' ? 'funds' : page}`)} />}</>
 }
+
+function getCurrentPage(pathname: string): PageKey {
+  if (pathname.startsWith('/funds')) return 'budget'
+  if (pathname.startsWith('/stats')) return 'stats'
+  if (pathname.startsWith('/settings')) return 'settings'
+  if (pathname.startsWith('/entry')) return 'entry'
+  return 'dashboard'
+}
+
+function DashboardRoute() {
+  const navigate = useNavigate(); const data = useAppData()
+  const disposableBalance = summarizeDisposable(data.transactions, data.savingsMovements, data.openingDisposableBalance).balance
+  return <DashboardPage transactions={data.transactions} budgets={data.budgets} balanceCardBackground={data.balanceCardBackground} disposableBalance={disposableBalance} totalSavings={getTotalSavings(data.savingsMovements, data.savingsBuckets)} savingsAmountsHidden={data.savingsAmountsHidden} onOpen={(id) => navigate(`/transactions/${id}`)} onCreate={() => navigate('/entry')} onOpenBudget={() => navigate('/funds?tab=budget')} onOpenSavings={() => navigate('/funds?tab=savings')} onBalanceCardBackgroundChange={data.handleBalanceCardBackgroundChange} />
+}
+
+function EntryRoute({ viewportHeight }: { viewportHeight: number }) {
+  const navigate = useNavigate(); const data = useAppData()
+  return <EntryPage viewportHeight={viewportHeight} onCancel={() => navigate('/')} onSaved={async () => { await data.reloadTransactions(); navigate('/') }} />
+}
+
+function FundsRoute() {
+  const [params] = useSearchParams(); const data = useAppData(); const navigate = useNavigate()
+  const initialTab = params.get('tab') === 'budget' ? 'budget' : 'savings'
+  return <FundsPage key={initialTab} initialTab={initialTab} transactions={data.transactions} budgets={data.budgets} savingsBuckets={data.savingsBuckets} savingsMovements={data.savingsMovements} openingDisposableBalance={data.openingDisposableBalance} amountsHidden={data.savingsAmountsHidden} onBudgetsChanged={data.reloadBudgets} onSavingsChanged={data.reloadSavings} onOpeningBalanceChange={data.handleOpeningBalanceChange} onOpenMonth={(month) => navigate(`/stats/month/${month}`)} />
+}
+
+function StatsRoute() {
+  const [year, setYear] = useState(currentYear()); const [expenseScope, setExpenseScope] = useState<TransactionScope>('all'); const data = useAppData(); const navigate = useNavigate()
+  return <Suspense fallback={<LoadingPage label="正在加载统计..." />}><StatsPage transactions={data.transactions} year={year} expenseScope={expenseScope} onYearChange={setYear} onExpenseScopeChange={setExpenseScope} onOpenMonth={(month) => navigate(`/stats/month/${month}`)} onOpenSearch={() => navigate('/stats/search')} /></Suspense>
+}
+
+function TransactionSearchRoute() {
+  const [query, setQuery] = useState(''); const [year, setYear] = useState(currentYear()); const [expenseScope, setExpenseScope] = useState<TransactionScope>('all'); const data = useAppData(); const navigate = useNavigate()
+  return <Suspense fallback={<LoadingPage label="正在加载搜索..." />}><TransactionSearchPage transactions={data.transactions} query={query} year={year} expenseScope={expenseScope} onQueryChange={setQuery} onYearChange={setYear} onExpenseScopeChange={setExpenseScope} onOpen={(id) => navigate(`/transactions/${id}`)} onBack={() => navigate('/stats')} /></Suspense>
+}
+
+function MonthRoute() {
+  const { month = '' } = useParams(); const data = useAppData(); const navigate = useNavigate()
+  return <MonthTransactionsPage month={month} transactions={data.transactions} budget={data.budgets.find((budget) => budget.month === month)} onBack={() => navigate('/stats')} onChangeMonth={(nextMonth) => navigate(`/stats/month/${nextMonth}`)} onOpen={(id) => navigate(`/transactions/${id}`)} />
+}
+
+function TransactionDetailRoute() {
+  const { id = '' } = useParams(); const data = useAppData(); const navigate = useNavigate(); const transaction = data.transactions.find((item) => item.id === id)
+  if (!transaction) return <NotFoundPage />
+  return <TransactionDetailPage transaction={transaction} onBack={() => navigate(-1)} onDeleted={async (transactionId) => { await data.removeTransaction(transactionId); navigate('/') }} onEdit={() => navigate(`/transactions/${id}/edit`)} />
+}
+
+function EditTransactionRoute({ viewportHeight }: { viewportHeight: number }) {
+  const { id = '' } = useParams(); const data = useAppData(); const navigate = useNavigate(); const transaction = data.transactions.find((item) => item.id === id)
+  if (!transaction) return <NotFoundPage />
+  return <EditTransactionPage transaction={transaction} viewportHeight={viewportHeight} onCancel={() => navigate(-1)} onSaved={async () => { await data.reloadTransactions(); navigate(`/transactions/${id}`) }} />
+}
+
+function SettingsRoute() {
+  const data = useAppData()
+  return <Suspense fallback={<LoadingPage label="正在加载设置..." />}><SettingsPage onChanged={data.reloadAllData} /></Suspense>
+}
+
+function OpeningPage() { return <div className="app-boot" role="status" aria-label="记账本正在启动"><div className="app-boot__mark" aria-hidden="true">账</div><div className="app-boot__title">记账本</div></div> }
+function LoadingPage({ label }: { label: string }) { return <Center h="100%"><Box ta="center"><Loader color="teal" size="sm" /><Text mt="sm" c="dimmed">{label}</Text></Box></Center> }
+function NotFoundPage() { return <Center h="100%"><Text c="dimmed">找不到这笔账单</Text></Center> }
