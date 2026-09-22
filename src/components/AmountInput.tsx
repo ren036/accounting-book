@@ -24,7 +24,7 @@ export function AmountInput({ value, onActivateKeyboard }: AmountInputProps) {
         </Text>
       </Group>
       <Divider />
-      {hasExpression && <Text mt="xs" ta="right" size="sm" fw={600} c="teal.7">{Number.isFinite(calculated) ? `= ${formatAmount(calculated)}` : '算式未完成'}</Text>}
+      {hasExpression && <Text mt="xs" ta="right" size="sm" fw={600} c="var(--book-ink)">{Number.isFinite(calculated) ? `= ${formatAmount(calculated)}` : '算式未完成'}</Text>}
     </Paper>
   )
 }
@@ -57,10 +57,10 @@ export function AmountKeyboard({ value, onChange, onSubmit, onDismiss }: AmountK
         </SimpleGrid>
         {onSubmit && (
           <SimpleGrid cols={1} spacing={6} flex={1} style={{ gridTemplateRows: 'repeat(4, minmax(0, 1fr))' }}>
-            <Button h="100%" mih={44} type="button" aria-label="输入加号" onClick={() => press('+')} variant="light" color="teal" radius="lg" fz="xl">+</Button>
-            <Button h="100%" mih={44} type="button" aria-label="输入减号" onClick={() => press('-')} variant="light" color="teal" radius="lg" fz="xl">−</Button>
+            <Button h="100%" mih={44} type="button" aria-label="输入加号" onClick={() => press('+')} variant="light" color="ink" radius="lg" fz="xl">+</Button>
+            <Button h="100%" mih={44} type="button" aria-label="输入减号" onClick={() => press('-')} variant="light" color="ink" radius="lg" fz="xl">−</Button>
             <Button h="100%" mih={44} type="button" aria-label="计算金额" onClick={() => press('equals')} variant="light" color="gray" radius="lg" fz="xl">=</Button>
-            <Button h="100%" mih={44} px="xs" type="button" onClick={onSubmit} color="teal" radius="lg" leftSection={<Check aria-hidden size={18} />}>
+            <Button h="100%" mih={44} px="xs" type="button" onClick={onSubmit} color="ink" radius="lg" leftSection={<Check aria-hidden size={18} />}>
               完成
             </Button>
           </SimpleGrid>

@@ -18,7 +18,7 @@ export default defineConfig({
         short_name: '记账本',
         description: '个人离线记账本',
         theme_color: '#111827',
-        background_color: '#f9fafb',
+        background_color: '#f5f6f8',
         display: 'standalone',
         start_url: '/',
         icons: [

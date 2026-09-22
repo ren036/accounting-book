@@ -57,7 +57,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
     const nextColorScheme = value === 'dark' ? 'dark' : 'light'
     setColorScheme(nextColorScheme)
     document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
-      ?.setAttribute('content', nextColorScheme === 'dark' ? '#171b18' : '#f4f6f3')
+      ?.setAttribute('content', nextColorScheme === 'dark' ? '#12151a' : '#f5f6f8')
   }
 
   async function handleJsonExport() {

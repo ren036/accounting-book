@@ -32,7 +32,7 @@ export function BottomNav({ currentPage, onChange }: BottomNavProps) {
           const active = currentPage === item.key
           const Icon = item.icon
           return (
-            <UnstyledButton key={item.key} className="bottom-nav-item" data-active={active} py={5} c={active ? 'teal.8' : 'gray.6'} aria-current={active ? 'page' : undefined} onClick={() => onChange(item.key)}>
+            <UnstyledButton key={item.key} className="bottom-nav-item" data-active={active} py={5} c={active ? 'var(--book-ink)' : 'gray.6'} aria-current={active ? 'page' : undefined} onClick={() => onChange(item.key)}>
               <Stack align="center" gap={2}>
                 <Icon size={20} strokeWidth={2.2} />
                 <Text size="xs" fw={active ? 700 : 500}>{item.label}</Text>

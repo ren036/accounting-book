@@ -225,7 +225,7 @@ export function SavingsPage({ transactions, buckets, movements, openingDisposabl
 
       <Group justify="space-between" px={4}>
         <Group gap="xs"><Text fw={700}>专项资金</Text><Text size="xs" c="dimmed">{goals.length} 项</Text></Group>
-        <ActionIcon color="teal" variant="subtle" aria-label="创建专项资金" onClick={openCreateGoal}><Plus size={16} strokeWidth={3} /></ActionIcon>
+        <ActionIcon color="ink" variant="subtle" aria-label="创建专项资金" onClick={openCreateGoal}><Plus size={16} strokeWidth={3} /></ActionIcon>
       </Group>
 
       {goals.length === 0 ? (
@@ -326,7 +326,7 @@ function BucketCard({ bucket, balance, onDeposit, onWithdraw, onEdit, amountsHid
     <Paper component="article" p="lg">
       <Stack gap="md">
         <Group justify="space-between" align="flex-start" gap="md" wrap="nowrap">
-          <Group gap="xs" wrap="nowrap"><ThemeIcon color="teal" variant="light" radius="xl" size="lg">{bucket.kind === 'general' ? <Landmark size={20} /> : <Target size={20} />}</ThemeIcon><Box><Text fw={700}>{bucket.name}</Text>{bucket.targetDate && <Text size="xs" c="dimmed">目标日期 {bucket.targetDate}</Text>}</Box></Group>
+          <Group gap="xs" wrap="nowrap"><ThemeIcon color="ink" variant="light" radius="xl" size="lg">{bucket.kind === 'general' ? <Landmark size={20} /> : <Target size={20} />}</ThemeIcon><Box><Text fw={700}>{bucket.name}</Text>{bucket.targetDate && <Text size="xs" c="dimmed">目标日期 {bucket.targetDate}</Text>}</Box></Group>
           {bucket.kind === 'goal' && <Group gap={4} wrap="nowrap"><Badge color={statusColor} variant="light" leftSection={<CheckCircle2 size={12} />}>{statusLabel}</Badge>{onEdit && <ActionIcon variant="light" color="gray" aria-label={`编辑${bucket.name}`} onClick={onEdit}><Pencil size={15} /></ActionIcon>}</Group>}
         </Group>
         <Text fz="xl" fw={700}>{formatPrivateMoney(balance, amountsHidden)}{bucket.targetAmount && <Text component="span" size="sm" c="dimmed"> / {formatPrivateMoney(bucket.targetAmount, amountsHidden)}</Text>}</Text>
@@ -334,7 +334,7 @@ function BucketCard({ bucket, balance, onDeposit, onWithdraw, onEdit, amountsHid
         {bucket.targetAmount && !targetReached && bucket.status === 'active' && <Text size="xs" c="dimmed">还需 {formatPrivateMoney(Math.max(bucket.targetAmount - balance, 0), amountsHidden)} · 已完成 {progress.toFixed(0)}%</Text>}
         {bucket.status === 'used' && <Text size="xs" c="dimmed">该金额已使用，并已从储蓄总额移除</Text>}
         {bucket.status === 'cancelled' && <Text size="xs" c="dimmed">专项已取消，剩余金额已退回可支配</Text>}
-        {suggestedMonthlyDeposit !== null && !targetReached && <Box p="sm" bg="var(--mantine-color-teal-light)" c="var(--mantine-color-teal-light-color)" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {formatPrivateMoney(suggestedMonthlyDeposit, amountsHidden)}</Text></Box>}
+        {suggestedMonthlyDeposit !== null && !targetReached && <Box p="sm" bg="var(--mantine-color-ink-light)" c="var(--mantine-color-ink-light-color)" style={{ borderRadius: 14 }}><Text size="xs">按目标日期，建议每月存 {formatPrivateMoney(suggestedMonthlyDeposit, amountsHidden)}</Text></Box>}
         <SimpleGrid cols={2} spacing="xs"><Button disabled={depositDisabled} onClick={onDeposit}>{depositLabel}</Button><Button variant="light" color="gray" disabled={isClosed || balance <= 0} onClick={onWithdraw}>取出</Button></SimpleGrid>
       </Stack>
     </Paper>
@@ -347,7 +347,7 @@ function SavingsTrend({ movements, amountsHidden }: { movements: ReturnType<type
   return (
     <Paper component="section" p="lg">
       <Stack gap="md">
-      <Box><Text size="xs" fw={700} tt="uppercase" c="teal.7">储蓄趋势</Text><Title order={3} size="h5" mt={4}>近 6 个月存取</Title></Box>
+      <Box><Text size="xs" fw={700} tt="uppercase" c="var(--book-ink)">储蓄趋势</Text><Title order={3} size="h5" mt={4}>近 6 个月存取</Title></Box>
       <SimpleGrid cols={6} spacing="xs" h={144} style={{ alignItems: 'end' }}>
         {visible.map((item) => (
           <Stack key={item.month} h="100%" gap="xs" align="center">

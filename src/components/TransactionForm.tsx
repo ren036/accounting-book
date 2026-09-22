@@ -102,7 +102,7 @@ export function TransactionForm({ id = 'transaction-form', viewportHeight = 0, i
       <SegmentedControl
         w={176}
         mx="auto"
-        my="xs"
+        mb="xs"
         value={type}
         data={[{ label: '支出', value: 'expense' }, { label: '收入', value: 'income' }]}
         onChange={(value) => handleTypeChange(value as TransactionType)}

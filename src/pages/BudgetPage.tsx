@@ -80,7 +80,7 @@ export function BudgetPage({ transactions, budgets, onChanged, onOpenMonth }: Bu
               <Box><Text size="sm" c="dimmed">日常消费</Text><Text mt={4} fz="lg" fw={700}>{formatMoney(progress?.spent ?? 0)}</Text></Box>
               <Box><Text size="sm" c="dimmed">{progress && progress.remaining < 0 ? '已超出' : '剩余'}</Text><Text mt={4} fz="lg" fw={700} c={progress && progress.remaining < 0 ? 'red.6' : undefined}>{formatMoney(Math.abs(progress?.remaining ?? 0))}</Text></Box>
             </Group>
-            <Text ta="right" size="xs" fw={700} c="teal.7">查看本月详细账单 →</Text>
+            <Text ta="right" size="xs" fw={700} c="var(--book-ink)">查看本月详细账单 →</Text>
           </Stack>
         </Paper>
 

@@ -34,7 +34,7 @@ export function CategoryPicker({ categories, value, onChange }: CategoryPickerPr
               >
                 <CategoryEmoji category={category} color={active ? 'white' : undefined} />
               </Center>
-              <Text mt={4} size="xs" ta="center" truncate fw={active ? 700 : 400} c={active ? 'teal.8' : 'dimmed'}>{category}</Text>
+              <Text mt={4} size="xs" ta="center" truncate fw={active ? 700 : 400} c={active ? 'var(--book-ink)' : 'dimmed'}>{category}</Text>
             </UnstyledButton>
           )
         })}

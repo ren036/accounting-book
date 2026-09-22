@@ -84,7 +84,7 @@ export function CategoryChart({
 }
 
 function ChartCard({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
-  return <Paper component="section" miw={0} p={18}><Text size="xs" fw={700} tt="uppercase" c="teal.7">{eyebrow}</Text><Title order={2} size="h4" mb="md">{title}</Title>{children}</Paper>
+  return <Paper component="section" miw={0} p={18}><Text size="xs" fw={700} tt="uppercase" c="var(--book-ink)">{eyebrow}</Text><Title order={2} size="h4" mb="md">{title}</Title>{children}</Paper>
 }
 
 function EmptyChart() { return <Center mih={192} bg="var(--book-surface-muted)" style={{ borderRadius: 16 }}><Text size="sm" c="dimmed">暂无数据</Text></Center> }

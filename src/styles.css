@@ -1,32 +1,35 @@
 :root {
-  --book-green: #34745e;
-  --book-bg: #f4f6f3;
+  /* 品牌墨黑，取自开屏 logo；深色模式下反转为浅色以保证可读性 */
+  --book-ink: #111827;
+  --book-bg: #f5f6f8;
   --book-surface: #ffffff;
-  --book-surface-muted: #f0f4f1;
-  --book-text: #202622;
-  --book-muted: #707871;
-  --book-border: #e1e6e2;
-  --book-ledger-start: #f0f7f3;
+  --book-surface-muted: #f1f3f6;
+  --book-text: #1f2429;
+  --book-muted: #6f757d;
+  --book-border: #e3e6ea;
+  --book-ledger-start: #f2f5f9;
   --book-ledger-middle: #ffffff;
-  --book-ledger-end: #f8f5ed;
+  --book-ledger-end: #faf8f4;
   --book-panel: rgb(255 255 255 / 72%);
-  --book-shadow: rgb(36 70 56 / 6%);
+  --book-shadow: rgb(17 24 39 / 6%);
   color-scheme: light;
 }
 
 :root[data-mantine-color-scheme='dark'] {
-  --book-green: #6caf95;
-  --book-bg: #111512;
-  --book-surface: #1b201c;
-  --book-surface-muted: #252c27;
-  --book-text: #e8ede9;
-  --book-muted: #a1aaa3;
-  --book-border: #303832;
-  --book-ledger-start: #17221c;
-  --book-ledger-middle: #1b201c;
-  --book-ledger-end: #211f1a;
-  --book-panel: rgb(27 32 28 / 82%);
+  --book-ink: #d8e0ea;
+  --book-bg: #12151a;
+  --book-surface: #1b1f26;
+  --book-surface-muted: #252a32;
+  --book-text: #e8ebf0;
+  --book-muted: #a1a8b3;
+  --book-border: #30363f;
+  --book-ledger-start: #171b22;
+  --book-ledger-middle: #1b1f26;
+  --book-ledger-end: #211f1b;
+  --book-panel: rgb(27 31 38 / 82%);
   --book-shadow: rgb(0 0 0 / 24%);
+  /* 深色模式下主色为浅色，Mantine 的滑块默认是白色，需反转为深色才看得出对比 */
+  --switch-thumb-bg: #111827;
   color-scheme: dark;
 }
 
@@ -91,7 +94,7 @@ button {
   flex: 0 0 32px;
   width: 32px;
   height: 32px;
-  color: var(--book-green);
+  color: var(--book-ink);
   background: var(--book-surface-muted);
   border-radius: 50%;
   place-items: center;

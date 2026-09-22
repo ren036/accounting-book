@@ -106,5 +106,5 @@ function SettingsRoute() {
 }
 
 function OpeningPage() { return <div className="app-boot" role="status" aria-label="记账本正在启动"><div className="app-boot__mark" aria-hidden="true">账</div><div className="app-boot__title">记账本</div></div> }
-function LoadingPage({ label }: { label: string }) { return <Center h="100%"><Box ta="center"><Loader color="teal" size="sm" /><Text mt="sm" c="dimmed">{label}</Text></Box></Center> }
+function LoadingPage({ label }: { label: string }) { return <Center h="100%"><Box ta="center"><Loader color="ink" size="sm" /><Text mt="sm" c="dimmed">{label}</Text></Box></Center> }
 function NotFoundPage() { return <Center h="100%"><Text c="dimmed">找不到这笔账单</Text></Center> }

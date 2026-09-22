@@ -40,7 +40,7 @@ export function CollapsibleTransactionSearch({ value, onChange, children }: Coll
             aria-label="搜索账单"
             leftSection={<Search aria-hidden="true" size={19} strokeWidth={2.2} />}
             rightSection={value ? (
-              <ActionIcon color="teal" variant="light" size="sm" aria-label="清空搜索" onClick={() => onChange('')}>
+              <ActionIcon color="ink" variant="light" size="sm" aria-label="清空搜索" onClick={() => onChange('')}>
                 <X aria-hidden="true" size={15} />
               </ActionIcon>
             ) : undefined}

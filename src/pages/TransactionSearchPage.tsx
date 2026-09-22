@@ -35,7 +35,7 @@ export function TransactionSearchPage({ transactions, query, year, expenseScope,
         autoFocus
         aria-label="搜索账单"
         leftSection={<Search aria-hidden="true" size={19} strokeWidth={2.2} />}
-        rightSection={query ? <ActionIcon color="teal" variant="light" size="sm" aria-label="清空搜索" onClick={() => onQueryChange('')}><X aria-hidden="true" size={15} /></ActionIcon> : undefined}
+        rightSection={query ? <ActionIcon color="ink" variant="light" size="sm" aria-label="清空搜索" onClick={() => onQueryChange('')}><X aria-hidden="true" size={15} /></ActionIcon> : undefined}
         onChange={(event) => onQueryChange(event.target.value)}
         placeholder="搜索分类、备注、金额或收支类型"
         type="search"

@@ -3,7 +3,7 @@ import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 
 export function showMessage(message: string) {
-  notifications.show({ message, color: 'teal', withCloseButton: false })
+  notifications.show({ message, color: 'ink', withCloseButton: false })
 }
 
 export function confirmAction({
@@ -29,7 +29,7 @@ export function confirmAction({
       title: '请确认',
       children: <Text size="sm">{message}</Text>,
       labels: { confirm: confirmLabel, cancel: cancelLabel },
-      confirmProps: { color: destructive ? 'red' : 'teal' },
+      confirmProps: { color: destructive ? 'red' : 'ink' },
       centered: true,
       radius: 'lg',
       onConfirm: () => settle(true),
