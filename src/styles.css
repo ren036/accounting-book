@@ -32,6 +32,10 @@
   --switch-thumb-bg: #111827;
   color-scheme: dark;
 }
+:root,
+body {
+  background: var(--book-bg);
+}
 
 html,
 body,
