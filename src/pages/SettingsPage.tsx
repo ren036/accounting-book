@@ -56,6 +56,7 @@ export function SettingsPage({ onChanged }: SettingsPageProps) {
   function handleColorSchemeChange(value: string) {
     const nextColorScheme = value === 'dark' ? 'dark' : 'light'
     setColorScheme(nextColorScheme)
+    document.documentElement.style.colorScheme = nextColorScheme
     document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
       ?.setAttribute('content', nextColorScheme === 'dark' ? '#12151a' : '#f5f6f8')
   }

@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="theme-color" content="#f5f6f8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>记账本</title>
     <script>
       try {
         const scheme = localStorage.getItem('accounting-book-color-scheme') === 'dark' ? 'dark' : 'light'
         document.documentElement.dataset.mantineColorScheme = scheme
+        document.documentElement.style.colorScheme = scheme
         document.querySelector('meta[name="theme-color"]').content = scheme === 'dark' ? '#12151a' : '#f5f6f8'
       } catch (error) {
         document.documentElement.dataset.mantineColorScheme = 'light'
